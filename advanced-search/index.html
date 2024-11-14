@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Advanced Search</title>
+    <meta name="description"
+        content="A simple tool to search Bluesky posts, users, and tags. Just type what you need, and it'll open a new tab with the required specific search formats.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+
+    <link rel="stylesheet" href="styles.css">
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div class="container">
+        <div class="top">
+            <img src="assets/bluesky.svg" alt="Bluesky Logo" class="logo">
+            <h3 class="title">Bluesky advanced search</h3>
+        </div>
+        <p class="subtitle">A simple tool to search Bluesky posts, users, and tags. Just type what you need, and it'll
+            open a new tab with the required specific search formats. This tool is based on tips shared in the <a
+                href="https://bsky.social/about/blog/05-31-2024-search" target="_blank" rel="noopener">Bluesky blog</a>,
+            which also mentions, "Over time, we'll make these features easier to use directly within the Bluesky app.
+            Think of these as advanced features!"</p>
+
+        <div class="search-section">
+            <form>
+
+                <div class="form-group">
+                    <label for="superPhrase">Exact text to search</label>
+                    <textarea id="superPhrase" class="input-field" placeholder="Enter exact text to search"
+                        aria-label="Exact text to search"></textarea>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="superFromUser">From</label>
+                        <input type="text" id="superFromUser" class="input-field"
+                            placeholder="Enter username or type 'me' to select yourself"
+                            aria-label="From Username or 'me'">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superToUser">To</label>
+                        <input type="text" id="superToUser" class="input-field" placeholder="Enter username"
+                            aria-label="To Username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superMentions">Mentions username or 'me'</label>
+                        <input type="text" id="superMentions" class="input-field"
+                            placeholder="Enter username or type 'me' to select yourself"
+                            aria-label="Mentions Username or 'me'">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superExactUsername">Exact username</label>
+                        <input type="text" id="superExactUsername" class="input-field" placeholder="Enter @username"
+                            aria-label="Exact @username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superHashtag">Hashtag</label>
+                        <input type="text" id="superHashtag" class="input-field"
+                            placeholder="Enter hashtag (spaces will be auto removed)" aria-label="Hashtag">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superDomain">Domain</label>
+                        <input type="text" id="superDomain" class="input-field"
+                            placeholder="Copy paste url and it will extract the domain" aria-label="Domain">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superSince">Start date</label>
+                        <input type="date" id="superSince" class="input-field" placeholder="YYYY-MM-DD"
+                            aria-label="Start Date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superUntil">End date</label>
+                        <input type="date" id="superUntil" class="input-field" placeholder="YYYY-MM-DD"
+                            aria-label="End Date">
+                    </div>
+                </div>
+
+                <button type="button" onclick="searchSuper()" class="search-button">
+                    <i class="ph-duotone ph-magnifying-glass"></i>
+                    Search using Bluesky
+                </button>
+            </form>
+
+        </div>
+
+        <footer>
+
+            JavaScript created by Mistral AI. Made for regular users who don’t like or know how to search using specific
+            search formats, like from:, to:, mentions:, hashtags, or date ranges. Simply paste a URL in the Bluesky
+            search field itself to see posts that have also shared it.
+        </footer>
+
+    </div>
+
+
+
+    <script src="script.js"></script>
+</body>
+
+</html>
