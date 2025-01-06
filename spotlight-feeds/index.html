@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Feeds - A Spotlight for Everyone</title>
+    <meta name="description"
+        content="Discover curated Bluesky feeds and lists, including recen and trending news, trending topics, tech updates, space insights, movies, shows, and popular profiles etc. No account needed—explore feeds with links to original posts.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Bluesky Feeds - A Spotlight for Everyone">
+    <meta property="og:description"
+        content="Discover curated Bluesky feeds and lists, including trending topics, tech updates, space insights, movies, shows, and popular profiles. No account needed—explore feeds with links to original posts.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/spotlight-feeds/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+    <link rel="stylesheet" href="styles.css">
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div class="tabs-container">
+        <div class="tabs" id="feedTabs">
+            <!-- Tabs will be inserted here -->
+        </div>
+    </div>
+    <div class="container">
+        <div class="feed-info">
+            <div id="feedDescription" class="feed-description">
+                <!-- Current feed description will be inserted here -->
+            </div>
+            <div id="feedButton" class="feed-button">
+                <!-- Current feed button will be inserted here -->
+            </div>
+        </div>
+
+        <div id="cardContainer" class="card-container">
+            <!-- Cards will be inserted here -->
+        </div>
+        <footer>
+            <h6>Understanding Bluesky: A practical experiment</h6>
+            <p>First of all, there are no analytics tools or trackers used here, so feel free to browse away with peace
+                of mind. These are the feed topics available here: Recent News, Trending News, Explore, What's Hot,
+                Design, Web Development, Developers, Science, Astronomy, Trending, Trending Images, Trending Links,
+                Tech, Bluesky Team, Movies, Philosophy, and Popular Profiles.</p>
+            <p>This project is a result of exploring Bluesky documentation and utilizing the LLMs. One day, while
+                browsing Bluesky posts, I noticed many people building innovative tools on the platform. That inspired
+                me to try something similar. To start, I needed to understand how everything worked. This project not
+                only helped me grasp the basics but also sparked new ideas during experimentation.</p>
+            <p>What's remarkable about Bluesky is its openness. Anyone can bring their unique ideas to life using
+                publicly available data. As more individuals and the tech industry start to adopt Bluesky, I think the
+                platform's potential is great, and its limitations can only be discovered by launching products and
+                pushing boundaries.</p>
+            <p>At first glance, this may seem like a simple project, right? I started everything by just sending a test
+                post via a Python script. Then I created a Python script with the help of Mistral AI to fetch the raw
+                metadata of every post. Eventually, I exported posts from feeds and lists I created, making them
+                publicly accessible in a slightly different design. I know that anybody can see these posts in real time
+                by just accessing the Bluesky platform itself. But like I said, everything leads to one another. Right
+                now, the posts will be updated every two to four hours.</p>
+            <p>The whole point was to make the posts last a bit longer and make it accessible to people who just want to
+                explore Bluesky. There is also an option to check the real-time post details, as every post includes a
+                link to view it directly on Bluesky, its raw data in a downloadable JSON format, the author's profile
+                link, and the ability to view images in a new tab just by tapping on them.</p>
+            <p>I don't control or take responsibility for the posts shown here. They're from their respective owners and
+                update every 2 - 4 hours based on new content. Feel free to crosscheck with the original posts—each one
+                is
+                properly linked to its author and source.</p>
+            <p>For those who don't know, one of the greatest things about Bluesky is that their username is now their
+                website. Every username with .bsky.social is a website. You don't need to give the full URL to someone -
+                just the <a href="https://bsky.app/profile/romiojoseph.github.io/post/3lcscin7ihk2k" target="_blank"
+                    rel="noopener" alt="Visit username.bsky.social" title="Visit username.bsky.social">
+                    username.bsky.social</a>, and it will redirect.</p>
+            <P>Essentially, every regular user now has a website, along with an RSS feed.</P>
+            <p>This project, along with my other—an RSS Feed Reader web application—has inspired me to explore ways to
+                make news consumption more tailored to my preferences.</p>
+            <p>I really hope and expect more people to adopt Bluesky soon.</p>
+            <p>Here's a <a href="https://romiojoseph.github.io/bluesky/advanced-search/" target="_blank" rel="noopener"
+                    title="Bluesky Advanced Search Tool">simple tool for advanced search on Bluesky</a>.</p>
+            <button class="footer-button" title="Explore RSS feed reader"
+                onclick="window.open('https://romiojoseph.github.io/rss-feed-reader/', '_blank')">
+                Explore RSS Feed Reader
+            </button>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
