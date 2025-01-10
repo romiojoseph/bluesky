@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head></head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhotoStream - An Instagram-like image feed for Bluesky</title>
+<meta name="description"
+    content="An Instagram-like feed for Bluesky with sorted posts, regular updates, and tailored categories like photography, art, nature, and more.">
+<meta property="og:image" content="assets/social-image.png">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+<meta property="og:title" content="PhotoStream - An Instagram-like image feed for Bluesky">
+<meta property="og:description"
+    content="An Instagram-like feed for Bluesky with sorted posts, regular updates, and tailored categories like photography, art, nature, and more.">
+<meta property="og:image" content="assets/social-image.png">
+<meta property="og:url" content="https://romiojoseph.github.io/bluesky/photo-stream/">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+<link rel="stylesheet" href="styles.css">
+
+<meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div id="loadingScreen">
+        <div class="loader"></div>
+        <p>Just a moment, posts are loading...</p>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button" title="Switch theme">
+        <i class="ph-duotone ph-sun-dim"></i>
+    </button>
+    <div class="container" id="posts-container"></div>
+    <footer class="container">
+        <h6>
+            Footnote
+        </h6>
+        <p>
+            Bluesky offers incredible flexibility. If someone wanted an Instagram-like client tailored to individual
+            preferences, it's entirely possible to build one (I'm not quite there yet). This project explores that idea.
+            With Bluesky now supporting video, creating short-form and long-form video feeds (Yes, YouTube like apps!)
+            also seems likely in the future. The platform's openness is amazing.
+        </p>
+        <p>
+            For this project, I looked for a better image feed but couldn't find one that matched everyone's
+            preferences. So, I created a feed with categories like astronomy, photography, nature, art, travel, animals,
+            birds, etc. I wanted to create a feed with specific hashtags, but one issue I faced is that some people add
+            a ton of hashtags—many of which are irrelevant to the post—just to increase reach. Until I have better
+            control over the feed, I welcome any unique hashtags.
+        </p>
+        <p>
+            I added labels to filter out unsuitable and offensive posts from this feed. However, I'm not fully confident
+            it works as intended. Posts with any value in the Label column of the post metadata are excluded from this
+            project but may still appear in <a href="https://bsky.app/profile/romiojoseph.github.io/feed/aaadvp6teeh3k"
+                rel="noopener" target="_blank">Bluesky's native client feed</a>.
+        </p>
+        <p>Sorting is based on HN ranking with a gravity of 1.8. User actions like repost, like, and reply will redirect
+            you to Bluesky. This isn't a client but an Instagram-like feed that updates every two to four hours to
+            provide an Instagram-like experience. The like, repost, and reply counts may differ from the original post
+            due to periodic updates.
+        </p>
+        <p>I don't control or take responsibility for the posts shown here. They're from their respective owners. Feel
+            free to crosscheck with the original posts—each one is properly linked to its author and source.
+        </p>
+        <p>Javascript is entriely created using LLMs like Claude Sonnet and Google Gemini. I built this to make Bluesky
+            accessible to people who prefer not to sign up or log in (but I highly recommend creating an account, as
+            Bluesky has the potential to become a better platform). Now about this project, unlike other social media
+            apps, you can explore freely without having your actions or scrolls tracked or monitored. No analytics or
+            trackers are used here, so you can browse with peace of mind.
+        </p>
+        <p>Another Bluesky project of mine - Spotligt Feeds - offering a tracker-free feed with topics like Recent
+            News, Trending News, Science, Movies, Tech, Web Development, and more.</p>
+        <button alt="EXplore button" title="Explore spotlight feeds of Bluesky" type="button"
+            onclick="window.open('https://romiojoseph.github.io/bluesky/spotlight-feeds/', '_blank', 'noopener'); return false;">
+            Bluesky spotlight feeds
+        </button>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
