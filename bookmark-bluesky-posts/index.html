@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueSky Bookmarks Feed - Powered by Telegram Bot</title>
+    <meta name="description"
+        content="Bookmark Bluesky posts with a Telegram bot and save them in a Google Sheet. Optionally, make your personalized feed public by building a custom website. Code available on the GitHub repo.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="BlueSky Bookmarks Feed - Powered by Telegram Bot">
+    <meta property="og:description"
+        content="Bookmark Bluesky posts with a Telegram bot and save them in a Google Sheet. Optionally, make your personalized feed public by building a custom website. Code available on the GitHub repo.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1/build/global/luxon.min.js"></script>
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <p>Just a moment, fetching the latest posts...</p>
+    </div>
+    <main>
+        <div class="filters-container">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search posts...">
+            </div>
+            <div class="filters">
+                <button data-filter="all">All</button>
+                <!-- Category filters will be added here by script.js -->
+            </div>
+        </div>
+
+        <div class="sort-options">
+            <select id="sort-select" title="Sort feed">
+                <option value="random">Random</option>
+                <option value="post-created-desc">Latest Post</option>
+                <option value="post-created-asc">Oldest Post</option>
+                <option value="saved-desc">Latest Save</option>
+                <option value="saved-asc">Oldest Save</option>
+            </select>
+            <i class="ph-duotone ph-caret-down"></i>
+        </div>
+
+        <div class="feed" id="feed">
+            <!-- Posts will be loaded here -->
+        </div>
+        <footer class="feed">
+            <h5>Bluesky Open Bookmark Feed</h5>
+            <p>I'm on a streak of building simple things with Bluesky open data, and this is one of them. As of today,
+                the platform still doesn't have a native bookmarking option for posts. But it has a feed to view posts
+                that we replied to using a pin emoji. It is useful, but I didn't like that approach. For a while, I used
+                to save posts that I wanted to revisit later using my <a
+                    href="https://github.com/romiojoseph/open-source/tree/main/telegram-bots/telegram-to-raindrop"
+                    target="_blank" title="Telegram to Raindrop bot link" rel="noopener">Telegram-to-Raindrop bot</a>.
+                Then, I started
+                saving them in my Telegram saved messages. But like everything, after a point, everything starts to pile
+                up, which means that the first impression wears out, and we start to expect more use cases and focused
+                solutions. That's when I started to think about a Telegram bot to save these posts.
+            </p>
+            <p>
+                It's only been a few days since I started being able to export raw metadata from Bluesky using their
+                Open API. I tried to make a script several times using different AI tools, I don't know why, but until
+                recently, I always faced errors. I'm not sure if it's because tools like Claude, Mistral, and Gemini
+                have improved or if their knowledge cutoffs have expanded, but they started producing scripts that
+                better matched my requirements. This helped me build <a href="https://github.com/romiojoseph/bluesky"
+                    target="_blank" title="Bluesky projects" rel="noopener">a few simple websites</a> using the output
+                data.
+            </p>
+            <h6>Bookmark Bluesky Posts Using a Telegram Bot</h6>
+            <p>
+                It was a very difficult process for me to build this specific bot as I don't have knowledge of coding.
+                But after several attempts and by reading the post structure several times, I was able to tell exactly
+                what I needed to these AI tools. No AI could produce a completely working script. This is the result of
+                working and troubleshooting with multiple AI products.
+            </p>
+            <p>The main task is debugging and checking for every kind of possible scenario. I had to create many
+                versions. Yes, I know for a person familiar with programming, this could be built in a few hours, but it
+                took me 2 days plus changes. But hey, I'm happy with the result so far because many times I wanted to
+                abandon this project, but I still managed to launch it as I wanted—thanks to the amazing progress of AI.
+            </p>
+            <button
+                onclick="window.open('https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot', '_blank');"
+                title="Bookmark Bluesky Posts via Telegram Bot">
+                <i class="ph-duotone ph-brackets-curly"></i>
+                Script to run the Telegram bot
+            </button>
+            <h6>Footnote</h6>
+            <p>
+                This bot extracts post metadata and saves it to a Google Sheet, which I've published as a CSV and
+                connected to this website. Whenever I send a post link to the bot and assign it a category, it
+                automatically appears in the feed within a few seconds. The goal was to create curated feeds using posts
+                that I like or find interesting.
+            </p>
+            <p>I know the Bluesky team is currently working on a bookmark feature, and it could launch any day now—I
+                have a strong feeling about that. Still, I wanted something done my way, and now I have it.</p>
+            <p>Please note: If a user changes or deletes their profile picture, image, or video, it will no longer be
+                available here. However, text-based data will remain as it appears in the sheet. Posts with deleted
+                media will be removed manually, as I notice them, to respect the user's privacy. All media-related items
+                are served from this CDN: <a href="https://cdn.bsky.app/" target="_blank" title="Bluesky CDN"
+                    rel="noopener">https://cdn.bsky.app/</a>.
+            </p>
+            <p>Code and other resources available on GitHub.</p>
+            <div class="post-links">
+                <button onclick="window.open('https://romiojoseph.github.io/open-source.html', '_blank');"
+                    title="Check out my projects">
+                    <i class="ph-duotone ph-github-logo"></i>
+                    Projects
+                </button>
+                <button onclick="window.open('https://bsky.app/profile/romiojoseph.github.io', '_blank');"
+                    title="My Bluesky profile">
+                    <i class="ph-duotone ph-at"></i>
+                    Bluesky
+                </button>
+            </div>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
