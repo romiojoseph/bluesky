@@ -21,4 +21,8 @@
 **Export the Entire Posts from a Bluesky Profile**: This Python script collects and saves the raw JSON data of posts, reposts, and replies from a Bluesky profile. It fetches the author's feed, extracts relevant metadata from each post, and saves the raw feed to a JSON file named after the user's handle.
 [Link](https://github.com/romiojoseph/bluesky/tree/main/python-scripts/export-bluesky-posts)
 
+**Download Bluesky Video - Or Stream with the M3U8 Playlist URL**: Easily download Bluesky videos in available resolutions or get the playlist URL to stream. Respect authors' privacy and give proper credit when using this tool.
+[Link](https://romiojoseph.github.io/bluesky/video-download/)
+
+
 For more visit: https://romiojoseph.github.io/open-source/

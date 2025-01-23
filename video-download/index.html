@@ -1,0 +1,131 @@
+<head></head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Download Bluesky Video - Or Stream with the M3U8 Playlist URL</title>
+<meta name="description"
+    content="Easily download Bluesky videos in available resolutions or get the playlist URL to stream. Respect authors' privacy and give proper credit when using this tool.">
+<meta property="og:image" content="assets/social-image.png">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+<meta property="og:title" content="Download Bluesky Video - Or Stream with the M3U8 Playlist URL">
+<meta property="og:description"
+    content="Easily download Bluesky videos in available resolutions or get the playlist URL to stream. Respect authors' privacy and give proper credit when using this tool.">
+<meta property="og:image" content="assets/social-image.png">
+<meta property="og:url" content="https://romiojoseph.github.io/bluesky/video-download/">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+<link rel="stylesheet" href="styles.css">
+
+<meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div class="container">
+        <div class="heading">
+            <h3>Bluesky Video Downloader</h3>
+            <p>Bluesky is open. If you don't want to download, play the video in VLC: copy the playlist URL below, go to
+                VLC > Media > Stream > Network > Play. When downloading, credit the author and respect their privacy if
+                noted.
+            </p>
+        </div>
+
+        <div class="fetch-box">
+            <input type="text" id="postLink" placeholder="Enter Bluesky post link">
+            <button onclick="fetchVideoDetails()">Fetch video details</button>
+        </div>
+
+        <div id="error"></div>
+
+        <div id="loader">Processing post details, please wait...</div>
+
+        <div id="videoDetails">
+            <div class="video-container">
+                <video id="my-video" class="video-js" preload="auto"></video>
+                <div class="video-controls">
+                    <button class="video-control play-pause-button" id="playPauseButton" type="button">
+                        <i class="ph-duotone ph-play"></i>
+                        <span class="control-tooltip">Play (k)</span>
+                    </button>
+                    <div class="progress-holder" id="progressBar">
+                        <div class="buffer-progress" id="bufferProgress"></div>
+                        <div class="play-progress" id="playProgress"></div>
+                        <div class="progress-tooltip" id="progressTooltip"></div>
+                    </div>
+                    <div class="volume-controls">
+                        <button class="video-control volume-button" id="volumeButton">
+                            <i class="ph-duotone ph-speaker-high"></i>
+                            <span class="control-tooltip">Mute (m)</span>
+                        </button>
+                        <div class="volume-slider-container">
+                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" step="1"
+                                value="100" title="Adjust the volume">
+                            <span class="volume-tooltip" id="volumeTooltip">100%</span>
+                        </div>
+                    </div>
+                    <button class="video-control playback-speed-button" id="playbackSpeedButton">
+                        1x
+                        <span class="control-tooltip">Playback Speed</span>
+                    </button>
+                    <div class="quality-controls">
+                        <select id="qualitySelector" class="quality-selector" title="Pick a quality">
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <button class="video-control fullscreen-button" id="fullscreenButton">
+                        <i class="ph-duotone ph-corners-out"></i>
+                        <span class="control-tooltip">Fullscreen (f)</span>
+                    </button>
+                </div>
+            </div>
+            <div id="videoInfo"></div>
+        </div>
+
+        <div id="resolutionSelector">
+            <h4>Available Resolutions</h4>
+            <div id="resolutionOptions"></div>
+            <input type="text" id="filename" placeholder="Enter output filename (default: video)">
+            <button onclick="downloadVideo()">Download</button>
+        </div>
+    </div>
+    <footer>
+        <h6>Disclaimer</h6>
+        <p>This tool is for personal use only. Bluesky is an open platform, meaning posts are public and accessible
+            to anyone, even without an account. If you prefer not to download videos, you can stream them using VLC:
+            copy the playlist URL below, then in VLC, go to Media > Stream > Network, and paste the link to play.
+            When downloading, always credit the original author and respect their privacy preferences as stated in
+            their profile or posts. This tool does not store or track your data; how you use it is your
+            responsibility.</p>
+        <p>
+            Bluesky videos may be available in multiple resolutions. To download a video, you'll need to select your
+            preferred resolution. Bluesky utilizes M3U8 playlists for streaming. An M3U8 file is a plain text file that
+            lists media files for playback. Each post has a unique playlist URL. If you paste this URL into a browser, a
+            playlist file will download, containing details like resolution and other data. To copy the playlist URL,
+            simply click on it.
+        </p>
+        <p>I have also created other tools for Bluesky, including Bluesky Advanced Search, Bluesky Feeds - A
+            Spotlight for Everyone, PhotoStream - An Instagram-like image feed for Bluesky, and Send Post to Bluesky
+            via a Telegram Bot. You can find all of them here: <a href="https://github.com/romiojoseph/bluesky"
+                target="_blank" rel="noopener"
+                title="Romio Joseph's Bluesky Projects">https://github.com/romiojoseph/bluesky</a>.</p>
+        <p>
+            DIDs or Decentralized Identifiers are persistent, long-term account identifiers. They are a new
+            type of identifier that enables verifiable, decentralized digital identity.
+        </p>
+        <p>
+            CIDs, or Content Identifiers, are cryptographic hashes of records. They are used to track specific versions
+            of records.
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
