@@ -18,11 +18,15 @@
 **Personal BlueSky Bookmarks Feed - Powered by Personal Telegram Bot**: Bookmark Bluesky posts with a Telegram bot and save them in a Google Sheet. Optionally, make your personalized feed public by building a custom website.
 [Link](https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/)
 
-**Export the Entire Posts from a Bluesky Profile**: This Python script collects and saves the raw JSON data of posts, reposts, and replies from a Bluesky profile. It fetches the author's feed, extracts relevant metadata from each post, and saves the raw feed to a JSON file named after the user's handle.
+**Export the Entire Posts from a Bluesky Profile**: This Python script provides a comprehensive toolkit for collecting data from the Bluesky social network. Export Bluesky posts in JSON format.
 [Link](https://github.com/romiojoseph/bluesky/tree/main/python-scripts/export-bluesky-posts)
 
 **Download Bluesky Video - Or Stream with the M3U8 Playlist URL**: Easily download Bluesky videos in available resolutions or get the playlist URL to stream. Respect authors' privacy and give proper credit when using this tool.
 [Link](https://romiojoseph.github.io/bluesky/video-download/)
+
+**Export posts from Bluesky**: Export Bluesky posts in JSON format. Choose profile-based exports, including followers, following, and lists, etc or use any profile, list, or feed link for customized downloads. You can also enter a Bluesky post link to download the full metadata of its thread.
+[Link](https://romiojoseph.github.io/bluesky/export-bluesky-posts/)
+
 
 
 For more visit: https://romiojoseph.github.io/open-source/

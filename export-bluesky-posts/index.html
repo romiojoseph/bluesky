@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export posts from Bluesky</title>
+    <meta name="description"
+        content="Choose profile-based exports, including followers, following, and lists, or use any profile, list, or feed link for customized downloads. You can also enter a Bluesky post link to download the full metadata of its thread.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Export posts from Bluesky">
+    <meta property="og:description"
+        content="Choose profile-based exports, including followers, following, and lists, or use any profile, list, or feed link for customized downloads. You can also enter a Bluesky post link to download the full metadata of its thread.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/export-bluesky-posts/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <main>
+        <div class="header">
+            <h1>Export posts from Bluesky</h1>
+            <p class="subtitle">
+                Export Bluesky posts in JSON format. Choose profile-based exports, including followers,
+                following, and lists, etc or use any profile, list, or feed link for customized downloads. You can also
+                enter a Bluesky post link to download the full metadata of its thread.</p>
+            <p class="tagline">No authentication is needed. Bluesky is an open platform. But respect authors' privacy
+                when using this tool.
+            </p>
+        </div>
+
+        <div class="container">
+            <div class="heading">
+                <h3>Download Bluesky Profile Data</h3>
+                <p class="subtitle">Get almost everything about a profile. Click the DID to copy it to the clipboard.
+                    Feed related metadata will be available in the profile info file.
+                </p>
+            </div>
+
+            <form class="input-group" aria-label="Fetch Profile">
+                <input type="text" id="profileInput" placeholder="Enter any Bluesky profile link or handle"
+                    aria-label="Profile link or handle">
+                <button title="Fetch profile to do further actions" type="button"
+                    onclick="fetchProfile()">Fetch</button>
+            </form>
+
+            <div id="profileDetails" class="hidden">
+                <img id="profileBanner" class="profile-banner" alt="Banner">
+                <div class="profile-top">
+                    <div class="profile-avatar-handle" title="Click to go to the Bluesky profile." onclick="">
+                        <img id="profileAvatar" class="profile-avatar" alt="Avatar">
+                        <div class="profile-handle-name">
+                            <div id="profileName" class="profile-name"></div>
+                            <div id="profileHandle" class="profile-handle"></div>
+                        </div>
+                    </div>
+                    <button id="downloadProfileBtn" class="download-profile-btn"
+                        title="Get all the relevant metadata of this account.">Download profile info</button>
+                </div>
+                <div id="profileDID" class="profile-did" title="Click to copy the DID of this account."></div>
+                <div id="profileStats" class="profile-stats">
+                    <div><span id="profileFollowersCount" class="profile-count"></span> Followers</div>
+                    <div><span id="profileFollowingCount" class="profile-count"></span> Following</div>
+                    <div><span id="profilePostsCount" class="profile-count"></span> Posts</div>
+                    <div><span id="profileListsCount" class="profile-count"></span> Lists</div>
+                    <div><span id="profileFeedsCount" class="profile-count"></span> Feeds</div>
+                    <div><span id="profileStarterPacksCount" class="profile-count"></span> Starter Packs</div>
+                </div>
+                <div id="profileDescription" class="profile-description"></div>
+                <div id="profileDates" class="profile-dates">
+                    <div id="profileCreatedAt" class="tagline"></div>
+                    <div id="profileIndexedAt" class="tagline"></div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button onclick="handleAction('followers')" title="Export all followers of this account"
+                    type="button">Followers</button>
+                <button onclick="handleAction('follows')" title="Export all followings of this account"
+                    type="button">Following</button>
+                <button onclick="handleAction('originalPosts')"
+                    title="Export all posts and replies created by this account" type="button">Own
+                    Posts</button>
+                <button onclick="handleAction('allPosts')"
+                    title="Get releavnt statics and export all kind of posts of this account, including reposts"
+                    type="button">Incl.
+                    Reposts</button>
+                <button onclick="handleAction('lists')" title="Export all lists created by this account"
+                    type="button">Lists</button>
+                <button onclick="handleAction('starterPacks')" title="Export all StarterPacks created by this account"
+                    type="button">StarterPacks</button>
+            </div>
+
+            <div id="progress" class="progress-container hidden"></div>
+            <div id="results" class="hidden">
+                <div id="resultSection" class="result-section">
+                    <h3 id="resultTitle"></h3>
+                    <div id="resultSubtitle" class="result-subtitle"></div>
+                    <span id="totalItems" class="total-items"></span>
+                    <div id="noDataMessage" class="no-data-message"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="heading">
+                <h3>Profile Posts, Lists or Feeds</h3>
+                <p class="subtitle">Enter any profile, list, or feed link, with full control
+                    over the number of posts to download. For more than 25,000 posts, use the Python script in the
+                    footer.</p>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="Enter a handle, list, or feed link" />
+                <button title="Fetch the link to export posts, by default it is 250" id="fetchPostsBtn"
+                    type="button">Fetch</button>
+            </div>
+
+            <div class="slide-group">
+                <p class="labels">Number of posts to fetch</p>
+                <div class="slider-container">
+                    <input title="slider" type="range" id="postsSlider" min="1" max="25000" value="250" />
+                    <input title="slidernumber" type="number" id="postsInput" value="250" min="1" />
+                </div>
+            </div>
+
+            <div class="error" id="urlError"></div>
+
+            <button id="downloadPostsBtn" class="download-posts-hidden">Download Posts</button>
+
+            <div id="progresser"></div>
+        </div>
+
+        <div class="container">
+            <div class="heading">
+                <h3>Download Bluesky Post Thread</h3>
+                <p class="subtitle">Enter any Bluesky post link to download the entire post thread, including likes,
+                    reposts, and quotes, each as a separate file. To download videos, visit <a
+                        href="https://romiojoseph.github.io/bluesky/video-download/" target="_blank"
+                        rel="noopener">Bluesky video downloader</a>.
+                </p>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="postInput" placeholder="https://bsky.app/profile/{handle}/post/{post_id}">
+                <button title="Fetch the post link to download metadata" type="button"
+                    id="analyzePostBtn">Fetch</button>
+            </div>
+
+            <div id="postProgress" class="progress-container hidden"></div>
+            <div id="postResults" class="result-section hidden">
+                <div id="downloadButtons"></div>
+                <div id="postMessages"></div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="header">
+                <h4>Disclaimer</h4>
+                <p>Social media is at a turning point, shaping its future with each step. Platforms like Bluesky are
+                    opening new opportunities, giving us a chance to build something meaningful together. I don't know
+                    how you feel about Bluesky, but I see great potential in it.</p>
+                <p>
+                    No one can predict how fast a platform will grow. Every second, hundreds or even thousands of new
+                    posts appear. For researchers and those invested in the platform's future, access to raw data is
+                    crucial to track trends and insights.
+                </p>
+                <p>
+                    However, working with social media APIs is becoming expensive, making it harder for people to build
+                    useful tools. Bluesky, on the other hand, offers most of its endpoints without any authentication,
+                    making it far more accessible. I first created a Python script with the help of LLMs to retrieve my
+                    own posts while learning the Bluesky API. Every Bluesky-related project I've built since then has
+                    come from this ongoing learning process.
+                </p>
+                <p>
+                    It's not a huge project, but I believe it's something useful. My goal is to make these features
+                    accessible to those who need them in the simplest way possible.
+                </p>
+                <p>The export is in JSON format, which is great because it includes all essential metadata. Due to
+                    system limitations, only 100 posts can be processed at a time. If there are more than 100 posts, the
+                    job will be completed in batches. Please be patient while the requests are processed. You may notice
+                    some discrepancies in the fetched follower and following counts. I've checked this with multiple
+                    scripts, but it seems there's a bug on their end. You can check more about it <a
+                        href="https://www.google.com/search?q=bluesky+count+issue&ie=UTF-8" target="_blank"
+                        rel="noopener">here</a>.
+                </p>
+                <p>No data is sent anywhere—everything runs in your browser. I
+                    developed the entire JavaScript using LLMs (Mistal AI, Claude and Google AI Studio). There are no
+                    analytics tools or trackers used here, so feel free to browse away with peace of mind.
+                </p>
+                <p>
+                    If you need to download more than 25,000 posts or use this project on a terminal, you can use the
+                    Python script I created with the help of LLMs. It's available on <a
+                        href="https://github.com/romiojoseph/bluesky/tree/main/python-scripts/export-bluesky-posts"
+                        target="_blank" rel="noopener">GitHub</a>. It's a simple way to get all the posts you need. I
+                    hope you find it useful.
+                </p>
+                <p>Created many other projects using LLMs. You can also find Bluesky adavanced search and other tools,
+                    just search Bluesky or <a href="https://github.com/romiojoseph/bluesky/blob/main/README.md"
+                        target="_blank" rel="noopener">click here</a>.</p>
+                <button onclick="window.open('https://romiojoseph.github.io/open-source.html', '_blank');"
+                    title="Check out my projects">
+                    My Projects
+                </button>
+            </div>
+        </footer>
+
+    </main>
+
+    <script src="script.js"></script>
+    <script src="fetch.js"></script>
+</body>
+
+</html>
