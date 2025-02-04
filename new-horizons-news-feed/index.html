@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Horizons - Real-Time News from Media & Organizations on Bluesky</title>
+    <meta name="description"
+        content="No account needed, no trackers, no analytics—just real time news from independent sources, journalists, and institutions, powered by Bluesky AppView API.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="New Horizons - Real-Time News from Media & Organizations on Bluesky">
+    <meta property="og:description"
+        content="No account needed, no trackers, no analytics—just real time news from independent sources, journalists, and institutions, powered by Bluesky AppView API.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/new-horizons-news-feed/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="#" id="logo-link"> <img src="assets/logo.svg" alt="Bluesky List and Feed"
+                    title="Aggregating the latest news from BlueSky for you."></a>
+        </div>
+        <div class="tabs">
+            <button class="tab active" id="for-you-tab" data-target="for-you" onclick="showTab(event, 'for-you')"
+                title="Trending and recent news along with tech updates">For you</button>
+            <button class="tab" data-target="list" onclick="showTab(event, 'list')"
+                title="Recent news without any algorithms">Recent</button>
+            <button class="tab" data-target="feed" onclick="showTab(event, 'feed')"
+                title="Trending news feed based on HN Ranking from the past 12 hours.">Trending</button>
+            <button type="button"
+                onclick="window.open('https://romiojoseph.github.io/rss-feed-reader/', '_blank', 'noopener')"
+                title="A simple RSS feed reader for configuring and displaying multiple feeds.">
+                RSS Reader
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div id="for-you" class="content">
+            <div class="hero-section">
+                <div class="slideshow-container"></div>
+                <div class="slide-indicators"></div>
+            </div>
+            <div id="recent-news-section">
+                <div class="section-head">
+                    <div class="section-title">
+                        <h2>Recent News</h2>
+                        <p>Stay updated with the latest news from BlueSky.</p>
+                    </div>
+                    <div class="controller">
+                        <button id="prev-news" class="nav-btn" aria-label="Previous" type="button">
+                            <i class="ph-duotone ph-caret-left"></i>
+                        </button>
+                        <button id="next-news" class="nav-btn" aria-label="Next" type="button">
+                            <i class="ph-duotone ph-caret-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="loader" id="recent-news-loader">
+                    <div class="loader-icon">
+                        <i class="ph-duotone ph-spinner"></i>
+                    </div>
+                    <p class="loader-text">Just a moment, loading recent news...</p>
+                </div>
+                <div class="recent-news-container">
+                    <div id="recent-news-posts" class="posts-container"></div>
+                </div>
+            </div>
+            <div id="techmeme-section">
+                <div class="section-title">
+                    <h2>Techmeme</h2>
+                    <p>The latest from tech coverage.</p>
+                </div>
+                <div class="loader" id="techmeme-loader">
+                    <div class="loader-icon">
+                        <i class="ph-duotone ph-spinner"></i>
+                    </div>
+                    <p class="loader-text">Just a moment, loading Techmeme posts...</p>
+                </div>
+                <div id="techmeme-posts" class="posts-container"></div>
+            </div>
+            <div id="tech-companies-section">
+                <div class="section-title">
+                    <h2>Tech</h2>
+                    <p>Updates from tech companies, industry newsletters, and more.</p>
+                </div>
+                <div class="loader" id="tech-companies-loader">
+                    <div class="loader-icon">
+                        <i class="ph-duotone ph-spinner"></i>
+                    </div>
+                    <p class="loader-text">Just a moment, loading tech companies posts...</p>
+                </div>
+                <div id="tech-companies-posts" class="posts-container"></div>
+            </div>
+        </div>
+
+        <div id="list" class="content">
+            <div id="list-posts" class="posts-container"></div>
+            <button id="load-more-list" class="load-more">Load More</button>
+            <div class="loader" id="list-loader">
+                <div class="loader-icon">
+                    <i class="ph-duotone ph-spinner"></i>
+                </div>
+                <p class="loader-text">Just a moment, loading news...</p>
+            </div>
+        </div>
+
+        <div id="feed" class="content">
+            <div id="feed-posts" class="posts-container"></div>
+            <button id="load-more-feed" class="load-more">Load More</button>
+            <div class="loader" id="feed-loader">
+                <div class="loader-icon">
+                    <i class="ph-duotone ph-spinner"></i>
+                </div>
+                <p class="loader-text">Just a moment, loading news...</p>
+            </div>
+        </div>
+
+        <aside>
+            <div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Bluesky_Logo.svg" alt="Blueksy logo">
+                <h5>Streams news and posts straight from BlueSky</h5>
+                <p>This website runs entirely in your browser using the Bluesky AppView API, with no data sent
+                    anywhere. No analytics or trackers are used, so you can explore freely. All JavaScript was
+                    developed with the help of LLMs like Mistral AI, Claude, and Google AI Studio. If you want to browse
+                    the Bluesky way, here are the links. You can pin it to your home.
+                </p>
+                <div class="links">
+                    <a href="https://bsky.app/profile/romiojoseph.github.io/lists/3lc34yoopje27" target="_blank"
+                        rel="noopener">Recent News (List)</a>
+                    <a href="https://bsky.app/profile/did:plc:xglrcj6gmrpktysohindaqhj/feed/aaahn42hkwvf2"
+                        target="_blank" rel="noopener">Trending News (Feed)</a>
+                </div>
+                <small>
+                    You can pin the list in the Bluesky app for direct access to news, free from algorithms. If you
+                    choose the feed, it follows HN Ranking from the past 12 hours.
+                </small>
+        </aside>
+
+        <footer>
+            <section>
+                <div>
+                    <h4>New Horizons</h4>
+                    <p class="footer-subtitle">Aggregating Real-Time News from BlueSky Media Profiles, Organizations,
+                        Institutions, and Journalists.
+                    </p>
+                    <p>You can fork this project and create your own version, adding different feeds and lists. The code
+                        is available on <a
+                            href="https://github.com/romiojoseph/bluesky/tree/main/new-horizons-news-feed"
+                            target="_blank" rel="noopener" title="Github repo link">GitHub</a>; all you need are the
+                        lists and feeds. Please note, the entire JavaScript is created with the help of LLMs.
+                    </p>
+                    <p>All post data comes from BlueSky, where the accounts on the list have posted it. This project
+                        simply aggregates and visualizes that data in a news media format. It's part of my ongoing
+                        experience with the BlueSky API.
+                    </p>
+                </div>
+
+                <div class="other-projects">
+                    <nav>
+                        <strong>Bluesky</strong>
+                        <a href="https://romiojoseph.github.io/bluesky/spotlight-feeds/" target="_blank"
+                            rel="noopener">Bluesky
+                            spotlight feeds</a>
+                        <a href="https://romiojoseph.github.io/bluesky/export-bluesky-posts/" target="_blank"
+                            rel="noopener">Export
+                            posts from Bluesky</a>
+                        <a href="https://romiojoseph.github.io/bluesky/photo-stream/" target="_blank"
+                            rel="noopener">PhotoStream</a>
+                        <a href="https://romiojoseph.github.io/bluesky/video-download/" target="_blank"
+                            rel="noopener">Download
+                            Bluesky Video</a>
+                        <a href="https://romiojoseph.github.io/bluesky/advanced-search" target="_blank"
+                            rel="noopener">Bluesky
+                            advanced search</a>
+                        <a href="https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot"
+                            target="_blank" rel="noopener">Bookmark Bluesky Posts</a>
+                        <a href="https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/" target="_blank"
+                            rel="noopener">BlueSky Bookmarks Feed</a>
+                    </nav>
+                    <nav>
+                        <strong>Other</strong>
+                        <a href="https://romiojoseph.github.io/rss-feed-reader" target="_blank" rel="noopener">RSS Feed
+                            Reader</a>
+                        <a href="https://romiojoseph.github.io/lichess-pgn-analyzer" target="_blank"
+                            rel="noopener">Lichess
+                            PGN
+                            Analyzer</a>
+                        <a href="https://romiojoseph.github.io/imdb-watchlist-export-visualizer" target="_blank"
+                            rel="noopener">IMDb Watchlist Analyzer</a>
+                        <a href="https://romiojoseph.github.io/daily-quotes" target="_blank" rel="noopener">A quote for
+                            your
+                            day</a>
+                        <a href="https://romiojoseph.github.io/open-source/text-case-converter" target="_blank"
+                            rel="noopener">Text case converter</a>
+                        <a href="https://romiojoseph.github.io/open-source/design-token-studio/type-scale-generator/"
+                            target="_blank" rel="noopener">Type scale generator</a>
+                        <a href="https://romiojoseph.github.io/open-source/design-token-studio/color-variable-editor/"
+                            target="_blank" rel="noopener">Color variable editor</a>
+                    </nav>
+                </div>
+            </section>
+
+            <div>
+                <small>"New Horizons" refers to exploring or discovering new areas, possibilities, or experiences that
+                    were
+                    previously unknown or uncharted. The term often symbolizes growth, expansion, and the opportunity to
+                    move beyond current limitations, seeking fresh opportunities or insights. Inspired by the <a
+                        href="https://science.nasa.gov/mission/new-horizons/" target="_blank" rel="noopener">New
+                        Horizons
+                        satellite</a>.
+                </small>
+                <small>
+                    Note: Read full <a href="https://github.com/romiojoseph/personal/tree/main" target="_blank"
+                        rel="noopener" title="A link to a common disclaimer">disclaimer available here</a>.
+                </small>
+            </div>
+        </footer>
+    </main>
+
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/for-you.js"></script>
+    <script src="scripts/main.js"></script>
+    <script>
+        function showTab(event, tabId) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            document.querySelectorAll('.content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            const targetContent = document.getElementById(tabId);
+            targetContent.style.display = 'block';
+
+            // Scroll to top for 'for-you' tab
+            if (tabId === 'for-you') {
+                targetContent.scrollTop = 0; // Scroll to top of the content
+                window.scrollTo(0, 0); // Scroll to top of the page
+            }
+
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            const clickedTab = event ? event.currentTarget : document.querySelector(`.tab[data-target='${tabId}']`);
+            clickedTab.classList.add('active');
+
+            if (tabId === 'for-you') {
+                if (typeof initForYou === 'function') {
+                    // Re-initialize the For You tab to fetch new posts
+                    initForYou();
+                }
+            } else if (tabId === 'list' || tabId === 'feed') {
+                if (typeof init === 'function') {
+                    init();
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab(null, 'for-you');
+
+            // Add event listener to the logo link
+            const logoLink = document.getElementById('logo-link');
+            logoLink.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                showTab(event, 'for-you'); // Switch to "For you" and refresh
+
+                // Add active class to "For you" tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.getElementById('for-you-tab').classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>
