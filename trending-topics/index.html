@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueSky Trending Topics: Past & Present Conversations in One Place</title>
+    <meta name="description"
+        content="Explore BlueSky's trending topics, from past to present. BlueSky is becoming the next big thing—a moderated space where people gather to discuss what's happening, free from hate speech and disruptive behavior. Stay updated on the latest trends.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="BlueSky Trending Topics: Past & Present Conversations in One Place">
+    <meta property="og:description"
+        content="Explore BlueSky's trending topics, from past to present. BlueSky is becoming the next big thing—a moderated space where people gather to discuss what's happening, free from hate speech and disruptive behavior. Stay updated on the latest trends.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/trending-topics/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div>
+                    <h1>Bluesky Trending Feeds</h1>
+                    <p>
+                        This is a collection of feeds created by
+                        <a href="https://bsky.app/profile/trending.bsky.app" target="_blank" rel="noopener"
+                            title="Bluesky’s official account for trending feeds">
+                            @trending.bsky.app
+                        </a>
+                        on Bluesky to
+                        <a href="https://bsky.app/profile/pfrazee.com/post/3led2ug5eis2f" target="_blank" rel="noopener"
+                            title="A link to Paul Frazee's thread explaining the trending feed">
+                            give users an idea
+                        </a> of what's trending on the platform.
+                        <a href="https://bsky.app/profile/pfrazee.com/post/3led2uhbmns2f" target="_blank" rel="noopener"
+                            title="What happens to feeds after a trend ends?">
+                            Feeds may be archived
+                        </a> as snapshots after trends fade. Right now, feeds don’t have a createdAt field, only
+                        indexedAt, which indicates when the record was first seen.
+                        Click the buttons to view posts on Bluesky or news feeds on search engines.
+                    </p>
+
+                </div>
+
+                <button id="openModal" class="open-modal-button">Fetch Feeds</button>
+            </div>
+
+            <aside>
+                <div class="search-container">
+                    <input type="text" id="search" placeholder="Search feeds..." oninput="filterFeeds()">
+                </div>
+                <div class="sort-container">
+                    <select id="sort" onchange="sortFeeds()" title="Sort to filter feeds">
+                        <option value="likeCount-desc">Like Count (High to Low)</option>
+                        <option value="likeCount-asc">Like Count (Low to High)</option>
+                        <option value="displayName-asc">Display Name (A-Z)</option>
+                        <option value="displayName-desc">Display Name (Z-A)</option>
+                        <option value="indexedAt-asc">Indexed At (Old to Recent)</option>
+                        <option value="indexedAt-desc" selected>Indexed At (Recent to Old)</option>
+                    </select>
+                </div>
+            </aside>
+        </header>
+
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+            Loading...
+        </div>
+        <div id="progress" class="progress">Fetching feeds...</div>
+
+        <div id="feeds-container" class="feeds-container"></div>
+        <footer>
+            <p>
+                This website showcases Bluesky's trending topics. Currently, the only way to view the trends is by
+                visiting the dedicated trending account on Bluesky and checking the feeds created by that account. My
+                goal was to create a calendar-based display for easier navigation of trending topics by date. However,
+                due to some limitations, like the absence of a createdAt field for feeds, I ended up building it this
+                way. Maybe I'll revisit this project in the future with new ideas. Bluesky is becoming the next big
+                thing, like a new talking square where everyone gathers to talk about what's happening, without any hate
+                speech or disruptive behavior, like a moderated space.
+            </p>
+        </footer>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h1>Bluesky Handle or Profile Link</h1>
+            <div class="modal-input-container">
+                <input type="text" id="profileInput" placeholder="Enter profile link or handle">
+                <button id="fetchFeedsButton" type="button">Fetch Feeds</button>
+            </div>
+            <div id="modalLoader" class="loader">
+                <div class="spinner"></div>
+                Loading...
+            </div>
+            <div id="modalFeedsContainer" class="feeds-container"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script src="modal.js"></script>
+</body>
+
+</html>
