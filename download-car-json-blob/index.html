@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Bluesky Repository (CAR File) and Blobs (Media Files)</title>
+    <meta name="description"
+        content="Downloading a CAR (Content Addressable aRchives) file may take some time, depending on the account size. Once downloaded, it is converted into a JSON (JavaScript Object Notation) format, allowing you to view stats like the number of likes, reposts, etc. You can also download Bluesky blobs (media files) separately.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Download Bluesky Repository (CAR File) and Blobs (Media Files)">
+    <meta property="og:description"
+        content="Downloading a CAR (Content Addressable aRchives) file may take some time, depending on the account size. Once downloaded, it is converted into a JSON (JavaScript Object Notation) format, allowing you to view stats like the number of likes, reposts, etc. You can also download Bluesky blobs (media files) separately.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/download-car-json-blob/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="script_v3.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div class="explorer-container">
+        <div class="header">
+            <h1>Download Bluesky Repository and Blobs</h1>
+            <p class="subtitle">Bluesky offers CAR format files as a snapshot of public data in the AT Protocol,
+                including posts, likes, follows, profile information, etc. You can download it by going
+                to settings > account > export my data or by entering your handle below.</p>
+            <p class="tagline">No authentication is needed. Bluesky is an open platform. But respect authors' privacy
+                when using this tool.
+            </p>
+        </div>
+
+        <main>
+            <p class="subtitle">
+                Large accounts may take several minutes to download. Find the other exporter tool link below.
+            </p>
+
+            <div class="input-area">
+                <input type="text" id="handleInputV3" placeholder="Enter handle or URL">
+                <button id="resolveButtonV3">Resolve DID</button>
+            </div>
+
+            <div id="userInfoV3" class="user-info-area">
+                <h2>User Information</h2>
+                <p><strong>DID (Decentralized IDentifier):</strong> <span id="displayDidV3"></span></p>
+                <div id="auditLogV3">
+                    <div id="currentAuditV3">
+                        <!-- Current audit info will be placed here by JS -->
+                    </div>
+                    <div id="previousAuditSectionV3">
+                        <h3>Previously</h3>
+                        <div id="previousAuditV3">
+                            <!-- Previous audit history will be placed here by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="actionAreaV3" class="action-area">
+                <h2>Choose Action</h2>
+                <div class="radio-group-v3">
+                    <label><input type="radio" name="actionV3" value="blobs" id="blobsRadioV3"> Download
+                        Blobs</label><br>
+                    <!-- Changed radio ids/names -->
+                    <label><input type="radio" name="actionV3" value="repo" id="repoRadioV3"> Download CAR</label>
+                    <!-- Changed radio ids/names -->
+                </div>
+                <div id="blobNumberInputAreaV3">
+                    <label for="blobNumberInputV3">Blobs to Download (Max: <span id="maxBlobsInputV3"></span>):</label>
+                    <!-- Changed input id/span id -->
+                    <input type="number" id="blobNumberInputV3" min="1" max="1" value="1">
+                </div>
+                <button id="downloadButtonV3" disabled>Download</button>
+                <button id="downloadJsonButtonV4">Download JSON</button>
+            </div>
+
+            <div id="loadingOverlayV3" class="loading-area">
+                <i class="ph-duotone ph-spinner"></i>
+                <p id="loadingMessageV3">Loading...</p>
+            </div>
+
+            <div id="statsContainerV3">
+                <!-- Stats will be inserted here -->
+            </div>
+
+            <div id="metadataDisplayV3" class="metadata-area">
+                <h2>Metadata</h2>
+                <!-- Metadata will be displayed here -->
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="explorer-container">
+            <p>
+                This tool let you back up both complete repository details and individual media files for comprehensive
+                offline analysis.
+            </p>
+            <h6>CAR File</h6>
+            <p>
+                Downloading a CAR (Content Addressable aRchives) file may take some time, depending on the account
+                size. Once downloaded, it is converted into a JSON (JavaScript Object Notation) format, allowing you to
+                view stats like the number of likes, reposts, etc. You can access the JSON file as a whole or by type,
+                along with individual JSON files for those types. Additionally, you can view DID (Decentralized
+                Identifier), PDS (Personal Data Server), and track handle change history of any Bluesky account. I also
+                have a <a href="https://github.com/romiojoseph/bluesky/tree/main/go-scripts/car-to-json" target="_blank"
+                    rel="noopener">Go script that lets you manually convert a Bluesky CAR file to JSON</a> on your own
+                device.
+            </p>
+            <h6>Blobs</h6>
+            <p>
+                Download blobs (media files in Bluesky) of an account. It may take a while to download all the blobs of
+                an account. It will display the available blobs count and let you download the blobs.
+            </p>
+            <h6>Profile, Thread, Feeds and Lists Downloader</h6>
+            <p><a href="https://romiojoseph.github.io/bluesky/export-bluesky-posts/" target="_blank"
+                    rel="noopener">Click here to use this tool to export Bluesky posts</a> in JSON format. Choose
+                profile-based exports, including followers, following, and lists, or customize downloads using any
+                profile, list, or feed link. You can also enter a Bluesky post link to get the full metadata of its
+                thread.</p>
+            <nav>
+                <strong>Bluesky Projects</strong>
+                <a href="https://romiojoseph.github.io/bluesky/new-horizons-news-feed/" target="_blank"
+                    rel="noopener">News feed Powered by Bluesky</a>
+                <a href="https://romiojoseph.github.io/bluesky/spotlight-feeds/" target="_blank" rel="noopener">Bluesky
+                    spotlight feeds</a>
+                <a href="https://romiojoseph.github.io/bluesky/export-bluesky-posts/" target="_blank"
+                    rel="noopener">Export
+                    posts from Bluesky</a>
+                <a href="https://romiojoseph.github.io/bluesky/photo-stream/" target="_blank"
+                    rel="noopener">PhotoStream</a>
+                <a href="https://romiojoseph.github.io/bluesky/video-download/" target="_blank" rel="noopener">Download
+                    Bluesky Video</a>
+                <a href="https://romiojoseph.github.io/bluesky/advanced-search" target="_blank" rel="noopener">Bluesky
+                    advanced search</a>
+                <a href="https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot"
+                    target="_blank" rel="noopener">Bookmark Bluesky Posts</a>
+                <a href="https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/" target="_blank"
+                    rel="noopener">BlueSky Bookmarks Feed</a>
+            </nav>
+            <p>This website runs entirely in your browser using the Bluesky AppView API, with no data sent
+                anywhere. No analytics or trackers are used, so you can explore freely. All JavaScript was
+                developed with the help of LLMs like Mistral AI and Google AI Studio.
+            </p>
+        </div>
+
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ipld/car@5.4.0/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cbor-js@0.1.0/cbor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/multiformats@13.3.1/dist/index.min.js"></script>
+</body>
+
+</html>
