@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky User Statistics</title>
+    <meta name="description"
+        content="Enter a Bluesky username to see stats on posts, likes, reposts, and follows. View hashtag, mention, link, and word usage, along with their counts.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Bluesky User Statistics">
+    <meta property="og:description"
+        content="Enter a Bluesky username to see stats on posts, likes, reposts, and follows. View hashtag, mention, link, and word usage, along with their counts.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/bluesky-user-statistics/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <main>
+        <div class="header">
+            <h1>Bluesky User Statistics</h1>
+            <p class="subtitle">Enter a Bluesky username to see stats on posts, likes, reposts, and follows. View
+                hashtag, mention, link, and word usage, along with their counts. Click any item to see where it appears.
+            </p>
+            <p class="tagline">No authentication is needed. Bluesky is an open platform. But respect authors' privacy
+                when using this tool.
+            </p>
+        </div>
+        <div class="container">
+            <div id="downloadSection" class="content-section">
+                <div class="input-section">
+                    <input type="text" id="handleInput" placeholder="Enter Bluesky handle (e.g., example.bsky.social)">
+                    <button id="fetchBtn">Analyze</button>
+                </div>
+                <div class="basic-data">
+                    <div class="basic-data-box">
+                        <label>DID (Decentralized IDentifier)</label>
+                        <div id="didDisplay"></div>
+                    </div>
+                    <div class="basic-data-box">
+                        <label>PDS (Personal Data Server)</label>
+                        <div id="pdsDisplay"></div>
+                    </div>
+                    <div id="auditLogContainer" class="basic-data-box" style="display: none;">
+                        <p>Username History from web.plc.directory</p>
+                        <pre id="filteredLog">Waiting for input...</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div id="progressContainer" class="progress-container">
+                <div id="progressLog" class="progress-log"></div>
+            </div>
+
+            <div id="loadingScreen" class="loading-screen" style="display: none;">
+                <div class="loading-spinner"><i class="ph-duotone ph-spinner"></i></div>
+                <div id="loadingMessage" class="loading-message">Loading...</div>
+            </div>
+
+            <div id="chartContainer" class="chart-container" style="display: none;">
+                <h2>Posts</h2>
+                <p class="sub-info">See posting activity by year, week, and hour.</p>
+                <div id="postsCharts" class="charts-section">
+                    <div id="postsHeatmapContainer"></div>
+                    <div id="postsHourlyBarChartContainer" class="bar-chart-wrapper"></div>
+                    <div id="postsWeeklyBarChartContainer" class="bar-chart-wrapper"></div>
+                </div>
+
+                <h2>Likes</h2>
+                <p class="sub-info">Likes are public but not visible in the app. View them by year, week, and hour.</p>
+                <div id="likesCharts" class="charts-section">
+                    <div id="likesHeatmapContainer"></div>
+                    <div id="likesHourlyBarChartContainer" class="bar-chart-wrapper"></div>
+                    <div id="likesWeeklyBarChartContainer" class="bar-chart-wrapper"></div>
+                </div>
+
+                <h2>Reposts</h2>
+                <p class="sub-info">Find repost activity by year, week, and hour.</p>
+                <div id="repostsCharts" class="charts-section">
+                    <div id="repostsHeatmapContainer"></div>
+                    <div id="repostsHourlyBarChartContainer" class="bar-chart-wrapper"></div>
+                    <div id="repostsWeeklyBarChartContainer" class="bar-chart-wrapper"></div>
+                </div>
+
+                <h2>Follows</h2>
+                <p class="sub-info">This is the following activity by the user.</p>
+                <div id="followsCharts" class="charts-section">
+                    <div id="followsHeatmapContainer"></div>
+                    <div id="followsHourlyBarChartContainer" class="bar-chart-wrapper"></div>
+                    <div id="followsWeeklyBarChartContainer" class="bar-chart-wrapper"></div>
+                </div>
+
+                <h2>Content Analysis</h2>
+                <p class="sub-info">Explore user data with clickable keywords in all tabs.</p>
+                <div class="tabs-container">
+                    <button class="tab-button active" data-target="hashtags">Hashtags</button>
+                    <button class="tab-button" data-target="mentions">Mentions</button>
+                    <button class="tab-button" data-target="links">Links</button>
+                    <button class="tab-button" data-target="words">Top Words</button>
+                </div>
+                <div class="tab-content-container">
+                    <div id="hashtagsTableContainer" class="tab-content" style="display: block;"></div>
+                    <div id="mentionsTableContainer" class="tab-content" style="display: none;"></div>
+                    <div id="linksTableContainer" class="tab-content" style="display: none;"></div>
+                    <div id="wordsTableContainer" class="tab-content" style="display: none;"></div>
+                </div>
+            </div>
+    </main>
+    <footer>
+        <div class="container">
+            <h6>Disclaimer</h6>
+            <p>This project is a follow-up to <a href="https://romiojoseph.github.io/bluesky/download-car-json-blob/"
+                    target="_blank" rel="noopener" title="Link to the Bluesky CAR to JSON Downloader">Convert
+                    Bluesky CAR to JSON</a>. With this tool, you can check stats for any Bluesky user, including posts,
+                likes, reposts, and follows.
+            </p>
+            <p>As I added features, I realized this tool offers many interesting stats. My favorite is the
+                content analysis section - it helps me see what I talk about the most, which hashtags I use, and the
+                links I share the most.</p>
+            <p>These insights are ideal for users who use Bluesky for marketing. For regular users, checking them
+                occasionally offers a glimpse of their performance on the platform.</p>
+            <p>The idea was simple: I wanted to track my own activity. But I can't control how others use it. Adding
+                authentication could help, but it would make things harder for regular users.
+            </p>
+
+            <nav>
+                <strong>Bluesky Projects</strong>
+                <a href="https://romiojoseph.github.io/bluesky/new-horizons-news-feed/" target="_blank"
+                    rel="noopener">News feed Powered by Bluesky</a>
+                <a href="https://romiojoseph.github.io/bluesky/spotlight-feeds/" target="_blank" rel="noopener">Bluesky
+                    spotlight feeds</a>
+                <a href="https://romiojoseph.github.io/bluesky/download-car-json-blob/" target="_blank"
+                    rel="noopener">Convert Bluesky CAR to JSON</a>
+                <a href="https://romiojoseph.github.io/bluesky/export-bluesky-posts/" target="_blank"
+                    rel="noopener">Export
+                    posts from Bluesky</a>
+                <a href="https://romiojoseph.github.io/bluesky/photo-stream/" target="_blank"
+                    rel="noopener">PhotoStream</a>
+                <a href="https://romiojoseph.github.io/bluesky/video-download/" target="_blank" rel="noopener">Download
+                    Bluesky Video</a>
+                <a href="https://romiojoseph.github.io/bluesky/advanced-search" target="_blank" rel="noopener">Bluesky
+                    advanced search</a>
+                <a href="https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot"
+                    target="_blank" rel="noopener">Bookmark Bluesky Posts</a>
+                <a href="https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/" target="_blank"
+                    rel="noopener">BlueSky Bookmarks Feed</a>
+            </nav>
+
+            <p>This website runs entirely in your browser using the Bluesky AppView API, with no data sent
+                anywhere. No analytics or trackers are used, so you can explore freely. All JavaScript was
+                developed with the help of LLMs like Claude, Mistral AI and Gemini.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ipld/car@5.4.0/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cbor-js@0.1.0/cbor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/multiformats@13.3.1/dist/index.min.js"></script>
+    <script src="scripts/table.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/charts.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+
+</html>
