@@ -1,0 +1,302 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Post Analyzer</title>
+    <meta name="description"
+        content="Analyze Bluesky posts with detailed stats - track likes, reposts, replies, and quotes. View engagement timelines, user interactions, and performance metrics.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Bluesky Post Analyzer">
+    <meta property="og:description"
+        content="Analyze Bluesky posts with detailed stats - track likes, reposts, replies, and quotes. View engagement timelines, user interactions, and performance metrics.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/bluesky-post-analyzer/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="charts.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="profile_fetcher.js" defer></script>
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div id="container">
+        <div class="header">
+            <h1>Bluesky Post Analyzer</h1>
+            <p class="subtitle">Enter a Bluesky post url to analyze posts with detailed stats - track likes,
+                reposts, replies, and quotes. View engagement timelines, user interactions, and performance metrics.
+            </p>
+            <p class="tagline">No authentication is needed. Bluesky is an open platform. But respect authors' privacy
+                when using this tool.
+            </p>
+        </div>
+        <div class="input-section">
+            <input type="text" id="post-url" placeholder="https://bsky.app/profile/username/post/post_id">
+            <button onclick="analyzePost()">Analyze Post</button>
+        </div>
+
+        <!-- Loader (modified) -->
+        <div class="loader-container" id="loader">
+            <span class="loader"></span>
+            <p id="progress-message"></p>
+            <p id="progress-action"></p>
+        </div>
+        <div id="error-message"></div>
+        <!-- <div id="progress-message"></div> -->
+
+        <h2>Analyzed Post</h2>
+        <div id="analyzed-post"></div>
+
+        <!-- Add the button -->
+        <button id="show-profiles-button" class="hidden" onclick="showProfiles()">Show Engaged Users</button>
+
+        <section>
+            <div>
+                <h2>Post Stats</h2>
+                <p>How people interacted with this post.</p>
+                <div id="post-stats-chart" class="chart"></div>
+            </div>
+            <div>
+                <h2>Post Interaction Timeline</h2>
+                <p>How interactions changed over time.</p>
+                <div id="interaction-timeline-chart" class="chart"></div>
+            </div>
+        </section>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('replies')">Replies</div>
+            <div class="tab" onclick="showTab('quotes')">Quotes</div>
+        </div>
+
+        <div id="replies" class="tab-content">
+            <h2>Replies</h2>
+            <p>Browse and analyze replies to this post.</p>
+            <input type="text" id="replies-search" placeholder="Search Replies..."
+                onkeyup="searchTable('replies-table', 'replies-search')">
+            <div class="table-wrapper">
+                <table id="replies-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('replies-table', 0)">From<span id="replies-table-sort-0"></span>
+                            </th>
+                            <th onclick="sortTable('replies-table', 1)">Text<span id="replies-table-sort-1"></span>
+                            </th>
+                            <th onclick="sortTable('replies-table', 2, true)">Replies<span
+                                    id="replies-table-sort-2"></span>
+                            </th>
+                            <th onclick="sortTable('replies-table', 3, true)">Reposts<span
+                                    id="replies-table-sort-3"></span>
+                            </th>
+                            <th onclick="sortTable('replies-table', 4, true)">Likes<span
+                                    id="replies-table-sort-4"></span>
+                            </th>
+                            <th onclick="sortTable('replies-table', 5, true)">Quotes<span
+                                    id="replies-table-sort-5"></span>
+                            </th>
+                            <th onclick="sortTable('replies-table', 6, true)">Time<span
+                                    id="replies-table-sort-6"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="quotes" class="tab-content" style="display: none;">
+            <h2>Quotes</h2>
+            <p>See how this post was quoted and discussed.</p>
+            <input type="text" id="quotes-search" placeholder="Search Quotes..."
+                onkeyup="searchTable('quotes-table', 'quotes-search')">
+            <div class="table-wrapper">
+                <table id="quotes-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('quotes-table', 0)">From <span id="quotes-table-sort-0"></span></th>
+                            <th onclick="sortTable('quotes-table', 1)">Text <span id="quotes-table-sort-1"></span></th>
+                            <th onclick="sortTable('quotes-table', 2, true)">Replies<span
+                                    id="quotes-table-sort-2"></span>
+                            </th>
+                            <th onclick="sortTable('quotes-table', 3, true)">Reposts<span
+                                    id="quotes-table-sort-3"></span>
+                            </th>
+                            <th onclick="sortTable('quotes-table', 4, true)">Likes<span id="quotes-table-sort-4"></span>
+                            </th>
+                            <th onclick="sortTable('quotes-table', 5, true)">Quotes<span
+                                    id="quotes-table-sort-5"></span>
+                            </th>
+                            <th onclick="sortTable('quotes-table', 6, true)">Time<span id="quotes-table-sort-6"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <h6>Disclaimer</h6>
+            <p>This project is another result of my ongoing exploration of the Bluesky API. Alongside other statistics
+                about Bluesky user profiles, this tool is specifically designed to check post statistics. The timestamp
+                for reposts isn't available in the "getRepostedBy" endpoint, which is why that line doesn't appear in
+                the line chart.</p>
+            <p>With this tool, you can track how any Bluesky post performs over time. All replies and quotes are
+                displayed in separate tables, respectively. You can also sort the rows based on the available data and
+                search through them. Another useful feature is the ability to view the basic stats of users who liked or
+                reposted the post, or did both actions. You can see their followers, following, post count, any labels,
+                and their join date, helping you determine if they are bots, spam accounts, or regular supporters.</p>
+            <p>If the post interaction data exceeds a certain count, fetching the entire data may take some time.</p>
+
+            <p>These insights are ideal for users who use Bluesky for marketing. For regular users, checking them
+                occasionally offers a glimpse of their performance on the platform.</p>
+
+            <nav>
+                <strong>Bluesky Projects</strong>
+
+                <a href="https://romiojoseph.github.io/bluesky/bluesky-user-statistics/" target="_blank"
+                    rel="noopener">Bluesky User Statistics</a>
+                <a href="https://romiojoseph.github.io/bluesky/new-horizons-news-feed/" target="_blank"
+                    rel="noopener">News feed Powered by Bluesky</a>
+                <a href="https://romiojoseph.github.io/bluesky/spotlight-feeds/" target="_blank" rel="noopener">Bluesky
+                    spotlight feeds</a>
+                <a href="https://romiojoseph.github.io/bluesky/download-car-json-blob/" target="_blank"
+                    rel="noopener">Convert Bluesky CAR to JSON</a>
+                <a href="https://romiojoseph.github.io/bluesky/export-bluesky-posts/" target="_blank"
+                    rel="noopener">Export
+                    posts from Bluesky</a>
+                <a href="https://romiojoseph.github.io/bluesky/photo-stream/" target="_blank"
+                    rel="noopener">PhotoStream</a>
+                <a href="https://romiojoseph.github.io/bluesky/video-download/" target="_blank" rel="noopener">Download
+                    Bluesky Video</a>
+                <a href="https://romiojoseph.github.io/bluesky/advanced-search" target="_blank" rel="noopener">Bluesky
+                    advanced search</a>
+                <a href="https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot"
+                    target="_blank" rel="noopener">Bookmark Bluesky Posts</a>
+                <a href="https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/" target="_blank"
+                    rel="noopener">BlueSky Bookmarks Feed</a>
+            </nav>
+
+            <p>This website runs entirely in your browser using the Bluesky AppView API, with no data sent
+                anywhere. No analytics or trackers are used, so you can explore freely. All JavaScript was
+                developed with the help of LLMs like Claude, Mistral AI and Gemini.
+            </p>
+        </div>
+
+    </footer>
+
+    <!-- Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <h2>Engaged Users</h2>
+
+            <!-- Loader (modified) -->
+            <div class="loader-container" id="profile-loader">
+                <span class="loader"></span>
+                <p id="profile-progress-message"></p>
+                <p id="profile-progress-action"></p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" data-tab="mixed">Mixed</div>
+                <div class="tab" data-tab="liked">Liked</div>
+                <div class="tab" data-tab="reposted">Reposted</div>
+            </div>
+
+            <div id="mixed-profiles" class="tab-content">
+                <h3>Mixed (Liked and Reposted)</h3>
+                <p>Users who engaged the most—both liked and reposted.</p>
+                <input type="text" id="mixed-profiles-search" placeholder="Search...">
+                <div class="table-wrapper">
+                    <table id="mixed-profiles-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('mixed-profiles-table', 0)">Handle<span
+                                        id="mixed-profiles-table-sort-0"></span></th>
+                                <th onclick="sortTable('mixed-profiles-table', 1, true)">Followers<span
+                                        id="mixed-profiles-table-sort-1"></span></th>
+                                <th onclick="sortTable('mixed-profiles-table', 2, true)">Follows<span
+                                        id="mixed-profiles-table-sort-2"></span></th>
+                                <th onclick="sortTable('mixed-profiles-table', 3, true)">Posts<span
+                                        id="mixed-profiles-table-sort-3"></span></th>
+                                <th onclick="sortTable('mixed-profiles-table', 4)">Label<span
+                                        id="mixed-profiles-table-sort-4"></span></th>
+                                <th onclick="sortTable('mixed-profiles-table', 5, true)">Joined<span
+                                        id="mixed-profiles-table-sort-5"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="liked-profiles" class="tab-content" style="display:none;">
+                <h3>Liked</h3>
+                <p>People who showed appreciation for this post.</p>
+                <input type="text" id="liked-profiles-search" placeholder="Search...">
+                <div class="table-wrapper">
+                    <table id="liked-profiles-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('liked-profiles-table', 0)">Handle<span
+                                        id="liked-profiles-table-sort-0"></span></th>
+                                <th onclick="sortTable('liked-profiles-table', 1, true)">Followers<span
+                                        id="liked-profiles-table-sort-1"></span></th>
+                                <th onclick="sortTable('liked-profiles-table', 2, true)">Follows<span
+                                        id="liked-profiles-table-sort-2"></span></th>
+                                <th onclick="sortTable('liked-profiles-table', 3, true)">Posts<span
+                                        id="liked-profiles-table-sort-3"></span></th>
+                                <th onclick="sortTable('liked-profiles-table', 4)">Label<span
+                                        id="liked-profiles-table-sort-4"></span></th>
+                                <th onclick="sortTable('liked-profiles-table', 5, true)">Joined<span
+                                        id="liked-profiles-table-sort-5"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="reposted-profiles" class="tab-content" style="display:none;">
+                <h3>Reposted</h3>
+                <p>People who helped spread this post.</p>
+                <input type="text" id="reposted-profiles-search" placeholder="Search...">
+                <div class="table-wrapper">
+                    <table id="reposted-profiles-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('reposted-profiles-table', 0)">Handle<span
+                                        id="reposted-profiles-table-sort-0"></span></th>
+                                <th onclick="sortTable('reposted-profiles-table', 1, true)">Followers<span
+                                        id="reposted-profiles-table-sort-1"></span></th>
+                                <th onclick="sortTable('reposted-profiles-table', 2, true)">Follows<span
+                                        id="reposted-profiles-table-sort-2"></span></th>
+                                <th onclick="sortTable('reposted-profiles-table', 3, true)">Posts<span
+                                        id="reposted-profiles-table-sort-3"></span></th>
+                                <th onclick="sortTable('reposted-profiles-table', 4)">Label<span
+                                        id="reposted-profiles-table-sort-4"></span></th>
+                                <th onclick="sortTable('reposted-profiles-table', 5, true)">Joined<span
+                                        id="reposted-profiles-table-sort-5"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
