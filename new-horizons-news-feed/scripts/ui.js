@@ -125,7 +125,7 @@ function displayPosts(posts, containerId) {
         }
     });
 
-    // Ensure load more button is visible if we have a cursor
+    // Always show the load more button after posts are displayed
     if (loadMoreButton) {
         loadMoreButton.style.display = 'block';
     }
@@ -139,9 +139,10 @@ async function loadMorePosts(type) {
     const cursor = type === 'list' ? listCursor : feedCursor;
 
     try {
-        // Show loading state
+        // Show loading state and hide button
         loadMoreButton.disabled = true;
         loadMoreButton.textContent = 'Loading...';
+        loadMoreButton.style.display = 'none';
 
         const data = await fetchPosts(type, limit, cursor);
         if (data.feed && data.feed.length > 0) {
@@ -155,16 +156,16 @@ async function loadMorePosts(type) {
             }
         }
 
-        // Hide button only if no more posts
-        if (!data.cursor) {
-            loadMoreButton.style.display = 'none';
-        }
+        // Reset button state and always show it
+        loadMoreButton.disabled = false;
+        loadMoreButton.textContent = 'Load More';
+        loadMoreButton.style.display = 'block';
     } catch (error) {
         console.error('Error loading more posts:', error);
-    } finally {
         // Reset button state
         loadMoreButton.disabled = false;
         loadMoreButton.textContent = 'Load More';
+        loadMoreButton.style.display = 'block';
     }
 }
 
@@ -282,16 +283,34 @@ function createTechmemePostElement(post) {
     return postElement;
 }
 
-function displayTechmemePosts(posts) {
-    const techmemePostsContainer = document.getElementById('techmeme-posts');
-    techmemePostsContainer.innerHTML = '';
+function displayTechmemePosts(posts, containerId = 'techmeme-posts') {
+    const techmemePostsContainer = document.getElementById(containerId);
+    if (!techmemePostsContainer) {
+        console.error(`Container with ID ${containerId} not found`);
+        return;
+    }
 
+    // Don't clear existing posts if this is a "load more" operation
+    if (containerId === 'tech-posts' && techmemePostsContainer.children.length > 0) {
+        // This is a "load more" operation, so just append new posts
+    } else {
+        // This is an initial load, so clear the container
+        techmemePostsContainer.innerHTML = '';
+    }
+
+    // Add new posts
     posts.forEach(post => {
         const postElement = createTechmemePostElement(post);
         if (postElement) {
             techmemePostsContainer.appendChild(postElement);
         }
     });
+
+    // Always show the load more button
+    const loadMoreButton = document.getElementById('load-more-techmeme');
+    if (loadMoreButton) {
+        loadMoreButton.style.display = 'block';
+    }
 }
 
 function createTechCompaniesPostElement(postData) {
@@ -754,64 +773,70 @@ function tabClickHandler(event) {
 
 // Remove previous touch event handlers completely
 
-// For hero section slider
-document.querySelector('.slideshow-container').addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-}, { passive: true });
+// For hero section slider - Check if element exists before adding event listener
+const slideshowContainer = document.querySelector('.slideshow-container');
+if (slideshowContainer) {
+    slideshowContainer.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
 
-document.querySelector('.slideshow-container').addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    touchEndY = e.changedTouches[0].screenY;
+    slideshowContainer.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
 
-    const swipeDistanceX = touchEndX - touchStartX;
-    const swipeDistanceY = touchEndY - touchStartY;
+        const swipeDistanceX = touchEndX - touchStartX;
+        const swipeDistanceY = touchEndY - touchStartY;
 
-    const absSwipeX = Math.abs(swipeDistanceX);
-    const absSwipeY = Math.abs(swipeDistanceY);
+        const absSwipeX = Math.abs(swipeDistanceX);
+        const absSwipeY = Math.abs(swipeDistanceY);
 
-    // Only trigger horizontal slide if swipe is predominantly horizontal
-    if (absSwipeX > absSwipeY * 1.5 && absSwipeX > 50) {
-        if (swipeDistanceX > 0) {
-            showSlide(currentSlideIndex - 1);
-        } else {
-            showSlide(currentSlideIndex + 1);
-        }
-    }
-    // Otherwise, do nothing and allow natural scrolling
-}, { passive: true });
-
-// For recent news slider 
-document.querySelector('.recent-news-container').addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-}, { passive: true });
-
-document.querySelector('.recent-news-container').addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    touchEndY = e.changedTouches[0].screenY;
-
-    const swipeDistanceX = touchEndX - touchStartX;
-    const swipeDistanceY = touchEndY - touchStartY;
-
-    const absSwipeX = Math.abs(swipeDistanceX);
-    const absSwipeY = Math.abs(swipeDistanceY);
-
-    // Only trigger horizontal navigation if swipe is predominantly horizontal
-    if (absSwipeX > absSwipeY * 1.5 && absSwipeX > 50) {
-        if (swipeDistanceX > 0) {
-            // Swipe right (previous posts)
-            if (currentRecentNewsIndex > 0) {
-                currentRecentNewsIndex = Math.max(0, currentRecentNewsIndex - 3);
-                showRecentNewsPosts();
-            }
-        } else {
-            // Swipe left (next posts)
-            if (currentRecentNewsIndex + 3 < recentNewsPosts.length) {
-                currentRecentNewsIndex += 3;
-                showRecentNewsPosts();
+        // Only trigger horizontal slide if swipe is predominantly horizontal
+        if (absSwipeX > absSwipeY * 1.5 && absSwipeX > 50) {
+            if (swipeDistanceX > 0) {
+                showSlide(currentSlideIndex - 1);
+            } else {
+                showSlide(currentSlideIndex + 1);
             }
         }
-    }
-    // Otherwise, do nothing and allow natural scrolling
-}, { passive: true });
+        // Otherwise, do nothing and allow natural scrolling
+    }, { passive: true });
+}
+
+// For recent news slider - Check if element exists before adding event listener
+const recentNewsContainer = document.querySelector('.recent-news-container');
+if (recentNewsContainer) {
+    recentNewsContainer.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    recentNewsContainer.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+
+        const swipeDistanceX = touchEndX - touchStartX;
+        const swipeDistanceY = touchEndY - touchStartY;
+
+        const absSwipeX = Math.abs(swipeDistanceX);
+        const absSwipeY = Math.abs(swipeDistanceY);
+
+        // Only trigger horizontal navigation if swipe is predominantly horizontal
+        if (absSwipeX > absSwipeY * 1.5 && absSwipeX > 50) {
+            if (swipeDistanceX > 0) {
+                // Swipe right (previous posts)
+                if (currentRecentNewsIndex > 0) {
+                    currentRecentNewsIndex = Math.max(0, currentRecentNewsIndex - 3);
+                    showRecentNewsPosts();
+                }
+            } else {
+                // Swipe left (next posts)
+                if (currentRecentNewsIndex + 3 < recentNewsPosts.length) {
+                    currentRecentNewsIndex += 3;
+                    showRecentNewsPosts();
+                }
+            }
+        }
+        // Otherwise, do nothing and allow natural scrolling
+    }, { passive: true });
+}

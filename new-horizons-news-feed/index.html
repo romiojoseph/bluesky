@@ -6,13 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Horizons - Real-Time News from Media & Organizations on Bluesky</title>
     <meta name="description"
-        content="No account needed, no trackers, no analytics—just real time news from independent sources, journalists, and institutions, powered by Bluesky AppView API.">
+        content="No account needed, no trackers, no analytics. Just real time news from Bluesky media profiles, tech companies, organizations, institutions, and journalists.">
     <meta property="og:image" content="assets/social-image.png">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0866ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="New Horizons">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Apple Touch Icons - Note: Apple requires PNGs for home screen icons -->
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="mask-icon" href="assets/favicon.svg" color="#0866ff">
+
     <meta property="og:title" content="New Horizons - Real-Time News from Media & Organizations on Bluesky">
     <meta property="og:description"
-        content="No account needed, no trackers, no analytics—just real time news from independent sources, journalists, and institutions, powered by Bluesky AppView API.">
+        content="No account needed, no trackers, no analytics. Just real time news from Bluesky media profiles, tech companies, organizations, institutions, and journalists.">
     <meta property="og:image" content="assets/social-image.png">
     <meta property="og:url" content="https://romiojoseph.github.io/bluesky/new-horizons-news-feed/">
     <meta property="og:type" content="website">
@@ -35,83 +48,25 @@
                     title="Aggregating the latest news from BlueSky for you."></a>
         </div>
         <div class="tabs">
-            <button class="tab active" id="for-you-tab" data-target="for-you" onclick="showTab(event, 'for-you')"
-                title="Trending and recent news along with tech updates">For you</button>
-            <button class="tab" data-target="list" onclick="showTab(event, 'list')"
-                title="Recent news without any algorithms">Recent</button>
-            <button class="tab" data-target="feed" onclick="showTab(event, 'feed')"
-                title="Trending news feed based on HN Ranking from the past 12 hours.">Trending</button>
+            <button class="tab active" data-target="news">News</button>
+            <button class="tab" data-target="tech">Tech</button>
             <button type="button"
                 onclick="window.open('https://romiojoseph.github.io/rss-feed-reader/', '_blank', 'noopener')"
                 title="A simple RSS feed reader for configuring and displaying multiple feeds.">
-                RSS Reader
+                Reader
             </button>
         </div>
     </header>
 
     <main>
-        <div id="for-you" class="content">
-            <div class="hero-section">
-                <div class="slideshow-container"></div>
-                <div class="slide-indicators"></div>
+        <div id="news" class="content" style="display: block;">
+            <div class="toggle-container">
+                <button id="news-latest-toggle" class="toggle-btn active">Recent</button>
+                <button id="news-trending-toggle" class="toggle-btn">Trending</button>
             </div>
-            <div id="recent-news-section">
-                <div class="section-head">
-                    <div class="section-title">
-                        <h2>Recent News</h2>
-                        <p>Stay updated with the latest news from BlueSky.</p>
-                    </div>
-                    <div class="controller">
-                        <button id="prev-news" class="nav-btn" aria-label="Previous" type="button">
-                            <i class="ph-duotone ph-caret-left"></i>
-                        </button>
-                        <button id="next-news" class="nav-btn" aria-label="Next" type="button">
-                            <i class="ph-duotone ph-caret-right"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="loader" id="recent-news-loader">
-                    <div class="loader-icon">
-                        <i class="ph-duotone ph-spinner"></i>
-                    </div>
-                    <p class="loader-text">Just a moment, loading recent news...</p>
-                </div>
-                <div class="recent-news-container">
-                    <div id="recent-news-posts" class="posts-container"></div>
-                </div>
-            </div>
-            <div id="techmeme-section">
-                <div class="section-title">
-                    <h2>Techmeme</h2>
-                    <p>The latest from tech coverage.</p>
-                </div>
-                <div class="loader" id="techmeme-loader">
-                    <div class="loader-icon">
-                        <i class="ph-duotone ph-spinner"></i>
-                    </div>
-                    <p class="loader-text">Just a moment, loading Techmeme posts...</p>
-                </div>
-                <div id="techmeme-posts" class="posts-container"></div>
-            </div>
-            <div id="tech-companies-section">
-                <div class="section-title">
-                    <h2>Tech</h2>
-                    <p>Updates from tech companies, industry newsletters, and more.</p>
-                </div>
-                <div class="loader" id="tech-companies-loader">
-                    <div class="loader-icon">
-                        <i class="ph-duotone ph-spinner"></i>
-                    </div>
-                    <p class="loader-text">Just a moment, loading tech companies posts...</p>
-                </div>
-                <div id="tech-companies-posts" class="posts-container"></div>
-            </div>
-        </div>
-
-        <div id="list" class="content">
-            <div id="list-posts" class="posts-container"></div>
-            <button id="load-more-list" class="load-more">Load More</button>
-            <div class="loader" id="list-loader">
+            <div id="news-posts" class="posts-container"></div>
+            <button id="load-more-news" class="load-more">Load More</button>
+            <div class="loader" id="news-loader">
                 <div class="loader-icon">
                     <i class="ph-duotone ph-spinner"></i>
                 </div>
@@ -119,14 +74,20 @@
             </div>
         </div>
 
-        <div id="feed" class="content">
-            <div id="feed-posts" class="posts-container"></div>
-            <button id="load-more-feed" class="load-more">Load More</button>
-            <div class="loader" id="feed-loader">
+        <div id="tech" class="content">
+            <div class="toggle-container">
+                <button id="tech-latest-toggle" class="toggle-btn active">Recent</button>
+                <button id="tech-trending-toggle" class="toggle-btn">Trending</button>
+                <button id="tech-techmeme-toggle" class="toggle-btn">Techmeme</button>
+            </div>
+            <div id="tech-posts" class="posts-container"></div>
+            <button id="load-more-tech" class="load-more">Load More</button>
+            <button id="load-more-techmeme" class="load-more" style="display: none;">Load More</button>
+            <div class="loader" id="tech-loader">
                 <div class="loader-icon">
                     <i class="ph-duotone ph-spinner"></i>
                 </div>
-                <p class="loader-text">Just a moment, loading news...</p>
+                <p class="loader-text">Just a moment, loading tech posts...</p>
             </div>
         </div>
 
@@ -137,13 +98,23 @@
                 <p>This website runs entirely in your browser using the Bluesky AppView API, with no data sent
                     anywhere. No analytics or trackers are used, so you can explore freely. All JavaScript was
                     developed with the help of LLMs like Mistral AI, Claude, and Google AI Studio. If you want to browse
-                    the Bluesky way, here are the links. You can pin it to your home.
+                    the Bluesky way, here are the links. You can pin it to your home. As more companies, institutions,
+                    and organizations join Bluesky, you can use it as a one stop solution for all kinds of updates.
                 </p>
                 <div class="links">
-                    <a href="https://bsky.app/profile/romiojoseph.github.io/lists/3lc34yoopje27" target="_blank"
-                        rel="noopener">Recent News (List)</a>
+                    <a href="https://bsky.app/profile/did:plc:xglrcj6gmrpktysohindaqhj/lists/3lc34yoopje27"
+                        target="_blank" rel="noopener" title="View Recent News on Bluesky">Recent News</a>
+
                     <a href="https://bsky.app/profile/did:plc:xglrcj6gmrpktysohindaqhj/feed/aaahn42hkwvf2"
-                        target="_blank" rel="noopener">Trending News (Feed)</a>
+                        target="_blank" rel="noopener" title="View Trending News on Bluesky">Trending News</a>
+
+                    <a href="https://bsky.app/profile/did:plc:xglrcj6gmrpktysohindaqhj/lists/3lh6agik2oh2x"
+                        target="_blank" rel="noopener" title="View Recent Tech Updates on Bluesky">Recent Tech
+                        Updates</a>
+
+                    <a href="https://bsky.app/profile/did:plc:xglrcj6gmrpktysohindaqhj/feed/aaanqiwe5dvuu"
+                        target="_blank" rel="noopener" title="View Trending Tech Updates on Bluesky">Trending Tech
+                        Updates</a>
                 </div>
                 <small>
                     You can pin the list in the Bluesky app for direct access to news, free from algorithms. If you
@@ -155,8 +126,8 @@
             <section>
                 <div>
                     <h4>New Horizons</h4>
-                    <p class="footer-subtitle">Aggregating Real-Time News from BlueSky Media Profiles, Organizations,
-                        Institutions, and Journalists.
+                    <p class="footer-subtitle">Aggregating real-time news from Bluesky media profiles, tech companies,
+                        organizations, institutions, and journalists.
                     </p>
                     <p>You can fork this project and create your own version, adding different feeds and lists. The code
                         is available on <a
@@ -173,25 +144,30 @@
                 <div class="other-projects">
                     <nav>
                         <strong>Bluesky</strong>
-                        <a href="https://romiojoseph.github.io/bluesky/spotlight-feeds/" target="_blank"
-                            rel="noopener">Bluesky
-                            spotlight feeds</a>
+                        <a href="https://romiojoseph.github.io/bluesky/bluesky-user-statistics/" target="_blank"
+                            rel="noopener" title="View Bluesky user statistics">Bluesky User Statistics</a>
+                        <a href="https://romiojoseph.github.io/bluesky/bluesky-post-analyzer/" target="_blank"
+                            rel="noopener" title="Analyze Bluesky posts">Bluesky Post Analyzer</a>
+                        <a href="https://romiojoseph.github.io/bluesky/spotlight-feeds/" target="_blank" rel="noopener"
+                            title="Explore curated Bluesky spotlight feeds">Bluesky Spotlight Feeds</a>
+                        <a href="https://romiojoseph.github.io/bluesky/download-car-json-blob/" target="_blank"
+                            rel="noopener" title="Convert Bluesky CAR files to JSON format">Convert Bluesky CAR to
+                            JSON</a>
                         <a href="https://romiojoseph.github.io/bluesky/export-bluesky-posts/" target="_blank"
-                            rel="noopener">Export
-                            posts from Bluesky</a>
-                        <a href="https://romiojoseph.github.io/bluesky/photo-stream/" target="_blank"
-                            rel="noopener">PhotoStream</a>
-                        <a href="https://romiojoseph.github.io/bluesky/video-download/" target="_blank"
-                            rel="noopener">Download
-                            Bluesky Video</a>
-                        <a href="https://romiojoseph.github.io/bluesky/advanced-search" target="_blank"
-                            rel="noopener">Bluesky
-                            advanced search</a>
+                            rel="noopener" title="Export Bluesky posts in JSON format">Export Posts from Bluesky</a>
+                        <a href="https://romiojoseph.github.io/bluesky/photo-stream/" target="_blank" rel="noopener"
+                            title="View an Instagram-like image feed for Bluesky">PhotoStream</a>
+                        <a href="https://romiojoseph.github.io/bluesky/video-download/" target="_blank" rel="noopener"
+                            title="Download or stream Bluesky videos">Download Bluesky Video</a>
+                        <a href="https://romiojoseph.github.io/bluesky/advanced-search" target="_blank" rel="noopener"
+                            title="Perform advanced searches on Bluesky">Bluesky Advanced Search</a>
                         <a href="https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot"
-                            target="_blank" rel="noopener">Bookmark Bluesky Posts</a>
+                            target="_blank" rel="noopener" title="Bookmark Bluesky posts via a Telegram bot">Bookmark
+                            Bluesky Posts</a>
                         <a href="https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/" target="_blank"
-                            rel="noopener">BlueSky Bookmarks Feed</a>
+                            rel="noopener" title="Access your Bluesky bookmarks feed">BlueSky Bookmarks Feed</a>
                     </nav>
+
                     <nav>
                         <strong>Other</strong>
                         <a href="https://romiojoseph.github.io/rss-feed-reader" target="_blank" rel="noopener">RSS Feed
@@ -232,62 +208,27 @@
         </footer>
     </main>
 
+    <!-- Add the PWA script before other scripts -->
+    <script src="scripts/pwa.js"></script>
     <script src="scripts/utils.js"></script>
     <script src="scripts/ui.js"></script>
     <script src="scripts/api.js"></script>
-    <script src="scripts/for-you.js"></script>
     <script src="scripts/main.js"></script>
+
+    <!-- Optional: Add offline alert -->
+    <div id="offline-message"
+        style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #ff4b4b; color: white; padding: 10px 20px; border-radius: 4px; z-index: 1000;">
+        You are currently offline. Some features may be limited.
+    </div>
+
     <script>
-        function showTab(event, tabId) {
-            if (event) {
-                event.preventDefault();
-            }
+        // Display offline message when user goes offline
+        window.addEventListener('online', () => {
+            document.getElementById('offline-message').style.display = 'none';
+        });
 
-            document.querySelectorAll('.content').forEach(content => {
-                content.style.display = 'none';
-            });
-
-            const targetContent = document.getElementById(tabId);
-            targetContent.style.display = 'block';
-
-            // Scroll to top for 'for-you' tab
-            if (tabId === 'for-you') {
-                targetContent.scrollTop = 0; // Scroll to top of the content
-                window.scrollTo(0, 0); // Scroll to top of the page
-            }
-
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            const clickedTab = event ? event.currentTarget : document.querySelector(`.tab[data-target='${tabId}']`);
-            clickedTab.classList.add('active');
-
-            if (tabId === 'for-you') {
-                if (typeof initForYou === 'function') {
-                    // Re-initialize the For You tab to fetch new posts
-                    initForYou();
-                }
-            } else if (tabId === 'list' || tabId === 'feed') {
-                if (typeof init === 'function') {
-                    init();
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            showTab(null, 'for-you');
-
-            // Add event listener to the logo link
-            const logoLink = document.getElementById('logo-link');
-            logoLink.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default link behavior
-                showTab(event, 'for-you'); // Switch to "For you" and refresh
-
-                // Add active class to "For you" tab
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.getElementById('for-you-tab').classList.add('active');
-            });
+        window.addEventListener('offline', () => {
+            document.getElementById('offline-message').style.display = 'block';
         });
     </script>
 </body>

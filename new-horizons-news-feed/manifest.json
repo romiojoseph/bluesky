@@ -1,0 +1,23 @@
+{
+    "name": "New Horizons - Real-Time News from Bluesky",
+    "short_name": "New Horizons",
+    "description": "Real-time news from Bluesky media profiles, tech companies, organizations, institutions, and journalists.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#111111",
+    "theme_color": "#0866ff",
+    "icons": [
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ]
+}
