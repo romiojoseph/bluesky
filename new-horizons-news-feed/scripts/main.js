@@ -266,6 +266,9 @@ async function loadMoreTechmemePosts() {
 }
 
 function toggleFeedType(section, type) {
+    // Scroll to top
+    window.scrollTo(0, 0);
+
     // Update toggle buttons
     const trendingToggle = document.getElementById(`${section}-trending-toggle`);
     const latestToggle = document.getElementById(`${section}-latest-toggle`);

@@ -422,3 +422,34 @@ footer {
     }
 
 }
+
+.no-results {
+    width: 100%;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.no-results-message {
+    background-color: var(--driftwood-0);
+    border: 1px solid var(--driftwood-2);
+    border-radius: 24px;
+    padding: 24px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.no-results-message h3 {
+    color: var(--driftwood-8);
+    margin-bottom: 8px;
+    font-family: var(--heading);
+}
+
+.no-results-message p {
+    color: var(--driftwood-6);
+    font-size: var(--font-size-caption);
+}
+
+.progress {
+    text-align: center;
+    line-height: 1.6;
+}

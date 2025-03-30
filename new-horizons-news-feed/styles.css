@@ -141,6 +141,8 @@ header button:focus {
 }
 
 .toggle-container {
+    position: sticky;
+    top: 64px;
     display: flex;
     gap: 4px;
     margin: 24px 0;
@@ -148,11 +150,15 @@ header button:focus {
     width: fit-content;
     padding: 4px;
     border-radius: 150px;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
 }
 
 .toggle-btn {
     padding: 6px 16px;
-    background-color: var(--frostDark-1);
+    background: none;
     border: none;
     border-radius: 150px;
     color: var(--frostDark-11);
@@ -1032,14 +1038,25 @@ footer strong {
     }
 
     .toggle-container {
+        position: fixed;
+        bottom: 0;
+        top: auto;
+        left: 0;
+        right: 0;
+        transform: none;
+        margin: 0;
         width: 100%;
-        justify-content: space-between;
-        margin: 16px 0;
+        justify-content: center;
+        gap: 2px;
+        padding: 2px;
+        border: none;
+        border-radius: 0;
+        padding: 8px 16px;
+        background: rgba(0, 0, 0, 0.90);
     }
 
     .toggle-btn {
-        padding: 8px 16px;
-        background-color: var(--frostDark-1);
+        padding: 6px 16px;
         border: none;
         border-radius: 150px;
         color: var(--frostDark-11);
@@ -1091,10 +1108,11 @@ footer strong {
     .posts-container {
         grid-template-columns: repeat(1, 1fr);
         gap: 40px;
+        margin: 16px 0 0;
     }
 
     footer {
-        padding: 40px 0;
+        padding: 40px 0 88px;
     }
 
     footer>section>div {
