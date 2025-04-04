@@ -20,6 +20,7 @@
     --auraDark-12: #edeef0;
 
     --body: "Inter", serif;
+    --logo: "Rancho", cursive;
 
     --font-size-heading1: 36px;
     --font-size-heading2: 32px;
@@ -49,8 +50,9 @@ body.light-theme {
     --auraDark-11: #111827;
     --auraDark-12: #030712;
 
-    /* Update primary colors for light theme if needed */
     --primary-light: #0866ff;
+    /* Changed */
+    --primary-base: #0866ff;
     --primary-border: #0B5EC9;
     --primary-accent: #01183B;
 }
@@ -65,7 +67,7 @@ body.light-theme {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    transition: .3s ease;
+    transition: background-color .3s ease, color .3s ease, border-color .3s ease;
     -webkit-user-select: none;
     user-select: none;
     line-height: 1.5;
@@ -74,11 +76,14 @@ body.light-theme {
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--auraDark-1);
+    padding-top: 56px;
 }
 
 .container {
     max-width: 600px;
     margin: 16px auto;
+    padding: 20px 16px 0;
+    padding-top: 0;
 }
 
 
@@ -89,6 +94,7 @@ body {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     padding-bottom: 12px;
+    border: 1px solid var(--auraDark-3);
 }
 
 .post-header {
@@ -98,10 +104,11 @@ body {
 }
 
 .author-avatar {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     margin-right: 12px;
+    background-color: var(--auraDark-4);
 }
 
 .author-info {
@@ -109,10 +116,14 @@ body {
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-.author-info:hover {
-    transform: translateX(1px);
+/* Disable hover on touch */
+@media (hover: hover) {
+    .author-info:hover {
+        transform: translateX(1px);
+    }
 }
 
 .author-details {
@@ -133,6 +144,8 @@ body {
 .post-time {
     font-size: var(--font-size-caption);
     color: var(--auraDark-9);
+    flex-shrink: 0;
+    margin-left: 8px;
 }
 
 .carousel {
@@ -141,12 +154,16 @@ body {
     overflow: hidden;
     background-color: var(--auraDark-3);
     max-height: 566px;
+    min-height: 200px;
+    transition: height 0.2s ease-out;
+    height: auto;
 }
 
 .carousel-inner {
     display: flex;
     transition: transform 0.3s ease;
     height: 100%;
+    align-items: center;
 }
 
 .carousel-item {
@@ -155,45 +172,55 @@ body {
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
-    max-height: 566px;
-    height: auto;
+    height: 100%;
+    overflow: hidden;
 }
 
 .carousel-item img {
     display: block;
-    max-width: 100%;
-    max-height: 100%;
     width: auto;
     height: auto;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
+    object-position: center center;
     cursor: pointer;
     transition: transform .32s linear(0, 0.402 7.4%, 0.711 15.3%, 0.929 23.7%, 1.008 28.2%, 1.067 33%, 1.099 36.9%, 1.12 41%, 1.13 45.4%, 1.13 50.1%, 1.111 58.5%, 1.019 83.2%, 1.004 91.3%, 1);
 }
 
-.carousel-item img:hover {
-    transform: scale(1.16);
+
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    .carousel-item img:hover {
+        transform: scale(1.03);
+    }
 }
+
 
 .carousel-nav {
     position: absolute;
-    bottom: 16px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 6px;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 4px 8px;
+    border-radius: 10px;
 }
 
 .carousel-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: var(--auraDark-6);
-    background-color: var(--auraDark-10);
+    background-color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .carousel-dot.active {
-    background-color: var(--auraDark-12);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 .post-actions {
@@ -203,11 +230,7 @@ body {
     padding: 12px 16px 6px;
 }
 
-.left-actions {
-    display: flex;
-    gap: 18px;
-}
-
+.left-actions,
 .right-actions {
     display: flex;
     gap: 18px;
@@ -223,47 +246,37 @@ body {
     border: none;
     cursor: pointer;
     font-size: var(--font-size-caption);
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.ph-heart,
-.ph-repeat,
-.ph-chat-centered,
-.ph-copy-simple,
-.ph-share-fat {
-    font-size: var(--font-size-heading6);
-    color: var(--auraDark-11);
-}
-
-.ph-heart:hover,
-.ph-repeat:hover,
-.ph-chat-centered:hover,
-.ph-copy-simple:hover,
-.ph-share-fat:hover {
-    color: var(--auraDark-9);
-    transform: translateX(1px);
-}
-
-.post-btn {
-    padding: 8px 16px;
-    border: 1px solid var(--auraDark-3);
-    width: fit-content;
-    background-color: var(--auraDark-1);
-    margin: 8px 0 0 16px;
+.action-btn .count {
+    font-variant-numeric: tabular-nums;
     color: var(--auraDark-10);
-    border-radius: 32px;
-    cursor: pointer;
+    font-size: var(--font-size-tagline);
 }
 
-.post-btn:hover {
-    background-color: var(--auraDark-2);
-    border: 1px solid var(--auraDark-6);
-    transform: translateX(1px);
+/* Disable hover on touch */
+@media (hover: hover) {
+    .action-btn:hover {
+        color: var(--auraDark-9);
+        transform: translateY(-1px);
+    }
+
+    .action-btn:hover i[class*="ph-"] {
+        color: var(--auraDark-9);
+    }
 }
 
-.likes-count {
-    padding: 0 16px;
-    font-size: var(--font-size-label);
+
+.action-btn i[class*="ph-"] {
+    font-size: var(--font-size-body);
     color: var(--auraDark-10);
+    transition: color 0.2s ease;
+}
+
+
+.action-btn.copy-link-btn i.ph-check-circle {
+    color: lightgreen !important;
 }
 
 .post-text {
@@ -272,32 +285,58 @@ body {
     line-height: 1.6;
     color: var(--auraDark-11);
     white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .post-text a {
     color: var(--primary-light);
+    transition: color 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
     text-decoration: underline;
     text-decoration-style: dotted;
     text-underline-offset: 6px;
     text-decoration-color: var(--auraDark-2);
+    word-wrap: break-word;
+    white-space: normal;
 }
 
-.post-text a:hover {
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 6px;
-    text-decoration-color: var(--auraDark-7);
-    color: var(--auraDark-12);
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    .post-text a:hover {
+        color: var(--auraDark-12);
+        text-decoration-color: var(--auraDark-8);
+    }
 }
+
+
+.post-text .read-more {
+    color: var(--primary-light);
+    cursor: pointer;
+    display: inline-block;
+    padding-top: 4px;
+    font-weight: 500;
+    border-bottom: 1px dotted var(--auraDark-7);
+}
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    .post-text .read-more:hover {
+        color: var(--auraDark-12);
+        border-bottom-color: var(--auraDark-9);
+    }
+}
+
 
 .post-embed {
-    margin: 10px 0;
+    margin: 10px 16px 0;
     border: 1px solid var(--auraDark-5);
     border-radius: 12px;
     overflow: hidden;
     display: flex;
     text-decoration: none;
     color: inherit;
+    background-color: var(--auraDark-3);
 }
 
 .embed-link {
@@ -306,19 +345,25 @@ body {
     display: block;
 }
 
-.embed-link:hover {
-    text-decoration: none;
+/* Disable hover on touch */
+@media (hover: hover) {
+    .embed-link:hover {
+        text-decoration: none;
+        /* Still none, but ensure it's covered */
+    }
 }
 
+
 .embed-thumb {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     flex-shrink: 0;
+    border-right: 1px solid var(--auraDark-5);
 }
 
 .embed-text {
-    padding: 12px;
+    padding: 10px 12px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -328,8 +373,9 @@ body {
 
 .embed-title {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     margin: 0 0 4px;
+    color: var(--auraDark-11);
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -339,8 +385,8 @@ body {
 }
 
 .embed-description {
-    font-size: 14px;
-    color: #65676b;
+    font-size: 13px;
+    color: var(--auraDark-9);
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -350,17 +396,89 @@ body {
     -webkit-box-orient: vertical;
 }
 
-.comments-link {
-    padding: 12px 16px 0;
-    font-size: var(--font-size-caption);
-    color: var(--auraDark-9);
+.post-footer-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 10px 16px 0;
     border-top: 1px solid var(--auraDark-3);
-    cursor: pointer;
-    margin-top: 8px;
+    font-style: italic;
+    margin-top: 12px;
 }
 
+.comments-link,
+.quotes-link {
+    /* Apply styles to both */
+    font-size: var(--font-size-label);
+    color: var(--auraDark-9);
+    cursor: pointer;
+    display: block;
+    /* Keep as block */
+    transition: color 0.2s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    /* Prevent wrapping within the link */
+}
+
+
+/* Disable hover on touch */
+@media (hover: hover) {
+
+    .comments-link:hover,
+    .quotes-link:hover {
+        color: var(--auraDark-12);
+        text-decoration-color: var(--auraDark-8);
+    }
+}
+
+
+#loadMoreContainer {
+    text-align: center;
+    padding: 10px 0 20px;
+    display: none;
+    /* Initially hidden, JS controls */
+}
+
+#loadMoreButton {
+    padding: 10px 20px;
+    border: 1px solid var(--auraDark-4);
+    background-color: var(--auraDark-2);
+    color: var(--auraDark-11);
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: var(--font-size-body);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    #loadMoreButton:hover:not(:disabled) {
+        background-color: var(--auraDark-3);
+        border-color: var(--auraDark-6);
+        transform: translateX(1px);
+    }
+}
+
+
+#loadMoreButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+.no-posts-message {
+    text-align: center;
+    color: var(--auraDark-9);
+    padding: 40px 15px;
+    font-size: var(--font-size-body);
+}
+
+
 footer {
-    padding: 48px 0;
+    max-width: 600px;
+    margin: 16px auto;
+    padding: 48px 16px;
 }
 
 footer h6 {
@@ -379,57 +497,74 @@ footer p {
 
 footer button {
     padding: 8px 16px;
-    border: 1px solid var(--auraDark-3);
-    width: fit-content;
-    background-color: var(--auraDark-1);
-    color: var(--auraDark-10);
+    border: 1px solid var(--auraDark-4);
+    background-color: var(--auraDark-2);
+    color: var(--auraDark-11);
     border-radius: 32px;
     cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-footer button:hover {
-    background-color: var(--auraDark-2);
-    border: 1px solid var(--auraDark-6);
-    transform: translateX(1px);
+/* Disable hover on touch */
+@media (hover: hover) {
+    footer button:hover {
+        background-color: var(--auraDark-3);
+        border: 1px solid var(--auraDark-6);
+        transform: translateX(1px);
+    }
 }
+
 
 footer a {
     color: var(--auraDark-11);
     text-decoration: underline;
     text-decoration-style: dotted;
-    text-underline-offset: 6px;
-    text-decoration-color: var(--auraDark-4);
+    text-underline-offset: 4px;
+    text-decoration-color: var(--auraDark-6);
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
 }
 
-footer a:hover {
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 6px;
-    text-decoration-color: var(--auraDark-7);
-    color: var(--auraDark-12);
+/* Disable hover on touch */
+@media (hover: hover) {
+    footer a:hover {
+        text-decoration-color: var(--auraDark-8);
+        color: var(--auraDark-12);
+    }
 }
 
+
+/* --- Loading Screen CSS Updated --- */
 #loadingScreen {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: var(--auraDark-1);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
 
+#loadingScreen.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+    /* Fade in, immediate show */
+}
+
+
 .loader {
-    border: 8px solid var(--auraDark-3);
-    border-top: 8px solid var(--primary-accent);
+    border: 6px solid var(--auraDark-5);
+    border-top: 6px solid var(--primary-base);
     border-radius: 50%;
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     animation: spin 1s linear infinite;
 }
 
@@ -445,88 +580,466 @@ footer a:hover {
 
 #loadingScreen p {
     margin-top: 16px;
-    font-size: var(--font-size-subtitle);
-    color: var(--auraDark-9);
+    font-size: var(--font-size-body);
+    color: var(--auraDark-11);
 }
 
 ::-webkit-scrollbar {
     width: 8px;
-    height: 12px;
-    transition: background-color 0.2s ease;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
     background-color: var(--auraDark-7);
     border-radius: 10px;
+    border: 2px solid var(--auraDark-1);
     transition: background-color 0.2s ease;
-    scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background-color: var(--auraDark-8);
+/* Disable hover on touch */
+@media (hover: hover) {
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--auraDark-8);
+    }
 }
+
 
 ::-webkit-scrollbar-track {
-    background-color: none;
+    background-color: transparent;
     border-radius: 10px;
-    transition: background-color 0.2s ease;
 }
 
 .theme-toggle {
     position: fixed;
     bottom: 24px;
     right: 24px;
-    padding: 8px 16px;
+    width: 44px;
+    height: 44px;
     border: 1px solid var(--auraDark-3);
     background-color: var(--auraDark-2);
     color: var(--auraDark-11);
-    border-radius: 32px;
+    border-radius: 50%;
     cursor: pointer;
     z-index: 1000;
+    line-height: 1.0;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.theme-toggle:hover,
-.theme-toggle:active,
-.theme-toggle:focus-visible {
-    background-color: var(--auraDark-3);
-    border: 1px solid var(--auraDark-6);
-    transform: translateX(1px);
+/* Disable hover on touch */
+@media (hover: hover) {
+
+    .theme-toggle:hover,
+    .theme-toggle:active,
+    .theme-toggle:focus-visible {
+        background-color: var(--auraDark-3);
+        border: 1px solid var(--auraDark-6);
+        transform: translateY(-1px) scale(1.05);
+        outline: none;
+    }
 }
 
-.ph-sun-dim,
-.ph-moon {
-    font-size: var(--font-size-heading6);
+
+.theme-toggle i[class*="ph-"] {
+    font-size: var(--font-size-heading5);
     line-height: 1.0;
 }
 
+
+/* Error Message Area CSS Updated */
+#errorMessageContainer {
+    margin-bottom: 0;
+    /* Remove default margin if container has it */
+    /* Padding handled by .container */
+}
+
+#errorMessage {
+    color: #ff4d4f;
+    background-color: rgba(255, 77, 79, 0.1);
+    border: 1px solid rgba(255, 77, 79, 0.3);
+    border-radius: 8px;
+    font-size: var(--font-size-caption);
+    margin-top: 8px;
+    /* Space from header or posts */
+    min-height: 1em;
+    text-align: center;
+    padding: 8px 12px;
+    display: none;
+    /* Hide initially, JS controls display */
+}
+
+
+/* Header Styles */
+#main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--auraDark-1);
+    border-bottom: 1px solid var(--auraDark-2);
+    padding: 10px 16px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    /* Reduced gap slightly */
+    height: 55px;
+    /* Set a fixed height for consistency */
+}
+
+.logo {
+    font-family: var(--logo);
+    font-size: var(--font-size-heading4);
+    color: var(--auraDark-12);
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.0;
+    cursor: pointer;
+    /* Make logo clickable for reload */
+}
+
+#main-header .predefined-feeds {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-bottom: 0;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+#main-header .predefined-feeds::-webkit-scrollbar {
+    display: none;
+}
+
+#main-header .predefined-feeds button {
+    padding: 6px 12px;
+    border: none;
+    background: none;
+    color: var(--auraDark-10);
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: var(--font-size-caption);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    line-height: 1.2;
+    /* Ensure text is vertically centered */
+}
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    #main-header .predefined-feeds button:hover {
+        background-color: var(--auraDark-3);
+        /* transform: translateX(1px); Removed minor transform */
+        color: var(--auraDark-11);
+    }
+
+    #main-header .predefined-feeds button.active-feed:hover,
+    #main-header .predefined-feeds button.active-feed:focus {
+        color: var(--auraDark-12);
+        background: none;
+        /* Add subtle background on hover/focus */
+    }
+}
+
+
+#main-header .predefined-feeds button.active-feed {
+    color: var(--auraDark-12);
+    font-weight: 600;
+    background: none;
+}
+
+
+.header-action-btn {
+    background: none;
+    border: none;
+    color: var(--auraDark-10);
+    font-size: var(--font-size-heading5);
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    .header-action-btn:hover {
+        color: var(--auraDark-12);
+        background-color: var(--auraDark-3);
+    }
+}
+
+
+
+/* Modal Styles */
+#configModal {
+    position: fixed;
+    inset: 0;
+    /* background-color: rgba(0, 0, 0, 0.7); No longer using direct background */
+    z-index: 1000;
+    display: none;
+    /* Start hidden */
+    align-items: center;
+    justify-content: center;
+    /* backdrop-filter: blur(3px); Removed backdrop filter */
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    visibility: hidden;
+}
+
+.modal-overlay {
+    /* Added overlay element */
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+    z-index: 0;
+}
+
+
+#configModal.visible {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.modal-content {
+    background-color: var(--auraDark-2);
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    /* Changed to relative to stack on overlay */
+    z-index: 1;
+    /* Ensure content is above overlay */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--auraDark-4);
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#configModal.visible .modal-content {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-header {
+    margin-bottom: 16px;
+}
+
+.modal-content h5 {
+    color: var(--auraDark-11);
+    font-size: var(--font-size-subtitle);
+    margin-bottom: 4px;
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.modal-content p {
+    color: var(--auraDark-10);
+    font-size: var(--font-size-label);
+    line-height: 1.4;
+}
+
+.modal-content .custom-feed-input {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+#bskyUrlInput {
+    flex-grow: 1;
+    padding: 10px 16px;
+    border: 1px solid var(--auraDark-5);
+    background-color: var(--auraDark-3);
+    color: var(--auraDark-11);
+    border-radius: 8px;
+    font-size: var(--font-size-caption);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+}
+
+#bskyUrlInput:hover,
+#bskyUrlInput:focus {
+    outline: none;
+    border-color: var(--primary-base);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+#closeModalButton {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--auraDark-9);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    #closeModalButton:hover {
+        color: var(--auraDark-11);
+        background-color: var(--auraDark-4);
+    }
+}
+
+
+#fetchCustomFeedButton {
+    padding: 10px 16px;
+    background-color: var(--primary-base);
+    color: #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: var(--font-size-caption);
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+    border: none;
+    margin-top: 16px;
+    width: 100%;
+}
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    #fetchCustomFeedButton:hover {
+        transform: translateY(-2px);
+    }
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    body {
+        padding-top: 56px;
+        /* Adjust for smaller header */
+    }
+
+    #main-header {
+        padding: 8px 12px;
+        gap: 12px;
+        /* Slightly reduce gap */
+        height: 50px;
+        /* Adjust height */
+    }
+
+
+
+    #main-header .predefined-feeds button {
+        padding: 4px 10px;
+        /* Adjust padding */
+    }
+
+    .logo {
+        font-size: var(--font-size-heading5);
+    }
+
+    .header-action-btn {
+        width: 32px;
+        height: 32px;
+        font-size: var(--font-size-heading6);
+    }
+
+}
+
 @media (max-width: 480px) {
+    body {
+        padding-top: 44px;
+        /* Adjust further if needed */
+    }
+
     .container {
-        padding: 0 12px;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .post-card {
         margin-bottom: 12px;
+        border-radius: 12px;
     }
 
     footer {
-        padding-top: 16px !important;
-        padding-bottom: 16px !important;
+        padding: 32px 12px;
     }
 
-    .ph-heart,
-    .ph-repeat,
-    .ph-chat-centered,
-    .ph-copy-simple,
-    .ph-share-fat {
-        font-size: var(--font-size-heading5);
+    .action-btn i[class*="ph-"] {
+        font-size: var(--font-size-body);
     }
+
+    .left-actions,
+    .right-actions {
+        gap: 16px;
+    }
+
+
+    #main-header {
+        height: 48px;
+        /* Adjust height */
+        gap: 16px;
+    }
+
+    #main-header .predefined-feeds button {
+        padding: 2px 8px;
+        font-size: var(--font-size-label);
+        border-radius: 14px;
+    }
+
+    .embed-title {
+        font-size: 14px;
+    }
+
+    #loadMoreButton,
+    footer button {
+        padding: 8px 16px;
+        font-size: var(--font-size-caption);
+    }
+
+    .theme-toggle {
+        bottom: 16px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .theme-toggle i[class*="ph-"] {
+        font-size: var(--font-size-heading6);
+    }
+
+    .modal-content {
+        padding: 24px;
+    }
+
+
 }
 
 @media (max-height: 566px) {
-    .carousel-item {
-        height: auto;
+    .carousel {
+        max-height: 75vh;
     }
 }

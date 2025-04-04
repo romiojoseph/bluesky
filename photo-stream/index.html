@@ -4,15 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhotoStream - An Instagram-like image feed for Bluesky</title>
+    <title>PhotoStream: Instagram-style Bluesky Image Feed</title>
     <meta name="description"
-        content="An Instagram-like feed for Bluesky with sorted posts, regular updates, and tailored categories like photography, art, nature, and more.">
+        content="Browse Bluesky feeds and lists like Instagram. No login, no tracking. View any feed or list you like.">
     <meta property="og:image" content="assets/social-image.png">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 
-    <meta property="og:title" content="PhotoStream - An Instagram-like image feed for Bluesky">
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0866ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PhotoStream">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Apple Touch Icons - Note: Apple requires PNGs for home screen icons -->
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="mask-icon" href="assets/favicon.svg" color="#0866ff">
+
+    <meta property="og:title" content="PhotoStream: Instagram-style Bluesky Image Feed">
     <meta property="og:description"
-        content="An Instagram-like feed for Bluesky with sorted posts, regular updates, and tailored categories like photography, art, nature, and more.">
+        content="Browse Bluesky feeds and lists like Instagram. No login, no tracking. View any feed or list you like.">
+    <meta property="og:site_name" content="PhotoStream: Instagram-style Bluesky Image Feed">
     <meta property="og:image" content="assets/social-image.png">
     <meta property="og:url" content="https://romiojoseph.github.io/bluesky/photo-stream/">
     <meta property="og:type" content="website">
@@ -20,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rancho&display=swap"
         rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
@@ -30,60 +42,141 @@
 </head>
 
 <body>
+    <!-- Loading Screen (no changes) -->
     <div id="loadingScreen">
         <div class="loader"></div>
-        <p>Just a moment, posts are loading...</p>
+        <p>Getting the latest posts...</p>
     </div>
+
+    <!-- Theme Toggle (no changes) -->
     <button id="theme-toggle" class="theme-toggle" type="button" title="Switch theme">
         <i class="ph-duotone ph-sun-dim"></i>
     </button>
-    <div class="container" id="posts-container"></div>
-    <footer class="container">
+
+    <!-- Fixed Header (no changes) -->
+    <header id="main-header">
+        <div class="logo" id="logo">PhotoStream</div>
+        <nav class="predefined-feeds">
+            <!-- Buttons moved here -->
+            <button type="button" data-url="https://bsky.app/profile/bsky.app/feed/whats-hot"
+                title="Discover Feed">Discover</button>
+            <button type="button" data-url="https://bsky.app/profile/gabriellanonino.com/feed/aaacm6hg3tlui"
+                title="Photography Feed">Photography</button>
+            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/lists/3lc34yoopje27"
+                title="News Feed">News</button>
+            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/lists/3lh6agik2oh2x"
+                title="Tech List">Tech</button>
+            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/feed/aaaoy5eufdxdo"
+                title="Astronomy Feed">Astronomy</button>
+            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/lists/3levis2b5yj2e"
+                title="Entertainment List">Entertainment</button>
+
+        </nav>
+        <button id="configButton" class="header-action-btn" type="button" title="Configure Custom Feed">
+            <i class="ph-duotone ph-gear"></i>
+        </button>
+    </header>
+
+
+    <!-- Error Message Area (no changes) -->
+    <div class="container" id="errorMessageContainer">
+        <div id="errorMessage">
+        </div>
+    </div>
+
+
+    <!-- Posts Container (no changes) -->
+    <div class="container" id="posts-container">
+        <!-- Posts will be loaded here -->
+    </div>
+
+    <!-- Load More Button Area (no changes) -->
+    <div class="container" id="loadMoreContainer">
+        <button type="button" id="loadMoreButton">Load more posts</button>
+    </div>
+
+    <!-- Footer (no changes) -->
+    <footer>
         <h6>
             Footnote
         </h6>
         <p>
             Bluesky offers incredible flexibility. If someone wanted an Instagram-like client tailored to individual
             preferences, it's entirely possible to build one (I'm not quite there yet). This project explores that idea.
-            With Bluesky now supporting video, creating short-form and long-form video feeds (Yes, YouTube like apps!)
-            also seems likely in the future. The platform's openness is amazing.
+            Right now it's just a front end and properly linked to their rerspective posts. With Bluesky now supporting
+            video, creating short-form and long-form video feeds (Yes, YouTube like apps!) also seems likely in the
+            future. The platform's openness is amazing.
         </p>
         <p>
-            For this project, I looked for a better image feed but couldn't find one that matched everyone's
-            preferences. So, I created a feed with categories like astronomy, photography, nature, art, travel, animals,
-            birds, etc. I wanted to create a feed with specific hashtags, but one issue I faced is that some people add
-            a ton of hashtags—many of which are irrelevant to the post—just to increase reach. Until I have better
-            control over the feed, I welcome any unique hashtags.
-        </p>
-        <p>
-            I added labels to filter out unsuitable and offensive posts from this feed. However, I'm not fully confident
-            it works as intended. Posts with any value in the Label column of the post metadata are excluded from this
-            project but may still appear in <a href="https://bsky.app/profile/romiojoseph.github.io/feed/aaadvp6teeh3k"
-                rel="noopener" target="_blank">Bluesky's native client feed</a>.
-        </p>
-        <p>Sorting is based on HN ranking with a gravity of 1.8. User actions like repost, like, and reply will redirect
-            you to Bluesky. This isn't a client but an Instagram-like feed that updates every two to four hours to
-            provide an Instagram-like experience. The like, repost, and reply counts may differ from the original post
-            due to periodic updates.
+            For this project, I've added a few feeds and lists, and you'll land on the Discover feed offered by Bluesky
+            itself. The condition is that a post will be shown only if it has one or more images. Bring your own Bluesky
+            feed or list URL to fetch posts. Your URL will be saved for future visits. If your browser has autofill
+            enabled, you can quickly switch between multiple links you've used before. Links, hashtags, and mentions are
+            clickable. Click any image to open it in a new tab.
         </p>
         <p>I don't control or take responsibility for the posts shown here. They're from their respective owners. Feel
-            free to crosscheck with the original posts—each one is properly linked to its author and source.
+            free to crosscheck with the original posts. Each one is properly linked to its author and source.
         </p>
-        <p>Javascript is entriely created using LLMs like Claude Sonnet and Google Gemini. I built this to make Bluesky
-            accessible to people who prefer not to sign up or log in (but I highly recommend creating an account, as
-            Bluesky has the potential to become a better platform). Now about this project, unlike other social media
-            apps, you can explore freely without having your actions or scrolls tracked or monitored. No analytics or
-            trackers are used here, so you can browse with peace of mind.
+        <p>This website runs entirely in your browser using the Bluesky AppView API, with no data sent anywhere. No
+            analytics or trackers are used, so you can explore freely. All JavaScript was developed with the help of
+            LLMs like Mistral AI, Claude, and Google AI Studio. I built this to make Bluesky accessible to people who
+            prefer not to sign up or log in (but I highly recommend creating an account, as Bluesky has the potential to
+            become a better platform).
         </p>
-        <p>Another Bluesky project of mine - Spotligt Feeds - offering a tracker-free feed with topics like Recent
-            News, Trending News, Science, Movies, Tech, Web Development, and more.</p>
+        <p>Explore my other Bluesky projects:</p>
         <button alt="EXplore button" title="Explore spotlight feeds of Bluesky" type="button"
-            onclick="window.open('https://romiojoseph.github.io/bluesky/spotlight-feeds/', '_blank', 'noopener'); return false;">
-            Bluesky spotlight feeds
+            onclick="window.open('https://romiojoseph.github.io/bluesky/', '_blank', 'noopener'); return false;">
+            Free Bluesky Tools
         </button>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Configuration Modal (no changes) -->
+    <div id="configModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Enter Bluesky feed or list</h5>
+                <p>Bring your own Bluesky feed or list URL to fetch posts. Your URL will be saved for future visits. If
+                    your browser has autofill enabled, you can quickly switch between multiple links you've used before.
+                </p>
+            </div>
+            <button id="closeModalButton" title="Close">×</button>
+
+            <div class="custom-feed-input">
+                <input type="text" id="bskyUrlInput" placeholder="https://bsky.app/profile/user/feed/id">
+            </div>
+            <div>
+                <button type="button" id="fetchCustomFeedButton">Fetch & Save</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Load JavaScript files as modules -->
+    <script type="module" src="main.js"></script>
+    <script>
+        // Simple logo click reload
+        document.getElementById("logo").addEventListener("click", () => {
+            window.scrollTo(0, 0); // Scroll to top
+            location.reload();     // Then reload
+        });
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        } else {
+            console.log('Service workers are not supported.');
+        }
+    </script>
+
 </body>
 
 </html>
