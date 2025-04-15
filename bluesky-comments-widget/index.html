@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Comments Widget: Add replies to your blog or site</title>
+    <meta name="description"
+        content="Share your page link on Bluesky, then use this widget to show replies as comments on your site. No login or authentication needed.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Bluesky Comments Widget: Add replies to your blog or site">
+    <meta property="og:description"
+        content="Share your page link on Bluesky, then use this widget to show replies as comments on your site. No login or authentication needed.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/bluesky-comments-widget/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css"> <!-- Load your general styles FIRST -->
+    <link rel="stylesheet" href="bluesky-comments.css"> <!-- Load widget styles LAST -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <h1 class="demo-heading">Show Bluesky replies on your blog or site</h1>
+    <p class="body-text">This is a demo showing how Bluesky replies can look when embedded in any articles. It loads
+        replies from a specific Bluesky post. No authentication required. Each reply is linked to the post it
+        belongs to. Built with HTML, CSS, and JavaScript using LLMs. You can tweak the code if you know
+        JavaScript.</p>
+    <div class="user-actions">
+        <button class="outline-button"
+            onclick="window.open('https://skywrite.pages.dev/?DID=did%3Aplc%3Axglrcj6gmrpktysohindaqhj&view-post=bluesky-comments-widget', '_blank', 'noopener')"
+            title="See this README for a detailed documentation">
+            How to use
+        </button>
+        <button class="filled-button"
+            onclick="window.open('https://github.com/romiojoseph/bluesky/tree/main/bluesky-comments-widget/', '_blank', 'noopener')"
+            title="Download the CSS and JS files">
+            Download
+        </button>
+    </div>
+
+
+    <div class="widget-wrapper">
+        <!--
+          THIS IS THE TARGET CONTAINER
+          Give it a unique ID. The JavaScript function `loadAndRenderComments`
+          will populate this div.
+        -->
+        <div id="bluesky-comment-widget">
+            <!-- Content will be loaded here by JS -->
+            <p><i>Loading Bluesky comments...</i></p>
+        </div>
+
+    </div>
+
+    <!-- Include the component's JavaScript AFTER the container div -->
+    <script src="bluesky-comments.js"></script>
+
+    <!-- Initialize the script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Configuration ---
+            // 1. The ID of the container div you created above.
+            const targetContainerId = 'bluesky-comment-widget';
+
+            // 2. The AT URI of the Bluesky post whose thread you want to display.
+            const blueskyPostUri = 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3lktlkvn2lc2k'; // <<< --- CHANGE THIS URI
+
+            // 3. Call the function to load comments.
+            if (typeof loadAndRenderComments === 'function') {
+                loadAndRenderComments(targetContainerId, blueskyPostUri);
+            } else {
+                console.error("Error: loadAndRenderComments function not found. Ensure bluesky-comments.js is loaded correctly.");
+                const container = document.getElementById(targetContainerId);
+                if (container) {
+                    container.innerHTML = '<p class="bsky-comments-error">Error loading comments component.</p>';
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

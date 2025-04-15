@@ -1,0 +1,64 @@
+@import url('bluesky-comments.css');
+
+.demo-heading {
+    margin: 80px auto 8px;
+    padding: 0 16px;
+    text-align: center;
+    font-family: var(--body);
+    color: var(--monochrome-10);
+    line-height: 1.2;
+    font-size: var(--font-size-heading3);
+}
+
+.body-text {
+    font-size: var(--font-size-body);
+    color: var(--monochrome-8);
+    line-height: 1.6;
+    text-align: center;
+    margin: 0 auto;
+    padding: 0 16px;
+    max-width: 720px;
+}
+
+.user-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    margin: 16px auto 48px;
+}
+
+.filled-button {
+    padding: 8px 20px;
+    background-color: var(--monochrome-2);
+    border: 1px solid var(--monochrome-3);
+    font-size: var(--font-size-caption);
+    color: var(--monochrome-11);
+    box-shadow: inset 1px 2px 3px 1px var(--monochrome-0);
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all .32s ease-in-out;
+}
+
+.outline-button {
+    padding: 8px 20px;
+    background-color: var(--monochrome-0);
+    border: 1px solid var(--monochrome-2);
+    cursor: pointer;
+    font-size: var(--font-size-caption);
+    color: var(--monochrome-11);
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all .32s ease-in-out;
+}
+
+@media (hover: hover) {
+    .filled-button:hover {
+        transform: translateX(2px);
+    }
+
+    .outline-button:hover {
+        transform: translateX(2px);
+    }
+}
