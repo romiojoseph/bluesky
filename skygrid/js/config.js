@@ -7,7 +7,7 @@ const Config = {
 
     load: async () => {
         try {
-            const response = await fetch('/assets/config.json');
+            const response = await fetch('./assets/config.json');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -15,7 +15,7 @@ const Config = {
             // console.log("Raw config loaded:", Config.rawConfig); // Removed log
             return Config.rawConfig;
         } catch (error) {
-            console.error('Failed to load /assets/config.json:', error);
+            console.error('Failed to load ./assets/config.json:', error);
             UI.showError('Could not load configuration file.');
             throw error;
         }
@@ -112,7 +112,7 @@ const Config = {
         if (Config.processedConfig.length === 0 && Config.rawConfig.length > 0) {
             UI.showError("Failed to process any feeds/lists from config. Check URLs and console logs.");
         } else if (Config.processedConfig.length < Config.rawConfig.length) {
-            console.warn("Some items from /assets/config.json were skipped due to errors (see logs above).")
+            console.warn("Some items from ./assets/config.json were skipped due to errors (see logs above).")
         }
         return Config.processedConfig;
     },
