@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Feed of BlueSky Posts</title>
+    <meta name="description"
+        content="Browse BlueSky posts with media in a clean, card-style grid. No login or actions. Just view public posts in a visual layout, like a Pinterest board.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Visual Feed of BlueSky Posts">
+    <meta property="og:description"
+        content="Browse BlueSky posts with media in a clean, card-style grid. No login or actions. Just view public posts in a visual layout, like a Pinterest board.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/skygrid/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <meta name="robots" content="index, follow">
+</head>
+
+
+<body>
+    <!-- Page Overlay for Loading/Error Indicators -->
+    <div id="page-overlay" class="page-overlay hidden">
+        <div id="loading-indicator" class="loading-indicator hidden">
+            <!-- ph-spin class should handle rotation -->
+            <i class="ph-duotone ph-spinner"></i> Loading...
+        </div>
+        <div id="error-indicator" class="error-indicator hidden">
+            <p><i class="ph-duotone ph-warning-circle"></i> <span id="error-message"></span></p>
+            <button id="retry-button">Retry</button>
+        </div>
+    </div> <!-- End Overlay -->
+
+
+    <header>
+        <nav id="tabs-container" class="tabs-container"></nav>
+        <button id="search-icon-button" class="search-icon-button" aria-label="Search">
+            <i class="ph ph-magnifying-glass"></i>
+        </button>
+    </header>
+
+    <!-- Header Placeholder for Profile Search -->
+    <div id="search-profile-header" class="search-profile-header hidden">
+        <!-- Profile details loaded here -->
+    </div>
+
+    <!-- Header Placeholder for Direct Feed/List Search -->
+    <div id="direct-search-header" class="direct-search-header hidden">
+        <!-- Direct search info loaded here -->
+    </div>
+
+
+    <!-- Container for Masonry -->
+    <main id="feed-container" class="feed-container"></main>
+    <p id="feed-end-message" class="feed-end-message hidden"></p> <!-- Message for end of feed/search -->
+
+
+    <section id="detail-view" class="detail-view hidden">
+        <div class="detail-header">
+            <button id="back-button" class="back-button">Back</button>
+            <a id="leave-reply-button" href="#" target="_blank" rel="noopener noreferrer"
+                class="leave-reply-button subtle-button">
+                Leave a Reply
+            </a>
+        </div>
+        <div class="detail-content">
+            <!-- NEW: Video Player Container -->
+            <div id="detail-video-player-container" class="detail-video-player-container hidden">
+                <!-- Video element and controls will be added here by videoPlayer.js -->
+            </div>
+
+            <!-- Existing Image Carousel -->
+            <div id="detail-image-carousel" class="carousel hidden">
+                <div class="carousel-images">
+                    <!-- Images will be loaded here -->
+                </div>
+                <div class="carousel-dots">
+                    <!-- Dots will be loaded here -->
+                </div>
+                <button type="button" title="Previous Image" class="carousel-btn prev hidden"><i
+                        class="ph ph-caret-left"></i></button>
+                <button type="button" title="Next Image" class="carousel-btn next hidden"><i
+                        class="ph ph-caret-right"></i></button>
+            </div>
+
+            <!-- Rest of detail view content remains the same -->
+            <div class="post-actions">
+                <div class="actions-left">
+                    <button id="like-button" class="action-btn" aria-label="Like"><i class="ph-fill ph-heart"></i> <span
+                            id="like-count"></span></button>
+                    <button id="comment-button" class="action-btn" aria-label="Comment"><i
+                            class="ph ph-chat-circle"></i> <span id="comment-count"></span></button>
+                    <button id="share-button" class="action-btn" aria-label="Share"><i
+                            class="ph ph-share-network"></i></button>
+                    <span id="copy-status" class="copy-status"></span>
+                </div>
+                <div class="actions-right">
+                    <a id="follow-button" href="#" target="_blank" rel="noopener noreferrer"
+                        class="follow-btn">Follow</a>
+                </div>
+            </div>
+
+            <div id="author-info" class="author-info">
+                <!-- Author details -->
+            </div>
+
+            <div id="post-text" class="post-text">
+                <!-- Post text -->
+            </div>
+
+            <!-- External Embed Info Area -->
+            <div id="external-embed-info" class="external-embed-info hidden">
+                <!-- External link preview loaded here -->
+            </div>
+
+            <div class="replies-section">
+                <h3>Replies</h3>
+                <!-- Container for hierarchical replies -->
+                <div id="replies-container">
+                    <!-- Replies loaded here -->
+                </div>
+                <p id="no-replies" class="hidden">No replies yet.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Popup -->
+    <div id="search-popup" class="search-popup hidden">
+        <div class="search-popup-content">
+            <button type="button" id="search-popup-close" class="popup-close-button"
+                aria-label="Close Search">×</button>
+            <h3>Search User, Feed, or List</h3>
+            <p>Bring your own BlueSky feeds, lists, or profiles to view them in the same visual style.</p>
+            <form id="search-form">
+                <input type="text" id="search-username" placeholder="Enter handle, feed URL, or list URL" required>
+                <button type="submit">Search</button>
+            </form>
+            <p id="search-error" class="search-error hidden"></p>
+        </div>
+    </div>
+
+    <!-- Masonry & ImagesLoaded Libraries -->
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+
+    <!-- HLS.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+
+    <!-- Your JavaScript files -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/carousel.js"></script>
+    <script src="js/videoPlayer.js"></script> <!-- NEW -->
+    <script src="js/ui.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
