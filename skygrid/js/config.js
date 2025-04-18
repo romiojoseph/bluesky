@@ -7,9 +7,16 @@ const Config = {
 
     load: async () => {
         try {
-            // Get the base URL of the site
-            const basePath = window.location.pathname.includes('/bluesky/') ? '/bluesky/skygrid' : '';
-            const configPath = `${basePath}/assets/config.json`;
+            // More robust path resolution
+            let configPath;
+            if (window.location.hostname === 'romiojoseph.github.io') {
+                configPath = '/bluesky/skygrid/assets/config.json';
+            } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                configPath = './assets/config.json';
+            } else {
+                // Fallback to relative path
+                configPath = './assets/config.json';
+            }
 
             const response = await fetch(configPath);
             if (!response.ok) {
@@ -18,7 +25,7 @@ const Config = {
             Config.rawConfig = await response.json();
             return Config.rawConfig;
         } catch (error) {
-            console.error('Failed to load config.json:', error);
+            console.error(`Failed to load config.json from path ${configPath}:`, error);
             UI.showError('Could not load configuration file.');
             throw error;
         }
