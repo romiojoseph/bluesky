@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Thread Builder - Draft and Copy Posts</title>
+    <meta name="description"
+        content="Write Bluesky posts easily, no login or trackers. Draft, format, and copy threads with auto-saving, so you can focus on your writing.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Bluesky Thread Builder - Draft and Copy Posts">
+    <meta property="og:description"
+        content="Write Bluesky posts easily, no login or trackers. Draft, format, and copy threads with auto-saving, so you can focus on your writing.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/draft-bluesky-threads/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div class="container">
+        <div class="input-pane">
+            <h1>Bluesky Thread Builder</h1>
+            <p>Double enters create paragraphs, and triple enters start a new post. Your content stays here unless the
+                cache is cleared. No login or tracking. A simple tool to help you draft threads.
+            </p>
+            <textarea id="inputText" placeholder="Start writing or paste text."></textarea>
+            <!-- Input Counter Added -->
+            <div id="inputCounter" class="input-meta">Chars: 0 | Words: 0</div>
+            <div class="controls">
+                <button id="clearButton">Clear Input & Storage</button>
+            </div>
+        </div>
+
+        <div class="output-pane">
+            <div class="output-header">
+                <div>
+                    <h1>Thread Preview</h1>
+                    <span id="postCount">Posts: 0</span>
+                </div>
+                <button id="copyButton" disabled>Copy Thread</button>
+            </div>
+
+            <aside>If a sentence is broken in between or doesn't have a full stop, it will be highlighted in yellow.
+            </aside>
+
+            <div class="settings-area">
+                <div class="setting-group">
+                    <label for="maxCharsInput">Max Characters per Post:</label>
+                    <input type="number" id="maxCharsInput" value="300" min="50" max="1000" step="10">
+                </div>
+                <div class="setting-group" id="numberingSettings">
+                    <label>
+                        <input type="checkbox" id="showNumberingCheckbox" checked> Show Post Numbering (e.g., 1/N)
+                    </label>
+                    <div id="positionOptions">
+                        <label>Position:</label>
+                        <label>
+                            <input type="radio" name="numberingPosition" value="start" checked> Start
+                        </label>
+                        <label>
+                            <input type="radio" name="numberingPosition" value="end"> End
+                        </label>
+                    </div>
+                    <div id="spaceOptions" class="setting-group-sub">
+                        <label>
+                            <input type="checkbox" id="addSpaceCheckbox"> Add extra space around numbering
+                        </label>
+                    </div>
+                </div>
+                <!-- New Checkbox for Ellipsis -->
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="addEllipsisCheckbox"> Add "..." on cut sentences
+                    </label>
+                </div>
+                <!-- Add this after the ellipsis checkbox in the settings area -->
+                <div class="setting-group">
+                    <label>
+                        <input type="checkbox" id="preserveLineBreaksCheckbox" checked> Preserve single line breaks
+                        within posts
+                    </label>
+                </div>
+            </div>
+            <div id="threadOutput">
+                <!-- Posts will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Use type="module" for ES6 module support -->
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

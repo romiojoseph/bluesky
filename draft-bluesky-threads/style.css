@@ -1,0 +1,499 @@
+:root {
+    --primary-base: #0866ff;
+    --primary-light: #EBEFFF;
+    --primary-border: #C6D2FE;
+    --primary-accent: #0B5EC9;
+    --primary-dark: #01183B;
+    --yellow: #fcd34d;
+    --red: #f50c52;
+    --green: #16a34a;
+
+    --eclipse-0: #ffffff;
+    --eclipse-1: #f8fafc;
+    --eclipse-2: #f1f5f9;
+    --eclipse-3: #e2e8f0;
+    --eclipse-4: #cbd5e1;
+    --eclipse-5: #94a3b8;
+    --eclipse-6: #64748b;
+    --eclipse-7: #475569;
+    --eclipse-8: #334155;
+    --eclipse-9: #1e293b;
+    --eclipse-10: #0f172a;
+    --eclipse-11: #020617;
+
+    --body: "Inter", sans-serif;
+
+    --font-size-heading1: 36px;
+    --font-size-heading2: 32px;
+    --font-size-heading3: 29px;
+    --font-size-heading4: 26px;
+    --font-size-heading5: 23px;
+    --font-size-heading6: 20px;
+    --font-size-subtitle: 18px;
+    --font-size-body: 16px;
+    --font-size-caption: 14px;
+    --font-size-label: 13px;
+    --font-size-tagline: 11px;
+
+    --carousel-max-height: 550px;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--body);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    transition: all .3s ease;
+    line-height: 1.5;
+    color: var(--eclipse-11);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--eclipse-1);
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+    min-height: 100vh;
+}
+
+/* Main Container */
+.container {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 24px);
+    background-color: var(--eclipse-0);
+    box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+/* Textarea Styling */
+#inputText {
+    flex-grow: 1;
+    width: 100%;
+    min-height: 50vh;
+    padding: 16px;
+    border: 2px solid var(--eclipse-2);
+    border-radius: 12px;
+    font-size: var(--font-size-body);
+    line-height: 1.7;
+    resize: none;
+    scrollbar-width: none;
+    transition: all 0.3s ease;
+}
+
+
+#inputText:hover {
+    border-color: var(--eclipse-3);
+    box-shadow: 0 0 8px 2px var(--eclipse-2);
+}
+
+#inputText:focus {
+    border-color: var(--primary-base);
+    outline: none;
+    box-shadow: 0 0 8px 2px var(--eclipse-2);
+}
+
+#inputText::-webkit-scrollbar {
+    display: none;
+}
+
+#inputText:disabled {
+    background-color: var(--eclipse-1);
+    border-color: var(--eclipse-4);
+    cursor: not-allowed;
+}
+
+/* Panes Styling */
+.input-pane,
+.output-pane {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.output-pane {
+    padding: 0 !important;
+}
+
+.input-pane {
+    border-right: 1px solid #e0e0e0;
+    /* Separator */
+}
+
+button {
+    padding: 8px 20px;
+    font-size: var(--font-size-caption);
+    font-weight: 600;
+    color: var(--eclipse-0);
+    background-color: var(--primary-base);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--primary-accent);
+}
+
+button:disabled {
+    background-color: var(--eclipse-4);
+    cursor: not-allowed;
+    opacity: 0.7;
+    color: var(--eclipse-6);
+}
+
+#clearButton {
+    background-color: var(--red);
+    padding: 4px 12px;
+    font-size: var(--font-size-label);
+}
+
+#clearButton:hover {
+    background-color: #c82333;
+}
+
+/* Headings and Paragraphs */
+h1 {
+    color: var(--eclipse-11);
+    margin-bottom: 2px;
+    font-size: var(--font-size-heading5);
+}
+
+/* Settings Area */
+.settings-area {
+    background-color: var(--eclipse-1);
+    border: 1px solid var(--eclipse-2);
+    padding: 16px;
+    margin: 0;
+    font-size: var(--font-size-caption);
+}
+
+.settings-area h3 {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.setting-group {
+    margin-bottom: 10px;
+    /* display: flex; */
+    /* Let inner elements flow */
+    /* align-items: center; */
+    /* gap: 10px; */
+}
+
+.setting-group>label {
+    /* Direct label children */
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: 15px;
+    /* Spacing between top-level settings */
+}
+
+/* Style for aligning input fields like Max Chars */
+.setting-group>label:has(input[type="number"]) {
+    display: inline-flex;
+    /* Or flex if needed */
+    align-items: center;
+    gap: 5px;
+    min-width: 130px;
+    /* Helps align the input */
+}
+
+#maxCharsInput {
+    padding: 4px 8px;
+    border: 1px solid var(--eclipse-3);
+    border-radius: 6px;
+    width: 70px;
+    outline: none;
+    /* Adjust width */
+}
+
+
+#positionOptions {
+    margin-top: 8px;
+    /* Space above position radios */
+    padding-left: 20px;
+    /* Indent position radios */
+    display: block;
+    /* Default display */
+    margin-bottom: 8px;
+    /* Space below radios */
+}
+
+#positionOptions label {
+    margin-right: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#positionOptions label:first-of-type {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* Added style for sub-options like the new checkbox */
+.setting-group-sub {
+    margin-top: 8px;
+    padding-left: 20px;
+    /* Same indent as position options */
+}
+
+.setting-group-sub label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-meta {
+    font-size: var(--font-size-label);
+    color: var(--eclipse-6);
+    margin: 8px 0 16px;
+}
+
+.input-pane p {
+    font-size: var(--font-size-caption);
+    color: var(--eclipse-8);
+    margin-bottom: 16px;
+}
+
+aside {
+    font-size: var(--font-size-label);
+    color: var(--eclipse-7);
+    padding: 0 16px 16px;
+    font-style: italic;
+}
+
+/* Output Area Styling */
+#threadOutput {
+    flex-grow: 1;
+    padding: 24px 16px 16px;
+}
+
+/* Individual Post Styling */
+.post {
+    background-color: var(--eclipse-0);
+    border: 1px solid var(--eclipse-3);
+    box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.03);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-size: var(--font-size-body);
+    line-height: 1.6;
+}
+
+br+br {
+    display: block;
+    margin-top: 16px;
+    content: '';
+}
+
+.post-content mark {
+    background-color: var(--yellow);
+    color: var(--eclipse-11);
+    padding: 1px 2px;
+    border-radius: 4px;
+    font-style: italic;
+}
+
+.post-counter {
+    font-size: var(--font-size-label);
+    color: var(--eclipse-7);
+    font-style: italic;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px 24px;
+    align-items: center;
+}
+
+.post-counter span {
+    white-space: nowrap;
+    color: var(--eclipse-7);
+}
+
+.post-meta-row {
+    display: flex;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 24px;
+    border-top: 1px dashed var(--eclipse-3);
+    padding-top: 16px;
+    margin-top: 16px;
+}
+
+.post-copy {
+    margin: 0;
+    padding: 0;
+    font-size: var(--font-size-label);
+    color: var(--eclipse-7);
+    font-style: italic;
+}
+
+
+.output-pane h2 {
+    border-bottom: none;
+}
+
+.output-header {
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.9);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    position: sticky;
+    top: 0;
+    z-index: 101;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.output-header h2 {
+    margin: 0;
+}
+
+#postCount {
+    font-size: var(--font-size-caption);
+    color: var(--eclipse-7);
+    font-weight: 500;
+}
+
+.output-controls {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Update responsive styles */
+@media (max-width: 1024px) {
+    body {
+        padding: 0;
+    }
+
+    .container {
+        flex-direction: row;
+        height: 100vh;
+        max-height: none;
+        overflow: visible;
+    }
+
+
+
+    .input-pane {
+        flex: 0 0 50%;
+        overflow-y: auto;
+    }
+
+    .output-pane {
+        flex: 0 0 50%;
+        overflow: visible;
+    }
+
+    #copyButton {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .input-pane,
+    .output-pane {
+        flex: none;
+        width: 100%;
+    }
+}
+
+
+/* Basic Styling for Checkbox */
+input[type="checkbox"],
+input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--eclipse-5);
+    border-radius: 4px;
+    background-color: var(--eclipse-0);
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    /* Add this */
+}
+
+/* Checkbox specific styling */
+input[type="checkbox"]:checked {
+    background-color: var(--primary-base);
+    border-color: var(--primary-base);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '\2713';
+    color: var(--eclipse-0);
+    font-size: 12px;
+    font-weight: bold;
+    position: absolute;
+    /* Add this */
+}
+
+/* Radio button specific styling */
+input[type="radio"] {
+    border-radius: 50%;
+}
+
+input[type="radio"]:checked {
+    background-color: var(--primary-base);
+    border-color: var(--primary-base);
+}
+
+input[type="radio"]:checked::after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--eclipse-0);
+    position: absolute;
+    /* Add this */
+}
