@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspect Bluesky Post JSON</title>
+    <meta name="description"
+        content="Paste a Bluesky post URL to view its JSON, get the user DID and CID, convert link formats, and check video playlist or linked URLs.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Inspect Bluesky Post JSON">
+    <meta property="og:description"
+        content="Paste a Bluesky post URL to view its JSON, get the user DID and CID, convert link formats, and check video playlist or linked URLs.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/bluesky-json-viewer/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/black-metal-bathory.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner">
+            <i class="ph-duotone ph-hand-palm"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Inspect Any Bluesky Post</h1>
+        <p>Every Bluesky post is basically a JSON object. Enter a Bluesky post URL to see its JSON. You can also get the
+            user DID, post CID, convert the link to formats like at://, DID, or handle, check any linked URLs, and view
+            the video playlist URL.</p>
+        <div class="input-group">
+            <input type="text" id="postUrlInput" placeholder="Enter Bluesky Post URL or AT URI">
+            <button id="fetchButton" title="Fetch Post Data">
+                <i class="ph-duotone ph-magnifying-glass"></i>
+            </button>
+        </div>
+
+        <div id="errorOutput" class="error" style="display: none;"></div>
+
+        <!-- Label Area -->
+        <div id="labelArea" class="label-container" style="display: none;">
+            <h3 id="labelHeading"></h3>
+            <p id="labelHelpText" class="label-help-text" style="display: none;"></p>
+            <div id="labelBadgesContainer" class="label-badges-container">
+                <!-- Labels will be loaded here by JS -->
+            </div>
+        </div>
+
+        <!-- Media Preview Area -->
+        <div id="mediaPreviewArea" class="media-preview-container" style="display: none;">
+            <!-- Content loaded by JS -->
+        </div>
+
+
+        <!-- JSON Output Area -->
+        <div class="json-container">
+            <div class="json-header">
+                <h2>Post Data (JSON)</h2>
+                <div class="json-controls">
+                    <!-- Spam Indicator Span REMOVED -->
+                    <!-- NEW: Copy Handle Button -->
+                    <button id="copyHandleButton" class="icon-btn" title="Copy Author Handle (@handle)" disabled>
+                        <i class="ph-duotone ph-at"></i>
+                    </button>
+                    <!-- NEW: Copy DID Button -->
+                    <button id="copyDidButton" class="icon-btn" title="Copy Author DID (did:plc:...)" disabled>
+                        <i class="ph-duotone ph-fingerprint"></i>
+                    </button>
+                    <!-- Profile Button -->
+                    <button id="viewProfileButton" class="icon-btn" title="View Author Profile" disabled>
+                        <i class="ph-duotone ph-user"></i>
+                    </button>
+                    <!-- CID Button & Popover -->
+                    <div class="cid-popover-container">
+                        <button id="cidButton" class="icon-btn" title="View Post CID" disabled>
+                            <i class="ph-duotone ph-code-simple"></i>
+                        </button>
+                        <div id="cidPopover" class="popover cid-popover" style="display: none;">
+                            <span class="popover-label">Post CID:</span>
+                            <code id="cidValue" class="cid-value"></code>
+                            <button id="copyCidButton" class="icon-btn mini-copy-btn" title="Copy CID">
+                                <i class="ph-duotone ph-copy-simple"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Copy JSON -->
+                    <button id="copyButton" class="icon-btn" title="Copy JSON to Clipboard" disabled>
+                        <i class="ph ph-copy"></i>
+                    </button>
+                    <!-- Download JSON -->
+                    <button id="downloadButton" class="icon-btn" title="Download JSON File" disabled>
+                        <i class="ph-duotone ph-download"></i>
+                    </button>
+                    <!-- More Options -->
+                    <div class="more-options">
+                        <button id="moreOptionsButton" class="icon-btn" title="More Link Options" disabled>
+                            <i class="ph ph-dots-three-outline"></i>
+                        </button>
+                        <div id="moreOptionsDropdown" class="options-dropdown popover" style="display: none;">
+                            <button data-copy-type="at">Copy at:// URI</button>
+                            <button data-copy-type="did">Copy DID Link</button>
+                            <button data-copy-type="handle">Copy Handle Link</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <pre id="jsonOutput"><code class="language-json">{}</code></pre>
+            <div id="copyFeedback" class="copy-feedback" style="display: none;">Copied!</div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
