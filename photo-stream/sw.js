@@ -8,7 +8,7 @@ const APP_SHELL_URLS = [
     './assets/favicon.svg', // Keep the SVG icon
     './assets/default-avatar.png',
     './assets/social-image.png', // Optional, for sharing consistency
-    'https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css', // Cache Phosphor icons CSS
+    'https://unpkg.com/@phosphor-icons/web', // Cache Phosphor icons CSS
     'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rancho&display=swap', // Cache Google Font CSS request
     // Removed PNG icon paths
     './manifest.json' // Cache the manifest itself

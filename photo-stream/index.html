@@ -12,7 +12,7 @@
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0866ff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PhotoStream">
     <link rel="manifest" href="manifest.json">
@@ -35,17 +35,17 @@
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rancho&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="styles.css">
 
     <meta name="robots" content="index, follow">
 </head>
 
 <body>
-    <!-- Loading Screen (no changes) -->
+    <!-- Loading Screen -->
     <div id="loadingScreen">
-        <div class="loader"></div>
-        <p>Getting the latest posts...</p>
+        <i class="ph-duotone ph-spinner"></i>
+        <p>Getting latest posts...</p>
     </div>
 
     <!-- Theme Toggle (no changes) -->
@@ -58,19 +58,24 @@
         <div class="logo" id="logo">PhotoStream</div>
         <nav class="predefined-feeds">
             <!-- Buttons moved here -->
-            <button type="button" data-url="https://bsky.app/profile/bsky.app/feed/whats-hot"
-                title="Discover Feed">Discover</button>
-            <button type="button" data-url="https://bsky.app/profile/gabriellanonino.com/feed/aaacm6hg3tlui"
-                title="Photography Feed">Photography</button>
-            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/lists/3lc34yoopje27"
+            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/feed/aaahn42hkwvf2"
                 title="News Feed">News</button>
+            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/lists/3leviuxqxer2s"
+                title="Popular profiles">Profiles</button>
+            <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/feed/MoviesTVShows"
+                title="A movie feed">Movies & TV</button>
+            <button type="button" data-url="https://bsky.app/profile/bsky.app/feed/whats-hot"
+                title="Bluesky Discover Feed">Discover</button>
+            <button type="button" data-url="https://bsky.app/profile/skyfeed.xyz/feed/catch-up-weekly"
+                title="Top posts week">Week Peak</button>
             <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/lists/3lh6agik2oh2x"
                 title="Tech List">Tech</button>
             <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/feed/aaaoy5eufdxdo"
                 title="Astronomy Feed">Astronomy</button>
             <button type="button" data-url="https://bsky.app/profile/romiojoseph.github.io/lists/3levis2b5yj2e"
                 title="Entertainment List">Entertainment</button>
-
+            <button type="button" data-url="https://bsky.app/profile/gabriellanonino.com/feed/aaacm6hg3tlui"
+                title="Photography Feed">Photography</button>
         </nav>
         <button id="configButton" class="header-action-btn" type="button" title="Configure Custom Feed">
             <i class="ph-duotone ph-gear"></i>

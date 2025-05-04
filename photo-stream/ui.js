@@ -59,20 +59,23 @@ export function renderPosts(postElements) {
     const postsContainer = document.getElementById('posts-container');
     if (!postsContainer) return;
 
-    const validElements = postElements.filter(el => el instanceof HTMLElement); // Filter out nulls
+    const validElements = postElements.filter(el => el instanceof HTMLElement);
 
     if (validElements.length > 0) {
+        // Remove existing sentinel if it exists
+        const oldSentinel = document.getElementById('scroll-sentinel');
+        if (oldSentinel) oldSentinel.remove();
+
+        // Append new posts
         const fragment = document.createDocumentFragment();
         validElements.forEach(el => fragment.appendChild(el));
         postsContainer.appendChild(fragment);
-        // Ensure "no posts" message is removed if we are adding posts
+
+        // Remove "no posts" message if it exists
         const noPostsMsg = postsContainer.querySelector('.no-posts-message');
-        if (noPostsMsg) {
-            noPostsMsg.remove();
-        }
-    } else if (postsContainer.children.length === 0) { // Check if container is truly empty *after* filtering
-        // Only show "no posts" if the container was empty *before* this render call
-        // and we didn't actually add any new valid elements.
+        if (noPostsMsg) noPostsMsg.remove();
+
+    } else if (postsContainer.children.length === 0) {
         postsContainer.innerHTML = `<p class="no-posts-message">No posts with images found in this feed/list, or it might be empty.</p>`;
     }
 }
@@ -123,12 +126,34 @@ export function extractPostDataFromApi(post) {
     const record = post.record;
     const embed = post.embed || {};
 
-    // Find images, ensuring arrays exist
+    // Find images and external link data
     let images = [];
+    let externalLink = null;
+
     if (embed.$type === 'app.bsky.embed.images#view' && Array.isArray(embed.images)) {
-        images = embed.images;
-    } else if (embed.$type === 'app.bsky.embed.recordWithMedia#view' && embed.media && embed.media.$type === 'app.bsky.embed.images#view' && Array.isArray(embed.media.images)) {
-        images = embed.media.images;
+        images = embed.images.map(img => ({
+            thumb: img.thumb,
+            fullsize: img.fullsize
+        }));
+    } else if (embed.$type === 'app.bsky.embed.recordWithMedia#view' && embed.media &&
+        embed.media.$type === 'app.bsky.embed.images#view' && Array.isArray(embed.media.images)) {
+        images = embed.media.images.map(img => ({
+            thumb: img.thumb,
+            fullsize: img.fullsize
+        }));
+    } else if (embed.$type === 'app.bsky.embed.external#view' && embed.external) {
+        if (embed.external.thumb) {
+            images = [{
+                thumb: embed.external.thumb,
+                fullsize: embed.external.thumb
+            }];
+        }
+        externalLink = JSON.stringify({
+            uri: embed.external.uri,
+            title: embed.external.title,
+            description: embed.external.description,
+            thumb: embed.external.thumb
+        });
     }
 
     // Construct post link
@@ -142,7 +167,8 @@ export function extractPostDataFromApi(post) {
         Author_Avatar: author.avatar || 'assets/default-avatar.png',
         Author_DisplayName: author.displayName || author.handle || 'Unknown Author',
         Post_CreatedAt: record.createdAt || post.indexedAt || new Date().toISOString(),
-        Media_URLs: images.map(img => img.fullsize).filter(url => typeof url === 'string' && url).join('|'),
+        Media_URLs: images.length > 0 ? JSON.stringify(images) : '',
+        External_Link: externalLink, // Add this line
         Like_Count: post.likeCount ?? 0,
         Repost_Count: post.repostCount ?? 0,
         Reply_Count: post.replyCount ?? 0,
@@ -185,9 +211,9 @@ export function createPostElement(postData) {
     postCard.appendChild(header);
 
     // --- Media Carousel ---
-    const mediaUrls = postData.Media_URLs.split('|').filter(url => url);
+    const mediaUrls = postData.Media_URLs ? JSON.parse(postData.Media_URLs) : [];
     if (mediaUrls.length > 0) {
-        const carousel = createCarousel(mediaUrls); // Call the updated function
+        const carousel = createCarousel(mediaUrls);
         if (carousel) {
             postCard.appendChild(carousel);
         } else {
@@ -211,27 +237,27 @@ export function createPostElement(postData) {
     const repostCountFormatted = formatNumber(postData.Repost_Count);
     const replyCountFormatted = formatNumber(postData.Reply_Count);
     leftActionsDiv.innerHTML = `
-        <button type="button" class="action-btn" title="Like this post on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
-            <i class="ph-duotone ph-heart"></i>
-            ${likeCountFormatted ? `<span class="count">${likeCountFormatted}</span>` : ''}
-        </button>
-        <button type="button" class="action-btn" title="Quote or repost this on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
-            <i class="ph-duotone ph-repeat"></i>
-            ${repostCountFormatted ? `<span class="count">${repostCountFormatted}</span>` : ''}
-        </button>
-        <button type="button" class="action-btn" title="Add a comment to this post on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
-            <i class="ph-duotone ph-chat-centered"></i>
-            ${replyCountFormatted ? `<span class="count">${replyCountFormatted}</span>` : ''}
-        </button>
-     `;
+            <button type="button" class="action-btn" title="Like this post on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
+                <i class="ph ph-heart"></i>
+                ${likeCountFormatted ? `<span class="count">${likeCountFormatted}</span>` : ''}
+            </button>
+            <button type="button" class="action-btn" title="Quote or repost this on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
+                <i class="ph ph-repeat"></i>
+                ${repostCountFormatted ? `<span class="count">${repostCountFormatted}</span>` : ''}
+            </button>
+            <button type="button" class="action-btn" title="Add a comment to this post on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
+                <i class="ph ph-chat-teardrop"></i>
+                ${replyCountFormatted ? `<span class="count">${replyCountFormatted}</span>` : ''}
+            </button>
+         `;
     rightActionsDiv.innerHTML = `
-        <button type="button" class="action-btn copy-link-btn" title="Copy original Bluesky post link" data-link="${postData.Post_Link ?? '#'}">
-            <i class="ph-duotone ph-copy-simple"></i>
-        </button>
-        <button type="button" class="action-btn" title="View original post on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
-            <i class="ph-duotone ph-share-fat"></i>
-        </button>
-     `;
+            <button type="button" class="action-btn copy-link-btn" title="Copy original Bluesky post link" data-link="${postData.Post_Link ?? '#'}">
+                <i class="ph ph-copy-simple"></i>
+            </button>
+            <button type="button" class="action-btn" title="View original post on Bluesky" onclick="window.open('${postData.Post_Link ?? '#'}', '_blank', 'noopener')">
+                <i class="ph ph-arrow-square-out"></i>
+            </button>
+         `;
     const copyBtn = rightActionsDiv.querySelector('.copy-link-btn');
     if (copyBtn) {
         copyBtn.addEventListener('click', (event) => {
@@ -248,11 +274,40 @@ export function createPostElement(postData) {
 
     // --- Post text ---
     if (postData.Post_Text) {
-        const formattedText = formatPostText(postData.Post_Text, postData.Facets); // Call the updated function
+        const formattedText = formatPostText(postData.Post_Text, postData.Facets);
         const textDiv = document.createElement('div');
         textDiv.className = 'post-text';
         textDiv.innerHTML = formattedText;
         postCard.appendChild(textDiv);
+    }
+
+    // --- External Link Embed ---
+    if (postData.External_Link) {
+        try {
+            const externalData = JSON.parse(postData.External_Link);
+            if (externalData.uri && (externalData.title || externalData.description)) {
+                const embedDiv = document.createElement('a');
+                embedDiv.className = 'post-embed';
+                embedDiv.href = externalData.uri;
+                embedDiv.target = '_blank';
+                embedDiv.rel = 'noopener';
+
+                let embedContent = '<div class="embed-text">';
+                if (externalData.title) {
+                    embedContent += `<h4 class="embed-title">${escapeHtml(externalData.title)}</h4>`;
+                }
+                if (externalData.description) {
+                    embedContent += `<p class="embed-description">${escapeHtml(externalData.description)}</p>`;
+                }
+                embedContent += `<p class="embed-uri">${escapeHtml(externalData.uri)}</p>`;
+                embedContent += '</div>';
+
+                embedDiv.innerHTML = embedContent;
+                postCard.appendChild(embedDiv);
+            }
+        } catch (e) {
+            console.warn('Failed to parse external link data:', e);
+        }
     }
 
     // --- Add Comments and Quotes Links with PLURALIZATION ---
@@ -322,7 +377,7 @@ export function createPostElement(postData) {
 /**
  * Creates the HTML element for a post's image carousel.
  * Adapts height based on the first image and fits subsequent images.
- * @param {string[]} images - Array of image URLs.
+ * @param {Array<object|string>} images - Array of image objects or URLs.
  * @returns {HTMLElement|null} The carousel element or null if no valid images.
  */
 function createCarousel(images) {
@@ -342,13 +397,20 @@ function createCarousel(images) {
         item.style.display = 'flex'; // Keep as flex initially
 
         const img = document.createElement('img');
-        img.src = image;
+        // Use thumb for display, but store fullsize URL for click handling
+        if (typeof image === 'object' && image.thumb && image.fullsize) {
+            img.src = image.thumb;
+            img.dataset.fullsize = image.fullsize; // Store fullsize URL
+        } else {
+            img.src = image;
+            img.dataset.fullsize = image;
+        }
         img.alt = `Post image ${index + 1}`;
         img.loading = "lazy";
 
         img.onclick = (e) => {
             e.stopPropagation();
-            window.open(image, '_blank', 'noopener');
+            window.open(img.dataset.fullsize, '_blank', 'noopener');
         };
 
         // Define handler function to avoid repetition
@@ -868,19 +930,21 @@ export function showConfigModal() {
         const urlInput = document.getElementById('bskyUrlInput');
         const persistedUrl = localStorage.getItem('photostream_custom_url');
         if (urlInput && persistedUrl) {
-            urlInput.value = persistedUrl; // Pre-fill with saved URL
+            urlInput.value = persistedUrl;
         } else if (urlInput) {
-            urlInput.value = ''; // Clear if no saved URL
+            urlInput.value = '';
         }
-        modal.classList.add('visible'); // Make modal visible
-        if (urlInput) urlInput.focus(); // Focus input field
+        modal.classList.add('visible');
+        document.body.classList.add('modal-open'); // Add this line
+        if (urlInput) urlInput.focus();
     }
 }
 
 export function hideConfigModal() {
     const modal = document.getElementById('configModal');
     if (modal) {
-        modal.classList.remove('visible'); // Hide modal
+        modal.classList.remove('visible');
+        document.body.classList.remove('modal-open'); // Add this line
     }
 }
 

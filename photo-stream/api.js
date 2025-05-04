@@ -218,10 +218,24 @@ async function fetchPaginatedFeed(endpoint, initialParams, limit, cursor) {
  * @returns {boolean} True if the post has images, false otherwise.
  */
 function hasImages(post) {
-    // Check for post, embed, and the specific embed types containing images
-    return post && post.embed &&
-        (
-            (post.embed.$type === 'app.bsky.embed.images#view' && Array.isArray(post.embed.images) && post.embed.images.length > 0) ||
-            (post.embed.$type === 'app.bsky.embed.recordWithMedia#view' && post.embed.media && post.embed.media.$type === 'app.bsky.embed.images#view' && Array.isArray(post.embed.media.images) && post.embed.media.images.length > 0)
-        );
+    if (!post || !post.embed) return false;
+
+    switch (post.embed.$type) {
+        case 'app.bsky.embed.images#view':
+            return Array.isArray(post.embed.images) && post.embed.images.length > 0;
+
+        case 'app.bsky.embed.recordWithMedia#view':
+            return post.embed.media &&
+                (post.embed.media.$type === 'app.bsky.embed.images#view' &&
+                    Array.isArray(post.embed.media.images) &&
+                    post.embed.media.images.length > 0);
+
+        case 'app.bsky.embed.external#view':
+            return post.embed.external &&
+                post.embed.external.thumb &&
+                typeof post.embed.external.thumb === 'string';
+
+        default:
+            return false;
+    }
 }

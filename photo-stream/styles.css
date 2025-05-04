@@ -6,18 +6,18 @@
     --primary-accent: #0B5EC9;
     --primary-dark: #01183B;
 
-    --auraDark-1: #111113;
-    --auraDark-2: #18191b;
-    --auraDark-3: #212225;
-    --auraDark-4: #272a2d;
-    --auraDark-5: #2e3135;
-    --auraDark-6: #363a3f;
-    --auraDark-7: #43484e;
-    --auraDark-8: #5a6169;
-    --auraDark-9: #696e77;
-    --auraDark-10: #777b84;
-    --auraDark-11: #b0b4ba;
-    --auraDark-12: #edeef0;
+    --auraDark-1: #000000;
+    --auraDark-2: #0d0d0d;
+    --auraDark-3: #1a1a1a;
+    --auraDark-4: #262626;
+    --auraDark-5: #333333;
+    --auraDark-6: #4d4d4d;
+    --auraDark-7: #666666;
+    --auraDark-8: #808080;
+    --auraDark-9: #999999;
+    --auraDark-10: #b3b3b3;
+    --auraDark-11: #cccccc;
+    --auraDark-12: #ffffff;
 
     --body: "Inter", serif;
     --logo: "Rancho", cursive;
@@ -38,17 +38,17 @@
 /* Light Theme */
 body.light-theme {
     --auraDark-1: #ffffff;
-    --auraDark-2: #f9fafb;
-    --auraDark-3: #f3f4f6;
-    --auraDark-4: #e5e7eb;
-    --auraDark-5: #d1d5db;
-    --auraDark-6: #9ca3af;
-    --auraDark-7: #6b7280;
-    --auraDark-8: #4b5563;
-    --auraDark-9: #374151;
-    --auraDark-10: #1f2937;
-    --auraDark-11: #111827;
-    --auraDark-12: #030712;
+    --auraDark-2: #f2f2f2;
+    --auraDark-3: #e6e6e6;
+    --auraDark-4: #d9d9d9;
+    --auraDark-5: #cccccc;
+    --auraDark-6: #b3b3b3;
+    --auraDark-7: #999999;
+    --auraDark-8: #808080;
+    --auraDark-9: #666666;
+    --auraDark-10: #4d4d4d;
+    --auraDark-11: #333333;
+    --auraDark-12: #000000;
 
     --primary-light: #0866ff;
     /* Changed */
@@ -82,25 +82,23 @@ body {
 .container {
     max-width: 600px;
     margin: 16px auto;
-    padding: 20px 16px 0;
+    padding: 20px 0 0;
     padding-top: 0;
 }
 
 
 .post-card {
-    background: var(--auraDark-2);
-    border-radius: 16px;
+    background: var(--auraDark-1);
     margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    padding-bottom: 12px;
-    border: 1px solid var(--auraDark-3);
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--auraDark-3);
 }
 
 .post-header {
     display: flex;
     align-items: flex-start;
-    padding: 12px 16px;
+    padding: 16px 0;
 }
 
 .author-avatar {
@@ -143,7 +141,7 @@ body {
 
 .post-time {
     font-size: var(--font-size-caption);
-    color: var(--auraDark-9);
+    color: var(--auraDark-6);
     flex-shrink: 0;
     margin-left: 8px;
 }
@@ -152,7 +150,7 @@ body {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background-color: var(--auraDark-3);
+    background-color: var(--auraDark-2);
     max-height: 566px;
     min-height: 200px;
     transition: height 0.2s ease-out;
@@ -227,13 +225,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px 6px;
+    padding: 12px 0 0;
 }
 
 .left-actions,
 .right-actions {
     display: flex;
-    gap: 18px;
+    gap: 24px;
 }
 
 .action-btn {
@@ -252,7 +250,7 @@ body {
 .action-btn .count {
     font-variant-numeric: tabular-nums;
     color: var(--auraDark-10);
-    font-size: var(--font-size-tagline);
+    font-size: var(--font-size-caption);
 }
 
 /* Disable hover on touch */
@@ -269,7 +267,7 @@ body {
 
 
 .action-btn i[class*="ph-"] {
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-heading6);
     color: var(--auraDark-10);
     transition: color 0.2s ease;
 }
@@ -280,12 +278,18 @@ body {
 }
 
 .post-text {
-    padding: 8px 16px 0;
+    padding: 12px 0 0;
     font-size: var(--font-size-caption);
     line-height: 1.6;
-    color: var(--auraDark-11);
+    color: var(--auraDark-9);
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+
+.post-text br+br {
+    display: block;
+    margin-top: 8px !important;
+    content: '';
 }
 
 .post-text a {
@@ -327,16 +331,32 @@ body {
     }
 }
 
+#scroll-sentinel {
+    height: 10px;
+    width: 100%;
+    margin-top: 20px;
+    visibility: hidden;
+    /* Hide it visually but keep it functional */
+}
+
 
 .post-embed {
-    margin: 10px 16px 0;
-    border: 1px solid var(--auraDark-5);
+    margin: 10px 0 2px;
+    border: 1px dashed var(--auraDark-3);
     border-radius: 12px;
     overflow: hidden;
     display: flex;
     text-decoration: none;
     color: inherit;
-    background-color: var(--auraDark-3);
+    background-color: var(--auraDark-2);
+    transition: background-color 0.2s ease;
+}
+
+/* Disable hover on touch */
+@media (hover: hover) {
+    .post-embed:hover {
+        background-color: var(--auraDark-3);
+    }
 }
 
 .embed-link {
@@ -353,17 +373,8 @@ body {
     }
 }
 
-
-.embed-thumb {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    flex-shrink: 0;
-    border-right: 1px solid var(--auraDark-5);
-}
-
 .embed-text {
-    padding: 10px 12px;
+    padding: 12px 12px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -372,20 +383,20 @@ body {
 }
 
 .embed-title {
+    font-size: var(--font-size-tagline);
     font-weight: 600;
-    font-size: 14px;
-    margin: 0 0 4px;
     color: var(--auraDark-11);
+    margin: 0 0 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
 }
 
 .embed-description {
-    font-size: 13px;
+    font-size: var(--font-size-tagline);
     color: var(--auraDark-9);
     margin: 0;
     overflow: hidden;
@@ -396,29 +407,37 @@ body {
     -webkit-box-orient: vertical;
 }
 
+.embed-uri {
+    font-size: var(--font-size-tagline);
+    color: var(--auraDark-7);
+    font-style: italic;
+    margin: 4px 0 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
 .post-footer-links {
     display: flex;
     align-items: center;
     gap: 24px;
     flex-wrap: wrap;
-    padding: 10px 16px 0;
-    border-top: 1px solid var(--auraDark-3);
+    padding: 12px 0 0;
     font-style: italic;
-    margin-top: 12px;
 }
 
 .comments-link,
 .quotes-link {
-    /* Apply styles to both */
     font-size: var(--font-size-label);
     color: var(--auraDark-9);
     cursor: pointer;
     display: block;
-    /* Keep as block */
     transition: color 0.2s ease;
     text-decoration: none;
     white-space: nowrap;
-    /* Prevent wrapping within the link */
 }
 
 
@@ -559,13 +578,16 @@ footer a {
 }
 
 
-.loader {
-    border: 6px solid var(--auraDark-5);
-    border-top: 6px solid var(--primary-base);
-    border-radius: 50%;
+#loadingScreen i.ph-spinner {
+    font-size: 56px;
+    color: var(--auraDark-8);
+    display: inline-block;
     width: 56px;
     height: 56px;
+    text-align: center;
+    line-height: 56px;
     animation: spin 1s linear infinite;
+    transform-origin: center center;
 }
 
 @keyframes spin {
@@ -678,7 +700,9 @@ footer a {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: var(--auraDark-1);
+    background-color: rgba(0, 0, 0, 0.9);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--auraDark-2);
     padding: 10px 16px;
     z-index: 100;
@@ -800,11 +824,11 @@ footer a {
 }
 
 .modal-overlay {
-    /* Added overlay element */
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(3px);
+    background-color: rgba(0, 0, 0, 0.75);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     z-index: 0;
 }
 
@@ -817,17 +841,14 @@ footer a {
 }
 
 .modal-content {
-    background-color: var(--auraDark-2);
+    background-color: var(--auraDark-1);
     padding: 24px;
-    border-radius: 12px;
-    max-width: 500px;
+    border-radius: 16px;
+    max-width: 540px;
     width: 90%;
     position: relative;
-    /* Changed to relative to stack on overlay */
     z-index: 1;
-    /* Ensure content is above overlay */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--auraDark-4);
+    border: 1px solid var(--auraDark-3);
     transform: scale(0.95);
     opacity: 0;
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -865,20 +886,21 @@ footer a {
 #bskyUrlInput {
     flex-grow: 1;
     padding: 10px 16px;
-    border: 1px solid var(--auraDark-5);
-    background-color: var(--auraDark-3);
+    border: 2px solid var(--auraDark-3);
+    background-color: var(--auraDark-2);
     color: var(--auraDark-11);
     border-radius: 8px;
     font-size: var(--font-size-caption);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     width: 100%;
+    outline: none;
 }
 
 #bskyUrlInput:hover,
 #bskyUrlInput:focus {
     outline: none;
-    border-color: var(--primary-base);
-    box-shadow: 0 0 0 2px var(--primary-light);
+    border-color: var(--auraDark-4);
+    background-color: var(--auraDark-1);
 }
 
 #closeModalButton {
@@ -933,6 +955,20 @@ footer a {
 }
 
 
+/* Add this near your other modal styles */
+body.modal-open {
+    overflow: hidden;
+    padding-right: 17px;
+    /* Compensate for scrollbar disappearance */
+}
+
+@media (max-width: 540px) {
+    body.modal-open {
+        padding-right: 0;
+        /* No compensation needed on mobile */
+    }
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
@@ -968,20 +1004,49 @@ footer a {
 
 }
 
-@media (max-width: 480px) {
+@media (max-width: 540px) {
     body {
         padding-top: 44px;
-        /* Adjust further if needed */
+        background-color: var(--auraDark-1);
     }
 
     .container {
-        padding-left: 12px;
-        padding-right: 12px;
+        padding: 0;
+        margin-top: 4px;
     }
 
     .post-card {
-        margin-bottom: 12px;
-        border-radius: 12px;
+        margin-bottom: 16px;
+        border-radius: 0;
+        background: var(--auraDark-1);
+        box-shadow: none;
+
+    }
+
+    .post-header {
+        padding: 16px 16px;
+    }
+
+    .comments-link,
+    .quotes-link {
+        font-size: var(--font-size-tagline);
+    }
+
+    .post-actions {
+        padding: 12px 16px 0;
+    }
+
+    .post-text {
+        padding: 12px 16px 0;
+    }
+
+    .post-footer-links {
+        gap: 24px;
+        padding: 12px 16px;
+    }
+
+    .post-embed {
+        margin: 10px 16px 6px;
     }
 
     footer {
@@ -989,12 +1054,12 @@ footer a {
     }
 
     .action-btn i[class*="ph-"] {
-        font-size: var(--font-size-body);
+        font-size: var(--font-size-subtitle);
     }
 
     .left-actions,
     .right-actions {
-        gap: 16px;
+        gap: 24px;
     }
 
 
@@ -1008,10 +1073,6 @@ footer a {
         padding: 2px 8px;
         font-size: var(--font-size-label);
         border-radius: 14px;
-    }
-
-    .embed-title {
-        font-size: 14px;
     }
 
     #loadMoreButton,
@@ -1032,9 +1093,15 @@ footer a {
     }
 
     .modal-content {
-        padding: 24px;
+        padding: 16px;
+        border-radius: 16px 16px 0 0;
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        box-shadow: none;
+        border: none;
+        border-top: 2px solid var(--auraDark-4);
     }
-
 
 }
 

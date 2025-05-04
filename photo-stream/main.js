@@ -24,6 +24,7 @@ import {
 const INITIAL_FETCH_LIMIT = 100; // Number of posts to load initially
 const LOAD_MORE_LIMIT = 100;    // Number of posts to load per "Load More" click
 const CUSTOM_URL_STORAGE_KEY = 'photostream_custom_url'; // Local storage key
+const LAST_FEED_KEY = 'photostream_last_feed'; // Local storage key for last used feed
 
 // --- State ---
 // Store the feed info used for the current display
@@ -36,6 +37,7 @@ let currentFeedInfo = {
 let currentCursor = null;   // API cursor for pagination
 let isLoadingFeed = false;  // Prevent concurrent initial fetches
 let isLoadingMore = false; // Prevent concurrent 'load more' fetches
+let loadMoreObserver = null; // Intersection Observer for infinite scroll
 
 // --- Core Logic ---
 
@@ -115,13 +117,19 @@ async function handleFetchRequest(url, isCustomFromStorage = false) {
 
         // Render the fetched posts
         const postElements = result.posts.map(extractPostDataFromApi).map(createPostElement);
-        renderPosts(postElements); // Render the elements
+        if (postElements.length > 0) {
+            renderPosts(postElements);
+            setupInfiniteScroll(); // Re-setup infinite scroll
+        }
 
         // Store the cursor returned for the *next* potential fetch (Load More)
         currentCursor = result.cursor;
 
         // Update the 'Load More' button visibility based on whether a cursor was returned
         updateLoadMoreButton(false, !!currentCursor);
+
+        // Store the current feed URL
+        localStorage.setItem(LAST_FEED_KEY, url);
 
     } catch (error) {
         console.error("Error during initial fetch request:", error);
@@ -165,7 +173,10 @@ async function loadMorePosts() {
 
         // Render *additional* posts by appending them
         const postElements = result.posts.map(extractPostDataFromApi).map(createPostElement);
-        renderPosts(postElements); // Append new posts to the container
+        if (postElements.length > 0) {
+            renderPosts(postElements);
+            setupInfiniteScroll(); // Re-setup infinite scroll after adding new posts
+        }
 
         // Update the cursor for the *next* 'Load More' click
         currentCursor = result.cursor;
@@ -223,6 +234,44 @@ function isPredefinedUrl(url) {
     return Array.from(predefinedFeedButtons).some(button => button.getAttribute('data-url')?.trim() === trimmedUrl);
 }
 
+/**
+ * Sets up infinite scroll by creating and observing a sentinel element.
+ */
+function setupInfiniteScroll() {
+    // Disconnect previous observer if exists
+    if (loadMoreObserver) {
+        loadMoreObserver.disconnect();
+    }
+
+    loadMoreObserver = new IntersectionObserver((entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && !isLoadingMore && !isLoadingFeed && currentCursor) {
+            loadMorePosts();
+        }
+    }, {
+        root: null,
+        rootMargin: '200px',
+        threshold: 0.1
+    });
+
+    // Create and observe the sentinel element
+    const postsContainer = document.getElementById('posts-container');
+    let sentinel = document.getElementById('scroll-sentinel');
+
+    // Remove old sentinel if it exists
+    if (sentinel) {
+        sentinel.remove();
+    }
+
+    // Create new sentinel
+    sentinel = document.createElement('div');
+    sentinel.id = 'scroll-sentinel';
+    sentinel.style.height = '10px'; // Give it a small height
+    postsContainer.appendChild(sentinel);
+
+    // Start observing
+    loadMoreObserver.observe(sentinel);
+}
 
 // --- Event Listeners Setup ---
 
@@ -242,25 +291,27 @@ document.addEventListener('DOMContentLoaded', () => {
     applyInitialTheme();
 
     // --- Initial Load ---
-    // Check for a persisted custom URL first
+    // Check for last used feed first
+    const lastFeedUrl = localStorage.getItem(LAST_FEED_KEY);
     const persistedCustomUrl = localStorage.getItem(CUSTOM_URL_STORAGE_KEY);
-    if (persistedCustomUrl) {
+
+    if (lastFeedUrl) {
+        console.log("Loading last used feed:", lastFeedUrl);
+        handleFetchRequest(lastFeedUrl);
+    } else if (persistedCustomUrl) {
         console.log("Loading persisted custom URL:", persistedCustomUrl);
-        if (urlInput) urlInput.value = persistedCustomUrl; // Pre-fill modal input for convenience
-        handleFetchRequest(persistedCustomUrl, true); // Pass flag indicating it's custom
+        if (urlInput) urlInput.value = persistedCustomUrl;
+        handleFetchRequest(persistedCustomUrl, true);
     } else {
-        // If no custom URL, load the first predefined feed as default
         const firstFeedButton = predefinedFeedButtons[0];
         if (firstFeedButton) {
             const defaultUrl = firstFeedButton.getAttribute('data-url');
             console.log("Loading default predefined feed:", defaultUrl);
-            handleFetchRequest(defaultUrl); // Let it update the active button
+            handleFetchRequest(defaultUrl);
         } else {
-            // Handle case where there are no predefined buttons (unlikely based on HTML)
             console.warn("No predefined feeds found for initial load.");
             displayError("Welcome! Please select a feed or configure a custom one using the gear icon.");
-            updateActiveFeedButton(null); // Ensure no button appears active
-            // Scroll to top even if no feed is loaded initially
+            updateActiveFeedButton(null);
             window.scrollTo(0, 0);
         }
     }
@@ -336,11 +387,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Load More Button
-    if (loadMoreButton) {
-        loadMoreButton.addEventListener('click', loadMorePosts);
-        // Note: loadMorePosts does NOT scroll to top, which is desired behavior.
-    }
+    // Setup Intersection Observer for infinite scroll
+    setupInfiniteScroll();
 
     // Theme Toggle Button
     if (themeToggle) {

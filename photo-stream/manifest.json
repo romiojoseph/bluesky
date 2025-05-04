@@ -1,10 +1,10 @@
 {
     "name": "PhotoStream - Bluesky Image Feed",
     "short_name": "PhotoStream",
-    "description": "PhotoStream: Instagram-style Bluesky Image Feed",
+    "description": "Instagram-style Bluesky Image Feed",
     "start_url": "./index.html",
     "display": "standalone",
-    "background_color": "#111111",
+    "background_color": "#000000",
     "theme_color": "#0866ff",
     "icons": [
         {
