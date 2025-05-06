@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Browser: Explore Bluesky Profiles, Feeds & Lists</title>
+    <meta name="description"
+        content="Browse Bluesky profiles, feeds, and lists in a folder layout. Click to view posts. Add your own links. No login. Data stays in your browser.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0866ff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bsky Browser">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Apple Touch Icons - Note: Apple requires PNGs for home screen icons -->
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="mask-icon" href="assets/favicon.svg" color="#0866ff">
+
+    <meta property="og:title" content="Bluesky Browser: Explore Bluesky Profiles, Feeds & Lists">
+    <meta property="og:description"
+        content="Browse Bluesky profiles, feeds, and lists in a folder layout. Click to view posts. Add your own links. No login. Data stays in your browser.">
+    <meta property="og:site_name" content="Bluesky Browser: Explore Bluesky Profiles, Feeds & Lists">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/browser/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <!-- App container for managing mobile view state -->
+    <div class="app-container" id="app-container">
+        <aside class="folders-column" id="folders-column">
+        </aside>
+
+        <aside class="items-column" id="items-column">
+            <div class="finder-search-container" id="finder-search-container" style="display: none;">
+                <button class="add-item-button" id="add-finder-item-button">
+                    <i class="ph ph-plus-circle"></i> Add Profile/Feed/List
+                </button>
+            </div>
+            <div class="item-list-scroll-container" id="item-list-scroll-container">
+            </div>
+        </aside>
+
+        <main class="posts-column" id="posts-column">
+            <div class="posts-header" id="posts-header">
+                <!-- Back button placeholder -->
+                <button class="mobile-back-button" id="mobile-back-button" style="display: none;">
+                    <i class="ph ph-caret-left"></i>
+                </button>
+                <div class="posts-header-content" id="posts-header-content">
+                    <!-- Title and subtitle will go here -->
+                </div>
+            </div>
+            <div class="profile-tabs-container" id="profile-tabs-container" style="display: none;">
+                <button class="profile-tab active" data-tab="posts">Posts</button>
+                <button class="profile-tab" data-tab="replies">Replies</button>
+                <button class="profile-tab" data-tab="media">Media</button>
+                <button class="profile-tab" data-tab="links">Links</button>
+                <button class="profile-tab" data-tab="videos">Videos</button>
+            </div>
+            <div class="posts-list" id="posts-list">
+            </div>
+            <div class="loading-more-indicator" id="loading-more-indicator" style="display: none;">
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals remain unchanged -->
+    <div class="modal-overlay" id="generic-modal-overlay">
+        <div class="modal-content" id="generic-modal-content">
+            <div class="modal-header" id="generic-modal-header">
+                <h3 class="modal-title" id="generic-modal-title">Modal Title</h3>
+                <button class="modal-close-button" id="generic-modal-close-button">×</button>
+            </div>
+            <div class="modal-body" id="generic-modal-body">
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="add-item-modal-overlay">
+        <div class="modal-content" id="add-item-modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add & Manage Finder Items</h3>
+                <button class="modal-close-button" id="add-item-modal-close-button">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-item-form">
+                    <div class="form-group"> <label>Type:</label>
+                        <div class="radio-group"> <label><input type="radio" name="itemType" value="profile" checked>
+                                Profile</label> <label><input type="radio" name="itemType" value="feed"> Feed</label>
+                            <label><input type="radio" name="itemType" value="list"> List</label>
+                        </div>
+                    </div>
+                    <div class="form-group"> <label for="itemUrl">Bluesky URL:</label> <input type="text" id="itemUrl"
+                            placeholder="e.g., bsky.app or https://bsky.app/profile/..." required> </div>
+                    <button type="submit" class="submit-button">Add Item</button>
+                    <p id="add-item-error" class="error-message" style="display: none;"></p>
+                    <p id="add-item-success" class="success-message" style="display: none;"></p>
+                </form>
+                <hr>
+                <h4>Saved Items:</h4>
+                <ul id="finder-item-list-modal" class="finder-item-list-modal"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/parser.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

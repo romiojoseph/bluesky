@@ -1,0 +1,202 @@
+[
+    {
+        "name": "Bluesky",
+        "icon": "butterfly",
+        "items": [
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/bsky.app/feed/whats-hot"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/did:plc:tenurhgjptubkk5zf5qhi3og/feed/catch-up"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/did:plc:tenurhgjptubkk5zf5qhi3og/feed/catch-up-weekly"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/jaz.bsky.social/feed/at-bangers"
+            },
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3lerbsf2vix2x"
+            },
+            {
+                "type": "profile",
+                "url": "https://bsky.app/profile/atproto.com"
+            },
+            {
+                "type": "profile",
+                "url": "https://bsky.app/profile/bsky.app"
+            },
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3lg6u7xpnkx2k"
+            },
+            {
+                "type": "profile",
+                "url": "https://bsky.app/profile/jay.bsky.team"
+            },
+            {
+                "type": "profile",
+                "url": "https://bsky.app/profile/pfrazee.com"
+            },
+            {
+                "type": "profile",
+                "url": "https://bsky.app/profile/why.bsky.team"
+            },
+            {
+                "type": "profile",
+                "url": "https://bsky.app/profile/jaz.bsky.social"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/verdverm.com/feed/atprotodev"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/bsky.app/feed/hot-classic"
+            }
+        ]
+    },
+    {
+        "name": "Updates",
+        "icon": "list-bullets",
+        "items": [
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/feed/aaahn42hkwvf2"
+            },
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3lh6agik2oh2x"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/aendra.com/feed/verified-news"
+            },
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3lhi6x5u4ul2o"
+            }
+        ]
+    },
+    {
+        "name": "Film & TV",
+        "icon": "popcorn",
+        "items": [
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3levis2b5yj2e"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/feed/MoviesTVShows"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/francesmeh.reviews/feed/aaaotdzmoni2q"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/thescoreboardhq.bsky.social/feed/aaabomio5bzb6"
+            }
+        ]
+    },
+    {
+        "name": "Tech",
+        "icon": "sparkle",
+        "items": [
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3lh6agik2oh2x"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/taurean.posts.cv/feed/aaahltvlqwftc"
+            },
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/wolfgang.bremer.co/lists/3lbkvi6hint2q"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/hipstersmoothie.com/feed/web-development"
+            },
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3lfabs6o7xg2e"
+            }
+        ]
+    },
+    {
+        "name": "Space",
+        "icon": "shooting-star",
+        "items": [
+            {
+                "type": "list",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/lists/3lfexuulmgd2o"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/romiojoseph.github.io/feed/aaaoy5eufdxdo"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/emily.space/feed/astro"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/emily.space/feed/astrophotos"
+            }
+        ]
+    },
+    {
+        "name": "Engage",
+        "icon": "popcorn",
+        "items": [
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/bossett.social/feed/for-science"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/markrubin.bsky.social/feed/aaajji2bluzi2"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/rabbitholer.bsky.social/feed/aaabygc4ng36o"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/bsky.art/feed/art-new"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/whistberry.bsky.social/feed/aaagt6amuur5e"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/larsjohannessen.bsky.social/feed/aaamchzapws5y"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/bsky.flipboard.com/feed/flipboard-tech"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/rauchway.bsky.social/feed/aaaby3zazwhrq"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/whistberry.bsky.social/feed/aaai4f7awwzkc"
+            },
+            {
+                "type": "feed",
+                "url": "https://bsky.app/profile/rodrigobarrero.bsky.social/feed/aaao3rw3oxwku"
+            }
+        ]
+    }
+]

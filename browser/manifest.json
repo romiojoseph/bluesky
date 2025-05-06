@@ -1,0 +1,29 @@
+{
+    "name": "Bluesky Browser: Explore Bluesky Profiles, Feeds & Lists",
+    "short_name": "Bsky Browser",
+    "description": "Browse Bluesky profiles, feeds, and lists in a folder layout. Click to view posts. Add your own links. No login. Data stays in your browser.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#0866ff",
+    "icons": [
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        },
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "monochrome"
+        }
+    ]
+}
