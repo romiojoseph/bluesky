@@ -4,8 +4,9 @@
     "description": "Real-time news from Bluesky media profiles, tech companies, organizations, institutions, and journalists.",
     "start_url": "./index.html",
     "display": "standalone",
-    "background_color": "#111111",
+    "background_color": "#000000",
     "theme_color": "#0866ff",
+    "lang": "en",
     "icons": [
         {
             "src": "assets/favicon.svg",
@@ -18,6 +19,12 @@
             "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "maskable"
+        },
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "monochrome"
         }
     ]
 }
