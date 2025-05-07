@@ -8,18 +8,29 @@ function formatRelativeTime(timestamp) {
     const hours = diffInSeconds / (60 * 60);
     const minutes = diffInSeconds / 60;
 
+    // Show years only with decimal if it's not a whole number
     if (years >= 1) {
-        return `${years.toFixed(1)}y`;
-    } else if (months >= 1) {
-        return `${months.toFixed(1)}mo`;
-    } else if (days >= 1) {
-        return `${days.toFixed(1)}d`;
-    } else if (hours >= 1) {
-        return `${hours.toFixed(1)}h`;
-    } else if (minutes >= 1) {
-        return `${minutes.toFixed(1)}m`;
-    } else {
-        return 'now';
+        return `${years % 1 === 0 ? Math.floor(years) : years.toFixed(1).replace(/\.0$/, '')}y`; // Remove decimal if it's a whole number
+    }
+    // Show months if less than 1 year but more than a few days
+    else if (months >= 1) {
+        return `${Math.round(months)}mo`; // Rounded months
+    }
+    // Show days if less than a month
+    else if (days >= 1) {
+        return `${Math.round(days)}d`; // Rounded days
+    }
+    // Show hours if less than a day
+    else if (hours >= 1) {
+        return `${Math.round(hours)}h`; // Rounded hours
+    }
+    // Show minutes if less than an hour
+    else if (minutes >= 1) {
+        return `${Math.round(minutes)}m`; // Rounded minutes
+    }
+    // Show seconds if less than a minute
+    else {
+        return `${Math.round(diffInSeconds)}s`; // Rounded seconds
     }
 }
 
@@ -37,6 +48,7 @@ function formatAbsoluteTime(dateString) {
         return '';
     }
 }
+
 
 
 function escapeHtml(unsafe) {

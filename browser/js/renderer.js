@@ -97,7 +97,7 @@ async function renderItems(folderItems, activeItemIndex, clickHandler, isFinder 
                 handleOrPurpose = `@${details.handle || 'unknown'}`;
                 description = details.description || '';
                 createdAt = details.createdAt;
-                timestamp = `Created ${formatRelativeTime(createdAt)}`;
+                timestamp = `Joined ${formatRelativeTime(createdAt)}`;
             } else if (itemConfig.type === 'list' && details?.list) {
                 avatar = details.list.avatar || avatar;
                 name = details.list.name;
@@ -105,14 +105,14 @@ async function renderItems(folderItems, activeItemIndex, clickHandler, isFinder 
                 handleOrPurpose = `Curated list - ${formatNumber(itemCount)} ${itemCount === 1 ? 'profile' : 'profiles'}`;
                 description = details.list.description || '';
                 createdAt = details.list.indexedAt;
-                timestamp = `Last updated ${formatRelativeTime(createdAt)}`;
+                timestamp = `Last indexed ${formatRelativeTime(createdAt)}`;
             } else if (itemConfig.type === 'feed' && details?.view) {
                 avatar = details.view.avatar || avatar;
                 name = details.view.displayName;
                 handleOrPurpose = `by @${details.view.creator?.handle || 'unknown'}`;
                 description = details.view.description || '';
                 createdAt = details.view.indexedAt;
-                timestamp = `Last updated ${formatRelativeTime(createdAt)}`;
+                timestamp = `Last indexed ${formatRelativeTime(createdAt)}`;
             }
             if (createdAt) timestamp = formatRelativeTime(createdAt);
             else if (details?.createdAt) timestamp = formatRelativeTime(details.createdAt);
@@ -196,7 +196,7 @@ async function renderPostsHeader(itemConfig, backButtonHandler) {
     // Add timestamp to header
     const timestamp = createdAt ? formatRelativeTime(createdAt) : '';
     const timestampFull = createdAt ? formatAbsoluteTime(createdAt) : '';
-    const timestampPrefix = itemConfig.type === 'profile' ? 'Created' : 'Last updated';
+    const timestampPrefix = itemConfig.type === 'profile' ? 'Joined' : 'Last indexed';
     const timestampHtml = timestamp ? `<div class="header-timestamp" title="${escapeHtml(timestampFull)}">${timestampPrefix}: ${escapeHtml(timestamp)}</div>` : '';
 
     postsHeaderContent.innerHTML = `
