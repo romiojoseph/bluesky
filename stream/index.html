@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Video Player - Stream M3U8 and Bluesky Videos</title>
+    <meta name="description"
+        content="Stream M3U8 (HLS) playlists and Bluesky videos in a simple player. No login, no tracking. Add your own post or feed links, or pick from saved ones.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Bluesky Video Player - Stream M3U8 and Bluesky Videos">
+    <meta property="og:description"
+        content="Stream M3U8 (HLS) playlists and Bluesky videos in a simple player. No login, no tracking. Add your own post or feed links, or pick from saved ones.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/stream/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div id="globalSpinner" class="global-spinner-overlay" style="display: none;">
+        <i class="ph-duotone ph-spinner spinner-icon"></i>
+        <span id="spinnerMessage">Loading...</span>
+    </div>
+
+    <header>
+        <div class="search-container">
+            <input type="text" id="urlInput" placeholder="Enter Bluesky Post/Feed URL or M3U8 URL">
+            <button id="searchButton" aria-label="Search"><i class="ph-duotone ph-magnifying-glass"></i></button>
+        </div>
+    </header>
+
+    <div class="main-content-wrapper">
+        <main>
+            <div id="videoPlayerContainer" class="video-player-container">
+                <video id="videoPlayer"></video>
+                <div id="videoPlayerMessageOverlay" class="video-player-message-overlay" style="display: none;">
+                    <span></span>
+                </div>
+                <div class="video-center-controls-overlay" id="videoCenterControlsOverlay">
+                    <button class="center-control-button" id="centerRewindButton" aria-label="Rewind 10 seconds"><i
+                            class="ph ph-arrow-counter-clockwise"></i></button>
+                    <button class="center-control-button" id="centerPlayPauseButton" aria-label="Play/Pause">
+                        <i class="ph-fill ph-play-circle" id="centerPlayIcon"></i>
+                        <i class="ph-fill ph-pause-circle" id="centerPauseIcon" style="display:none;"></i>
+                    </button>
+                    <button class="center-control-button" id="centerForwardButton" aria-label="Forward 10 seconds"><i
+                            class="ph ph-arrow-clockwise"></i></button>
+                </div>
+                <div class="video-status-icon-overlay" id="videoStatusIconOverlay">
+                </div>
+                <div id="customControls" class="custom-controls">
+                    <div class="progress-bar-wrapper">
+                        <div id="progressBarBackground" class="progress-bar-background"></div>
+                        <div id="progressBarFilled" class="progress-bar-filled"></div>
+                    </div>
+                    <div class="controls-bottom-left">
+                        <button id="playPauseButton" aria-label="Play/Pause">
+                            <i class="ph ph-play" id="bottomPlayIcon"></i>
+                            <i class="ph ph-pause" id="bottomPauseIcon" style="display:none;"></i>
+                        </button>
+                        <button id="muteButton" aria-label="Mute/Unmute">
+                            <i class="ph ph-speaker-simple-high" id="volumeIcon"></i>
+                            <i class="ph ph-speaker-simple-slash" id="muteIcon" style="display:none;"></i>
+                        </button>
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span> / <span id="totalDuration">0:00</span>
+                        </div>
+                    </div>
+                    <div class="controls-bottom-right">
+                        <select id="qualitySelector" aria-label="Select video quality"></select>
+                        <button id="fullscreenButton" aria-label="Enter Fullscreen">
+                            <i class="ph ph-corners-out" id="fullscreenIconOpen"></i>
+                            <i class="ph ph-corners-in" id="fullscreenIconClose" style="display:none;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mainPostDetailsContainer" class="main-post-details-container" style="display:none;">
+                <div class="main-post-header">
+                    <div class="main-post-author">
+                        <img id="mainPostAuthorAvatar" src="" alt="">
+                        <div class="main-post-author-info">
+                            <strong id="mainPostAuthorDisplayName"></strong>
+                            <span id="mainPostAuthorVerification"></span>
+                            <span id="mainPostAuthorHandle"></span>
+                        </div>
+                    </div>
+                    <a id="openInBlueskyLink" href="#" target="_blank" rel="noopener noreferrer"
+                        class="open-in-bluesky-button" title="Open post in Bluesky">
+                        <i class="ph ph-arrow-square-out"></i>
+                    </a>
+                </div>
+                <p id="mainPostText" class="main-post-text"></p>
+                <div id="mainPostMeta" class="main-post-meta">
+                </div>
+            </div>
+
+            <div id="messageArea" class="message-area">
+                Enter a Bluesky video post URL, feed URL, or an M3U8 playlist URL to begin.
+            </div>
+            <div id="hiddenPostMessage" class="message-area error" style="display:none;">
+                This post is hidden due to content labels.
+            </div>
+
+
+            <div class="comments-section-header" style="display: none;">
+                <h3>Replies <span id="replyCountDisplay"></span></h3>
+            </div>
+            <div id="commentsContainer" class="comments-container" style="display: none;">
+            </div>
+            <button id="loadMoreCommentsButton" class="load-more-button" style="display: none;">
+                <span class="button-text">Load More Comments</span>
+                <i class="ph-duotone ph-spinner button-spinner spinner-icon" style="display: none;"></i>
+            </button>
+        </main>
+
+        <aside id="exploreMoreSidebar" class="explore-more-sidebar">
+            <h2>Explore More</h2>
+            <select id="exploreSourceSelect" class="explore-source-select" aria-label="Select explore source"></select>
+            <div id="explorePostsContainer" class="explore-posts-container">
+            </div>
+            <div id="exploreSpinnerContainer" class="sidebar-spinner-container" style="display:none;">
+                <i class="ph-duotone ph-spinner spinner-icon"></i>
+            </div>
+            <div id="exploreFeedEndMessage" class="explore-feed-end-message"
+                style="display:none; text-align: center; padding: 10px; color: var(--auraDark-8);">
+                End of feed.
+            </div>
+        </aside>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/comments.js"></script>
+    <script src="js/explore.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

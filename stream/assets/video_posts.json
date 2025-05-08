@@ -1,0 +1,34 @@
+{
+    "postUris": [
+        "https://bsky.app/profile/hrw.org/post/3loo2unreck2p",
+        "https://bsky.app/profile/wonderofscience.bsky.social/post/3lomoukrgak22",
+        "https://bsky.app/profile/knotweed-ireland.bsky.social/post/3lonh5qxod22z",
+        "https://bsky.app/profile/dcminx.bsky.social/post/3lonqx3hdd22l",
+        "https://bsky.app/profile/davewilk64.bsky.social/post/3loobtxm3bc2a",
+        "https://bsky.app/profile/culturecrave.co/post/3lomeqmqftk2d",
+        "https://bsky.app/profile/romiojoseph.github.io/post/3lihowor4sc2o",
+        "https://bsky.app/profile/stsci.edu/post/3lollnroffk2c"
+    ],
+    "feedGenerators": [
+        {
+            "name": "Trending Vids",
+            "url": "https://bsky.app/profile/devingaffney.com/feed/trending-vids"
+        },
+        {
+            "name": "Cats",
+            "url": "https://bsky.app/profile/did:plc:6i6n57nrkq6xavqbdo6bvkqr/feed/cat-videos"
+        },
+        {
+            "name": "Food",
+            "url": "https://bsky.app/profile/did:plc:geoqe3qls5mwezckxxsewys2/feed/cookingvids"
+        },
+        {
+            "name": "Booksky",
+            "url": "https://bsky.app/profile/clarabelle.xyz/feed/bookskyvids"
+        },
+        {
+            "name": "Ball Tok",
+            "url": "https://bsky.app/profile/did:plc:4xaad7thmc4uqdhefbq6vizm/feed/ball-tok"
+        }
+    ]
+}
