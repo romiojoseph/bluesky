@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky Repo Explorer: Bulk Delete & Export Posts, Likes etc</title>
+    <meta name="description"
+        content="Easily delete or export Bluesky posts, likes, reposts, blocks, follows, and more. Also Export your blobs all at once. No analytics or trackers.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="Bluesky Repo Explorer: Bulk Delete & Export Posts, Likes etc">
+    <meta property="og:description"
+        content="Easily delete or export Bluesky posts, likes, reposts, blocks, follows, and more. Also Export your blobs all at once. No analytics or trackers.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/bluesky/bluesky-repo-explorer/">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <h1 id="projectTitle">Explorer</h1>
+            <div id="auth-controls">
+                <button id="openLoginModalButton">Login</button>
+                <div id="user-session-info" class="hidden">
+                    <strong id="loggedInUserHandleDisplay"></strong>
+                    <button id="logoutButtonHeader">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="global-search-section">
+            <div class="search-input-container">
+                <input type="text" id="handleInput" placeholder="username.bsky.social" autocomplete="off">
+                <button type="submit" id="submitHandle" title="Search users"><i
+                        class="ph-duotone ph-magnifying-glass"></i></button>
+                <div id="actorSuggestionsDropdown" class="suggestions-dropdown hidden"></div>
+            </div>
+        </div>
+
+        <div id="loading-section" class="hidden">
+            <div id="loading-indicator">
+                <p id="loadingText">Loading...</p> <i id="mainLoadingSpinner"
+                    class="ph-duotone ph-spinner spinner-main hidden"></i>
+                <div id="progressBarContainer" class="hidden">
+                    <div id="progressBar"></div>
+                </div>
+                <button id="cancelOperationButton" class="hidden">Cancel Operation</button>
+            </div>
+        </div>
+
+        <div id="profile-details-section" class="hidden">
+            <div class="profile-header-card">
+                <img id="profileAvatar" src="assets/avatar.svg" alt="User avatar" class="profile-avatar">
+                <div class="profile-main-info">
+                    <h2 id="profileDisplayName"></h2>
+                    <p class="profile-handle-line">
+                        <a id="profileAtURI" href="#" target="_blank"></a>
+                        <span id="profileVerificationBadges"></span>
+                    </p>
+                    <p class="profile-did">
+                        <code id="profileDID"></code>
+                        <button id="copyDIDButton" class="icon-button" title="Copy DID">
+                            <i class="ph-fill ph-copy-simple"></i>
+                        </button>
+                        <span id="labelerBadge" class="hidden"></span>
+                    </p>
+                    <p id="profileVerificationText" class="verification-text"></p>
+                    <p id="profileTimestamps"></p>
+                </div>
+                <button id="profileHistoryButton"><i class="ph-fill ph-clock-counter-clockwise"></i>View Account
+                    History</button>
+            </div>
+
+            <div id="profilePDSInfo" class="pds-info-card">
+                <div class="pds-info-header">
+                    <div class="pds-info-content">
+                        <p><strong id="pdsType"></strong></p>
+                        <p><i class="ph-duotone ph-cloud"></i> <a id="pdsEndpoint" href="#" target="_blank"></a></p>
+                    </div>
+                    <div class="pds-links">
+                        <a id="plcDirectoryLink" href="#" target="_blank" title="View DID on PLC Directory">
+                            <i class="ph-duotone ph-arrow-square-out"></i>
+                        </a>
+                        <a id="plcLogLink" href="#" target="_blank" title="View PLC Audit Log">
+                            <i class="ph-duotone ph-folder-simple"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-metrics-grid">
+                <div class="metric-item"><span id="metricFollowers">0</span>Followers</div>
+                <div class="metric-item"><span id="metricFollowing">0</span>Following</div>
+                <div class="metric-item"><span id="metricPosts">0</span>Posts</div>
+                <div class="metric-item"><span id="metricLists">0</span>Lists</div>
+                <div class="metric-item"><span id="metricFeedgens">0</span>Feeds</div>
+                <div class="metric-item"><span id="metricStarterPacks">0</span>Starter Packs</div>
+            </div>
+            <p class="chat-allow-incoming"><i class="ph-duotone ph-chats"></i><span id="chatAllowIncoming"></span></p>
+        </div>
+
+        <div id="collections-list-section" class="hidden">
+            <h3>Available Collections <i id="collectionsLoadingSpinner"
+                    class="ph-duotone ph-spinner spinner-inline hidden"></i></h3>
+            <ul id="collectionsList"></ul>
+        </div>
+
+        <div id="blob-export-section" class="hidden">
+            <h3><i class="ph-duotone ph-archive-box"></i> Export Blobs</h3>
+            <p class="blob-description">Blobs are media files like images and videos tied to your posts. You can easily
+                list and preview them, and choose which ones to download. Downloading in bulk as a ZIP may take time
+                based on how many you select.
+            </p>
+            <button id="listBlobsButton"><i class="ph-fill ph-images"></i>List My Blobs</button>
+            <div id="blob-list-container" class="hidden">
+                <div id="blob-list-controls" class="hidden">
+                    <button id="selectAllBlobsButton"><i class="ph-bold ph-checks"></i>Select All</button>
+                    <button id="deselectAllBlobsButton"><i class="ph-bold ph-selection-slash"></i>Deselect All</button>
+                </div>
+                <p><span id="blobCount">0</span> blobs found. <button id="downloadAllBlobsButton" disabled>
+                        <i class="ph-fill ph-download"></i>Download Selected (<span
+                            id="selectedBlobCountDisplay">0</span>) as ZIP</button></p>
+                <ul id="blobList"></ul>
+            </div>
+        </div>
+
+        <div id="records-list-section" class="hidden">
+            <div id="records-header">
+                <h3 id="recordsCollectionTitle"></h3> <i id="recordsLoadingSpinnerIcon"
+                    class="ph-duotone ph-spinner spinner-inline hidden"></i>
+                <p id="recordsCount"></p>
+                <p id="records-action-info" class="hidden">Actions apply to currently loaded records. Load more if
+                    needed.</p>
+                <div id="record-actions-controls" class="hidden">
+                    <div class="selection-filters">
+                        <select id="filterSelect" title="Filter records to select">
+                            <option value="manual">Manual Selection</option>
+                            <option value="customRange">Custom Date Range</option>
+                            <option value="today">Created Today</option>
+                            <option value="yesterday">Created Yesterday</option>
+                            <option value="last3days">Last 3 Days</option>
+                            <option value="last7days">Last 7 Days</option>
+                            <option value="last15days">Last 15 Days</option>
+                            <option value="last30days">Last 30 Days</option>
+                        </select>
+                        <div id="customDateRangeInputs" class="hidden date-range-group">
+                            <input type="date" id="dateFromInput" placeholder="From">
+                            <input type="date" id="dateToInput" placeholder="To">
+                        </div>
+                        <button id="applyFilterButton">Apply Filter</button>
+                    </div>
+                    <div class="record-bulk-actions">
+                        <div class="select-actions">
+                            <button id="selectAllVisibleButton"><i class="ph-bold ph-checks"></i>Select All (Max
+                                1000)</button>
+                            <button id="deselectAllButton"><i class="ph-bold ph-selection-slash"></i>Deselect
+                                All</button>
+                        </div>
+                        <div class="record-action-buttons">
+                            <div>
+                                <button id="exportSelectedJsonButton" class="export-button" disabled><i
+                                        class="ph-fill ph-file-arrow-down"></i>Posts (<span
+                                        class="selectedCountExport">0</span>)</button>
+                                <button id="exportSelectedUrisButton" class="export-button" disabled><i
+                                        class="ph-fill ph-file-arrow-down"></i>Subjects (<span
+                                        class="selectedCountExport">0</span>)</button>
+                            </div>
+
+                            <button id="deleteSelectedButton" class="delete-button" disabled><i
+                                    class="ph-fill ph-trash"></i>Delete Selected (<span
+                                    id="selectedCountDelete">0</span>)</button>
+                        </div>
+                    </div>
+                    <p class="rate-limit-info">Max 1000 records per delete/export operation. Do not close site during
+                        deletion.
+                        Deletions are rate-limited.</p>
+                </div>
+            </div>
+            <button id="backToCollections"><i class="ph-bold ph-caret-left"></i>Back to Collections</button>
+            <ul id="recordsList"></ul>
+            <div id="infiniteScrollSentinel" class="hidden"></div>
+            <button id="loadMoreRecordsButton" class="hidden">Load More Records (Manual)</button>
+        </div>
+
+        <footer>
+            <h2>Frequently Asked Questions (FAQ)</h2>
+            <div class="faq-container">
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">What is Bluesky Repo Explorer?</span>
+                    </summary>
+                    <p>Bluesky Repo Explorer shows detailed info about a user's profile, their collections from Bluesky
+                        or other clients, and the records inside. These include likes, reposts, posts, blocks, lists,
+                        third-party records, and more. If you're logged in, you can delete or export your own data. As
+                        profiles grow, they collect a lot of info. Some users may not want to keep everything linked to
+                        their account. They might prefer to clean things up now and then. This tool is built for that.
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">What features are available?</span>
+                    </summary>
+                    <p><strong>For All Users (No Login Needed):</strong> Search for any Bluesky user. See public profile
+                        details like display name, handle, avatar, DID, and counts for posts, followers, and following.
+                        Check profile verification and public moderation labels. View the user's main at:// URI and
+                        their PDS endpoint. Access links to their PLC Directory page and DID history. See when the
+                        account was created and last indexed. View counts for lists, feed generators, starter packs, and
+                        chat settings. Browse all public collections and view individual records inside them.</p>
+
+                    <p><strong>For Logged-In Users (Your Own Profile):</strong> All the features above are available.
+                        You can select records from your own collections. Export them as full JSON or as subject
+                        URIs for likes, reposts, follows, blocks and more as available. Delete selected records
+                        from most collections, except system ones like profile, chat declaration and verification.
+                        Deletion needs "CONFIRM" input. You can also export blobs. See all blob CIDs from your repo and
+                        download selected or all as a ZIP.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">What are the "Verification" badges and text?</span>
+                    </summary>
+                    <p>
+                        Bluesky uses badges and labels for account verification. A <i class="ph-fill ph-seal-check"></i>
+                        badge means it's a trusted verifier, like bsky.app. The same icon is also used for accounts
+                        recognized as verifiers by Bluesky, but there's a color difference. A <i
+                            class="ph-fill ph-check-circle"></i> icon shows the account was verified by a trusted
+                        verifier, along with the verifier name and date. A <i class="ph-fill ph-lock"></i> icon means
+                        the user set a label to hide their profile from signed-out users, but this can't be fully
+                        enforced due to the open protocol. A <i class="ph-fill ph-warning-circle"></i> icon marks
+                        accounts with moderation labels like spam or impersonation. This may appear with other badges
+                        too.
+                    </p>
+                </details>
+
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">How does the "Profile History" work?</span>
+                    </summary>
+                    <p>The "Profile History" button opens a modal showing the audit log from the PLC Directory for the
+                        user's DID. This log tracks significant changes to the DID document, such as handle changes, PDS
+                        migrations. It's displayed in a reverse chronological timeline.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">What are the "Export" options for records (for logged-in
+                            users)?</span>
+                    </summary>
+                    <p>
+                        If you're logged in and viewing your own records, you can select and export them. There are two
+                        options. Export JSON <i class="ph-duotone ph-file-json"></i> gives you a file with full record
+                        data. The file name includes your handle, the collection name, and a timestamp. Subject export
+                        gives you a list of AT URIs. For likes and reposts, it includes the post URI. For blocks and
+                        follows, it includes the DID of the user. For other records, it uses the record URI. These
+                        export buttons appear after you select one or more records, and only apply to what's currently
+                        loaded and selected. Some system collections like profiles are excluded. Also note that there's
+                        a limit of 1000 per action.
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">How does record deletion work (for logged-in users)?</span>
+                    </summary>
+                    <p>
+                        If you're logged in and viewing your own profile's records in a deletable collection (not system
+                        ones like app.bsky.actor.profile), you can select and delete records. Checkboxes will appear
+                        next to deletable records. After selecting them, click the "Delete Selected" button. You'll need
+                        to type "CONFIRM" to go ahead. The tool sends a delete request using
+                        com.atproto.repo.deleteRecord to your PDS. A progress bar shows the status. Records are deleted
+                        one at a time with small delays to avoid rate limits.
+                    </p>
+                </details>
+
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">Why is some functionality (delete, export blobs) only for
+                            logged-in users viewing their own profile?</span>
+                    </summary>
+                    <p>Actions that modify data (like deletion) or access potentially large private data sets (like a
+                        full list of all blobs) require authentication and authorization. This tool only allows such
+                        actions on your own repository when you are logged in with an App Password, ensuring you have
+                        control over your own data.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">What are rate limits?</span>
+                    </summary>
+                    <p>Bluesky's APIs have rate limits to prevent abuse and ensure fair usage. This means there's a cap
+                        on how many requests can be made in a certain time period. This tool attempts to respect these
+                        limits, especially for intensive operations like blob downloads. If you perform many actions
+                        quickly, you might encounter a temporary slowdown or an error message asking you to wait.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">Is my App Password stored?</span>
+                    </summary>
+                    <p>No. Your App Password is used once to create a session with Bluesky servers. The application then
+                        stores temporary access and refresh tokens to keep you logged in. These tokens are used for
+                        subsequent authenticated requests. The App Password itself is not stored by this tool. You
+                        should make sure to delete the App Password you created for this tool once the process is
+                        finished.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">Download Car JSON Blob</span>
+                    </summary>
+                    <p>
+                        This page allows you to download the CAR file or a converted JSON files and Blobs. You can find
+                        out more about this format, its uses, and how it can help with managing or exporting your
+                        Bluesky data by visiting <a href="https://romiojoseph.github.io/bluesky/download-car-json-blob/"
+                            target="_blank" rel="noopener" title="Learn more about downloading Car JSON Blob">here</a>.
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">Bluesky User Tools: Statistics and Post Analyzer</span>
+                    </summary>
+                    <p>
+                        This page provides detailed statistics about Bluesky users, including user
+                        activity, and engagement patterns. You can explore the full range of statistics and insights by
+                        visiting <a href="https://romiojoseph.github.io/bluesky/bluesky-user-statistics/"
+                            target="_blank" rel="noopener" title="Explore Bluesky User Statistics">here</a>.
+                    </p>
+                    <p>
+                        Another tool related to Bluesky posts is the Bluesky Post Analyzer, which allows you to analyze
+                        and get insights on individual Bluesky posts. You can learn more about this tool and how it
+                        helps with post analysis by visiting
+                        <a href="https://romiojoseph.github.io/bluesky/bluesky-post-analyzer/" target="_blank"
+                            rel="noopener" title="Explore the Bluesky Post Analyzer">here</a>.
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">Bluesky JSON Viewer</span>
+                    </summary>
+                    <p>
+                        The Bluesky JSON Viewer allows you to view and inspect the raw JSON data behind Bluesky posts.
+                        This tool helps you better understand the structure and contents of Bluesky data. You can
+                        explore the tool and start inspecting JSON data
+                        <a href="https://romiojoseph.github.io/bluesky/bluesky-json-viewer/" target="_blank"
+                            rel="noopener" title="Explore the Bluesky JSON Viewer">here</a>.
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>
+                        <span class="faq-caret"><i class="ph-duotone ph-caret-right"></i></span>
+                        <span class="faq-summary-text">For more info...</span>
+                    </summary>
+                    <p>
+                        I created and am creating many tools for Bluesky, and this is just one of them. Explore more
+                        info
+                        <a href="https://github.com/romiojoseph/personal" target="_blank" rel="noopener"
+                            title="More information about the projects and their disclaimers and terms">here</a> and
+                        more projects
+                        <a href="https://romiojoseph.github.io/bluesky/" target="_blank" rel="noopener"
+                            title="View more Bluesky-related projects">here</a>.
+                    </p>
+                </details>
+            </div>
+        </footer>
+
+    </div>
+
+    <div id="loginModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="loginModal">×</span>
+            <h3>Login with App Password</h3>
+
+            <div class="helper-text">
+                <h4 class="caption-head">A simple tool to clean up your Bluesky account</h4>
+                <p class="tagline-sub">Clean up old posts, likes, reposts, and other saved records from your account.
+                    You can export them
+                    before deleting. Make a one-time App Password for this, then make sure to delete it when you're
+                    done.</p>
+            </div>
+
+            <form id="loginActualForm">
+                <div class="input-group">
+                    <label for="loginHandleInput">Bluesky Handle:</label>
+                    <input type="text" id="loginHandleInput" placeholder="yourhandle.bsky.social"
+                        autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label for="appPasswordInput">App Password:</label>
+                    <input type="password" id="appPasswordInput" placeholder="xxxx-xxxx-xxxx-xxxx"
+                        autocomplete="current-password">
+                </div>
+                <div class="button-group">
+                    <button type="submit" id="loginButton">Login</button>
+                </div>
+            </form>
+            <p id="loginError" class="modal-error hidden"></p>
+        </div>
+    </div>
+
+    <div id="customStatusModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="customStatusModal">×</span>
+            <h4 id="customStatusTitle">Status</h4>
+            <p id="customStatusMessage"></p>
+            <div id="customStatusDetails" class="hidden">
+                <p>Total to Process: <span id="statusTotal">0</span></p>
+                <p>Successful: <span id="statusSuccess">0</span></p>
+                <p>Failed: <span id="statusFailed">0</span></p>
+                <p>Remaining: <span id="statusRemaining">0</span></p>
+            </div>
+            <button id="customStatusOkButton">OK</button>
+        </div>
+    </div>
+    <div id="customConfirmModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="customConfirmModal">×</span>
+            <h4 id="customConfirmTitle">Confirm</h4>
+            <p id="customConfirmMessage"></p>
+            <div class="modal-buttons">
+                <button id="customConfirmYesButton">Yes</button>
+                <button id="customConfirmNoButton">No</button>
+            </div>
+        </div>
+    </div>
+    <div id="deleteConfirmModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="deleteConfirmModal">×</span>
+            <h4 id="deleteConfirmTitle">Confirm Deletion</h4>
+            <p id="deleteConfirmMessage"></p>
+            <p class="confirm-prompt">To proceed, type "CONFIRM" in the box below:</p>
+            <input type="text" id="deleteConfirmInput" placeholder="CONFIRM">
+            <div class="modal-buttons">
+                <button id="deleteConfirmYesButton" class="delete-button" disabled>Yes, Delete</button>
+                <button id="deleteConfirmNoButton">No, Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div id="record-detail-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" data-modal-id="record-detail-modal">×</span>
+            <h4>Record JSON:</h4>
+            <pre id="recordJsonContent"></pre>
+        </div>
+    </div>
+    <div id="profileHistoryModal" class="modal hidden">
+        <div class="modal-content modal-lg">
+            <span class="close-button" data-modal-id="profileHistoryModal">×</span>
+            <h4>Profile PLC Directory History</h4>
+            <div id="plcHistoryTimeline"></div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/actorSearch.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+
+    <script>
+        // Disable right-click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Disable specific key combos
+        document.addEventListener('keydown', function (e) {
+            // F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+I
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+J (Chrome DevTools)
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') {
+                e.preventDefault();
+            }
+
+            // Ctrl+U (View source)
+            if (e.ctrlKey && e.key.toLowerCase() === 'u') {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+C (Element picker)
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
