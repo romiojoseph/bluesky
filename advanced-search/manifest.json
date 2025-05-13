@@ -1,0 +1,30 @@
+{
+    "name": "Bluesky Advanced Search",
+    "short_name": "Bsky Search",
+    "description": "A simple tool to search Bluesky posts, users, and tags with advanced filters and options.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#0866ff",
+    "lang": "en",
+    "icons": [
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        },
+        {
+            "src": "assets/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "monochrome"
+        }
+    ]
+}
