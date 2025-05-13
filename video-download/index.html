@@ -40,10 +40,10 @@
             </p>
         </div>
 
-        <div class="fetch-box">
-            <input type="text" id="postLink" placeholder="Enter Bluesky post link">
-            <button onclick="fetchVideoDetails()">Fetch video details</button>
-        </div>
+        <form class="fetch-box" onsubmit="fetchVideoDetails(); return false;">
+            <input type="text" id="postLink" placeholder="Enter Bluesky post link or playlist URL">
+            <button type="submit">Fetch video details</button>
+        </form>
 
         <div id="error"></div>
 

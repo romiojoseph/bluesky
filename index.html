@@ -9,7 +9,6 @@
         content="Free and open-source Bluesky tools built with AI (vibe coding). No ads, paywalls, or trackers. Just simple and useful tools for everyone.">
     <meta property="og:image" content="assets/social-image.png">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon.svg">
 
     <meta property="og:title" content="Free & Open-Source Bluesky Tools">
     <meta property="og:description"
@@ -21,272 +20,371 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <link rel="stylesheet" href="styles.css">
     <meta name="robots" content="index, follow">
 </head>
 
 <body>
+
     <div class="container">
-        <header>
-            <h1>Free Bluesky Tools</h1>
-            <p>A collection of free and open-source Bluesky tools, with every JavaScript created using AI, aka vibe
-                coding. No ads, no paywalls and no trackers. Just simple and useful tools for everyone.</p>
+        <!-- Sticky Header Area -->
+        <header class="sticky-header">
+            <!-- Section One: Intro (Visible by default) -->
+            <div class="intro-section visible" id="introSection">
+                <p class="intro-subtitle">Free & open-source</p>
+                <h1 class="intro-title">Bluesky Projects</h1>
+                <p class="intro-tagline">A collection of free and open-source Bluesky tools, with every JavaScript
+                    created using AI (vibe coding). No ads, no paywalls and no trackers. Just simple and useful tools
+                    for everyone, made out of curiosity and left open for others.<a
+                        href="https://romiojoseph.github.io/open-source/" target="_blank" rel="noopener noreferrer"
+                        title="These are all the results of vibe coding."> Explore more projects</a> and <a
+                        href="https://romiojoseph.github.io/blog/" target="_blank" rel="noopener noreferrer"
+                        title="Read more about these projects on my blog.">read more on my
+                        blog</a>.
+                </p>
+            </div>
+
+            <!-- Lightbox Section (Hidden by default) -->
+            <div class="lightbox-section hidden" id="lightboxSection">
+                <div class="lightbox-content">
+                    <figure class="lightbox-image" id="lightboxImageContainer"></figure>
+                    <div class="lightbox-details">
+                        <h2 id="lightboxTitle"></h2>
+                        <p id="lightboxDescription"></p>
+                        <div class="lightbox-actions" id="lightboxActions"></div>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <main>
-            <article>
-                <h2>New Horizons</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/new-horizons-news-feed/assets/social-image.png"
-                        alt="New Horizons">
+        <!-- Section Two: Project Grid -->
+        <main class="project-grid" id="projectGrid">
+            <!-- Add 16 Project Cards - Replace with your real data! -->
+            <article class="project-card"
+                data-title="New Horizons - Real-Time News from Media & Organizations on Bluesky"
+                data-description="No account needed, no trackers, no analytics. Just real time news from Bluesky media profiles, tech companies, organizations, institutions, and journalists. Available as a PWA."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/new-horizons-news-feed/assets/social-image.png"
+                data-actions='[
+                    {"text": "Read news and updates", "url": "https://romiojoseph.github.io/bluesky/new-horizons-news-feed/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3llvgs3iyt22x", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/new-horizons-news-feed/assets/favicon.svg"
+                        alt="New Horizons Icon">
                 </figure>
-                <p>Real-time news from independent sources, journalists, and institutions, powered by Bluesky AppView
-                    API. Available as a PWA.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/new-horizons-news-feed/', '_blank', 'noopener')">
-                    Read news and updates
-                </button>
+                <h6 class="project-name">New Horizons</h6>
             </article>
 
-            <article>
-                <h2>Download Bluesky Video</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/video-download/assets/social-image.png"
-                        alt="Download Bluesky Video">
+            <article class="project-card" data-title="Bluesky Repo Explorer: Bulk Delete & Export Posts, Likes etc"
+                data-description="Easily delete or export Bluesky posts, likes, reposts, blocks, follows, and more. Also Export your blobs all at once. No analytics or trackers."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-repo-explorer/assets/social-image.png"
+                data-actions='[
+                    {"text": "Try now", "url": "https://romiojoseph.github.io/bluesky/bluesky-repo-explorer/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-repo-explorer/assets/favicon.svg"
+                        alt="Bluesky Repo Explorer Icon">
                 </figure>
-                <p>Easily download Bluesky videos in available resolutions or get the playlist URL to stream. Respect
-                    authors' privacy and give proper credits.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/video-download/', '_blank', 'noopener')">
-                    Try now
-                </button>
+                <h6 class="project-name">Repo Explorer</h6>
             </article>
 
-            <article>
-                <h2>AT Pages: Write, Read and Share</h2>
-                <figure>
-                    <img src="https://skywrite.pages.dev/assets/social-image.png"
-                        alt="AT Pages: Search and read long-form posts on ATProto">
+            <article class="project-card" data-title="Bluesky User Statistics"
+                data-description="Enter a Bluesky username to see stats on posts, likes, reposts, and follows. View hashtag, mention, link, and word usage, along with their counts."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-user-statistics/assets/social-image.png"
+                data-actions='[
+                    {"text": "Check stats", "url": "https://romiojoseph.github.io/bluesky/bluesky-user-statistics/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3lmfnt3xud22f", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-user-statistics/assets/favicon.svg"
+                        alt="Bluesky User Statistics Icon">
                 </figure>
-                <p>Create, search, and view long-form Bluesky posts with ATProto. No character limits. Posts stay in
-                    your repo and load via a simple frontend.</p>
-                <button type="button" onclick="window.open('https://skywrite.pages.dev/write/', '_blank', 'noopener')">
-                    Write
-                </button>
-                <button type="button" onclick="window.open('https://skywrite.pages.dev/', '_blank', 'noopener')">
-                    Search
-                </button>
-                <button type="button"
-                    onclick="window.open('https://github.com/romiojoseph/at-protocol/tree/main/node-scripts/create-pages', '_blank', 'noopener')">
-                    Script
-                </button>
-                <button type="button"
-                    onclick="window.open('https://skywrite.pages.dev/?DID=did%3Aplc%3Axglrcj6gmrpktysohindaqhj&view-post=learn-how-it-works', '_blank', 'noopener')">
-                    FAQ
-                </button>
+                <h6 class="project-name">User Statistics</h6>
             </article>
 
-            <article>
-                <h2>Bluesky User Statistics</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-user-statistics/assets/social-image.png"
-                        alt="Bluesky User Statistics">
+            <article class="project-card" data-title="Turn a Bluesky Thread Into an Article"
+                data-description="Paste a Bluesky thread link to turn it into a readable article you can copy and share anywhere. No account, no trackers, no analytics."
+                data-image="https://bsky-read.pages.dev/assets/social-image.png" data-actions='[
+                    {"text": "Try fetching a thread", "url": "https://bsky-read.pages.dev/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3lnarnqzlbc2t", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://bsky-read.pages.dev/assets/favicon.svg"
+                        alt="Turn a Bluesky Thread Into an Article Icon">
                 </figure>
-                <p>Enter a Bluesky username to see stats on posts, likes, reposts, and follows. View hashtag, mention,
-                    link, and word usage, along with their counts.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/bluesky-user-statistics/', '_blank', 'noopener')">
-                    Check stats
-                </button>
+                <h6 class="project-name">Thread ⇾ Article</h6>
             </article>
 
-            <article>
-                <h2>Visual Feed of BlueSky Posts</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/skygrid/assets/social-image.png"
-                        alt="Visual Feed of BlueSky Posts">
+            <article class="project-card" data-title="AT Pages: Write, Read and Share"
+                data-description="Create, search, and view long-form Bluesky posts with ATProto. No character limits. Posts stay in your repo and load via a simple frontend."
+                data-image="https://skywrite.pages.dev/assets/social-image.png" data-actions='[
+                    {"text": "Write", "url": "https://skywrite.pages.dev/write/", "buttonType": "primary"},
+                    {"text": "Search", "url": "https://skywrite.pages.dev/", "buttonType": "primary"},
+                    {"text": "Script", "url": "https://github.com/romiojoseph/at-protocol/tree/main/node-scripts/create-pages", "buttonType": "primary"},
+                    {"text": "FAQ", "url": "https://skywrite.pages.dev/?DID=did%3Aplc%3Axglrcj6gmrpktysohindaqhj&view-post=learn-how-it-works", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://skywrite.pages.dev/assets/favicon.svg"
+                        alt="AT Pages: Search and read long-form posts on ATProto Icon">
                 </figure>
-                <p>Browse BlueSky posts with media in a clean, card-style grid. No login or actions. Just view public
-                    posts in a visual layout, like a Pinterest board.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/skygrid/', '_blank', 'noopener')">
-                    Browse posts
-                </button>
+                <h6 class="project-name">AT Pages</h6>
             </article>
 
-            <article>
-                <h2>Turn a Bluesky Thread Into an Article</h2>
-                <figure>
-                    <img src="https://bsky-read.pages.dev/assets/social-image.png"
-                        alt="Turn a Bluesky Thread Into an Article">
+            <article class="project-card" data-title="Bluesky Comments Widget"
+                data-description="Share your page link on Bluesky, then use this widget to show replies as comments on your site. No login or authentication needed."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-comments-widget/assets/social-image.png"
+                data-actions='[
+                    {"text": "Demo", "url": "https://romiojoseph.github.io/bluesky/bluesky-comments-widget/", "buttonType": "primary"},
+                    {"text": "Source Code", "url": "https://github.com/romiojoseph/bluesky/tree/main/bluesky-comments-widget/", "buttonType": "primary"},
+                    {"text": "How to use", "url": "https://skywrite.pages.dev/?DID=did%3Aplc%3Axglrcj6gmrpktysohindaqhj&view-post=bluesky-comments-widget", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-comments-widget/assets/favicon.svg"
+                        alt="Bluesky Comments Widget Icon">
                 </figure>
-                <p>Paste a Bluesky thread link to turn it into a readable article you can copy and share anywhere. No
-                    account, no trackers, no analytics.</p>
-                <button type="button" onclick="window.open('https://bsky-read.pages.dev/', '_blank', 'noopener')">
-                    Try now
-                </button>
+                <h6 class="project-name">Comments Widget</h6>
             </article>
 
-            <article>
-                <h2>Bluesky Comments Widget</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-comments-widget/assets/social-image.png"
-                        alt="Bluesky Comments Widget">
+            <article class="project-card" data-title="Bluesky Advanced Search"
+                data-description="A simple tool to search Bluesky posts, users, and tags. Just type what you need, and it'll fill the specific formats."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/advanced-search/assets/social-image.png"
+                data-actions='[
+                    {"text": "Search anything", "url": "https://romiojoseph.github.io/bluesky/advanced-search/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/search?q=domain%3Aromiojoseph.github.io", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/advanced-search/assets/favicon.svg"
+                        alt="Bluesky Advanced Search Icon">
                 </figure>
-                <p>Share your page link on Bluesky, then use this widget to show replies as comments on your site. No
-                    login or authentication needed.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/bluesky-comments-widget/', '_blank', 'noopener')">
-                    Live demo
-                </button>
+                <h6 class="project-name">Advanced Search</h6>
             </article>
 
-            <article>
-                <h2>Bluesky Trending Topics</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/trending-topics/assets/social-image.png"
-                        alt="Bluesky Trending Topics">
+            <article class="project-card" data-title="Bluesky Post Analyzer"
+                data-description="Enter a Bluesky post URL to analyze posts with detailed stats. Track likes, reposts, replies, and quotes. View engagement timelines, user interactions, and performance metrics."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-post-analyzer/assets/social-image.png"
+                data-actions='[
+                    {"text": "Check any post", "url": "https://romiojoseph.github.io/bluesky/bluesky-post-analyzer/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3lktyymfkr22s", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-post-analyzer/assets/favicon.svg"
+                        alt="Bluesky Post Analyzer Icon">
                 </figure>
-                <p>Explore Bluesky's trending topics, from past to present. Bluesky is becoming the next big thing. A
-                    moderated space where people gather to discuss what's happening.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/trending-topics/', '_blank', 'noopener')">
-                    Explore the feeds
-                </button>
+                <h6 class="project-name">Post Analyzer</h6>
             </article>
 
-            <article>
-                <h2>Bluesky Advanced Search</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/advanced-search/assets/social-image.png"
-                        alt="Bluesky Advanced Search">
+            <article class="project-card" data-title="PhotoStream"
+                data-description="An Instagram-like feed for Bluesky with sorted posts, regular updates, and tailored categories like photography, art, nature, and more."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/photo-stream/assets/social-image.png"
+                data-actions='[
+                    {"text": "Browse any feed or list", "url": "https://romiojoseph.github.io/bluesky/photo-stream/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3llyjwqlhjs2y", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/photo-stream/assets/favicon.svg"
+                        alt="PhotoStream Icon">
                 </figure>
-                <p>A simple tool to search Bluesky posts, users, and tags. Just type what you need, and it'll fill the
-                    specific formats.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/advanced-search/', '_blank', 'noopener')">
-                    Search using Bluesky
-                </button>
+                <h6 class="project-name">Instagram like</h6>
             </article>
 
-            <article>
-                <h2>Bluesky Post Analyzer</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-post-analyzer/assets/social-image.png"
-                        alt="Bluesky Post Analyzer">
+            <article class="project-card" data-title="Stream M3U8 and Bluesky Videos"
+                data-description="Stream M3U8 (HLS) playlists and Bluesky videos in a simple player. No login, no tracking. Add your own post or feed links, or pick from saved ones."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/stream/assets/social-image.png"
+                data-actions='[
+                    {"text": "Browse videos", "url": "https://romiojoseph.github.io/bluesky/stream/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3loohcvvfns2x", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/stream/assets/favicon.svg"
+                        alt="Stream Icon">
                 </figure>
-                <p>Enter a Bluesky post URL to analyze posts with detailed stats. Track likes, reposts, replies, and
-                    quotes. View engagement timelines, user interactions, and performance metrics.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/bluesky-post-analyzer/', '_blank', 'noopener')">
-                    Try now
-                </button>
+                <h6 class="project-name">Stream</h6>
             </article>
 
-            <article>
-                <h2>Download Bluesky Repo and Blobs</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/download-car-json-blob/assets/social-image.png"
-                        alt="Download Bluesky Repository and Blobs">
+            <article class="project-card" data-title="Bluesky Spotlight Feeds"
+                data-description="Discover curated Bluesky feeds and lists, including recent or trending news, trending topics, tech updates, space insights, movies, shows, and popular profiles. You can also export posts as JSON. "
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/spotlight-feeds/assets/social-image.png"
+                data-actions='[
+                    {"text": "Explore Bluesky - No login, no trackers", "url": "https://romiojoseph.github.io/bluesky/spotlight-feeds/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/spotlight-feeds/assets/favicon.svg"
+                        alt="Bluesky Spotlight Feeds Icon">
                 </figure>
-                <p>Downloading a CAR (Content Addressable aRchives) file may take some time, depending on the account
-                    size. Once downloaded, it is converted into JSON format, allowing you to view stats like the number
-                    of likes, reposts, etc. You can also download Bluesky blobs (media files) separately.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/download-car-json-blob/', '_blank', 'noopener')">
-                    Get images and repo
-                </button>
+                <h6 class="project-name">Spotlight</h6>
             </article>
 
-            <article>
-                <h2>Export Posts from Bluesky</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/export-bluesky-posts/assets/social-image.png"
-                        alt="Export Posts from Bluesky">
+            <article class="project-card" data-title="Explore Bluesky Profiles, Feeds & Lists"
+                data-description="Browse Bluesky profiles, feeds, and lists in a folder layout. Click to view posts. Add your own links. No login. Data stays in your browser."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/browser/assets/social-image.png"
+                data-actions='[
+                    {"text": "Try app now", "url": "https://romiojoseph.github.io/bluesky/browser/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/browser/assets/favicon.svg"
+                        alt="Browser Icon">
                 </figure>
-                <p>Choose profile-based exports, including followers, following, and lists, or use any profile, list, or
-                    feed link for customized downloads. You can also enter a Bluesky post link to download the full
-                    metadata of its thread.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/export-bluesky-posts/', '_blank', 'noopener')">
-                    Try now
-                </button>
+                <h6 class="project-name">Browser</h6>
             </article>
 
-            <article>
-                <h2>Bluesky Spotlight Feeds</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/spotlight-feeds/assets/social-image.png"
-                        alt="Bluesky Spotlight Feeds">
+            <article class="project-card" data-title="Visual Feed of BlueSky Posts"
+                data-description="Browse BlueSky posts with media in a clean, card-style grid. No login or actions. Just view public posts in a visual layout, like a Pinterest board."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/skygrid/assets/social-image.png"
+                data-actions='[
+                    {"text": "Browse posts", "url": "https://romiojoseph.github.io/bluesky/skygrid/", "buttonType": "primary"},
+                    {"text": "Feedback", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3ln3ptztatk2n", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/skygrid/assets/favicon.svg"
+                        alt="Visual Feed of BlueSky Posts Icon">
                 </figure>
-                <p>Discover curated Bluesky feeds and lists, including recent or trending news, trending topics, tech
-                    updates, space insights, movies, shows, and popular profiles.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/spotlight-feeds/', '_blank', 'noopener')">
-                    Try now
-                </button>
+                <h6 class="project-name">Pinterest like</h6>
             </article>
 
-            <article>
-                <h2>PhotoStream</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/photo-stream/assets/social-image.png"
-                        alt="PhotoStream">
+            <article class="project-card" data-title="Curated Bluesky Post Feed"
+                data-description="View posts added to custom lexicon. Browse by category, sort if needed, or open a shared link."
+                data-image="https://my-feed.pages.dev/assets/social-image.png" data-actions='[
+                    {"text": "Visit Feed", "url": "https://my-feed.pages.dev/", "buttonType": "primary"},
+                    {"text": "Try Bookmark", "url": "https://my-feed.pages.dev/bookmark/", "buttonType": "primary"},
+                    {"text": "Idea", "url": "https://bsky.app/profile/romiojoseph.github.io/post/3lnhc6tf3k22v", "buttonType": "outline"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://my-feed.pages.dev/assets/favicon.svg" alt="My Feed Icon">
                 </figure>
-                <p>An Instagram-like feed for Bluesky with sorted posts, regular updates, and tailored categories like
-                    photography, art, nature, and more.</p>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/photo-stream/', '_blank', 'noopener')">
-                    Try now
-                </button>
+                <h6 class="project-name">My Feed</h6>
             </article>
 
-            <article>
-                <h2>Bookmark Bluesky Posts</h2>
-                <figure>
-                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bookmark-bluesky-posts/assets/social-image.png"
-                        alt="Bookmark Bluesky Posts">
+
+            <article class="project-card" data-title="Download Bluesky Repo and Blobs"
+                data-description="Downloading a CAR (Content Addressable aRchives) file may take some time, depending on the account size. Once downloaded, it is converted into JSON format, allowing you to view stats like the number of likes, reposts, etc. You can also download Bluesky blobs (media files) separately."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/download-car-json-blob/assets/social-image.png"
+                data-actions='[
+                    {"text": "Get your repo and blobs", "url": "https://romiojoseph.github.io/bluesky/download-car-json-blob/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/download-car-json-blob/assets/favicon.svg"
+                        alt="Download Bluesky Repository and Blobs Icon">
                 </figure>
-                <p>Bookmark Bluesky posts with a Telegram bot and save them in a Google Sheet. A website to display a
-                    feed full of Bluesky posts that you curated. Make your personalized feed
-                    public by using the script, Telegram bot, and this template.</p>
-                <button type="button"
-                    onclick="window.open('https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot', '_blank', 'noopener')">
-                    Google Apps Script
-                </button>
-                <button type="button"
-                    onclick="window.open('https://github.com/romiojoseph/bluesky/tree/main/python-scripts/telegram-bluesky-bot', '_blank', 'noopener')">
-                    Python Script
-                </button>
-                <button type="button"
-                    onclick="window.open('https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/', '_blank', 'noopener')">
-                    Try now
-                </button>
+                <h6 class="project-name">Download CAR/JSON</h6>
             </article>
+
+            <article class="project-card" data-title="Inspect Bluesky Post JSON"
+                data-description="Paste a Bluesky post URL to view its JSON, get the user DID and CID, convert link formats, and check video playlist or linked URLs."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-json-viewer/assets/social-image.png"
+                data-actions='[
+                    {"text": "Check any post", "url": "https://romiojoseph.github.io/bluesky/bluesky-json-viewer/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bluesky-json-viewer/assets/favicon.svg"
+                        alt="Bluesky JSON Viewer Icon">
+                </figure>
+                <h6 class="project-name">Post JSON Viewer</h6>
+            </article>
+
+            <article class="project-card" data-title="Download Bluesky Video"
+                data-description="Easily download Bluesky videos in available resolutions or get the playlist URL to stream. Respect authors' privacy and give proper credits."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/video-download/assets/social-image.png"
+                data-actions='[
+                    {"text": "Try now", "url": "https://romiojoseph.github.io/bluesky/video-download/", "buttonType": "primary"},
+                    {"text": "Check Stream", "url": "https://romiojoseph.github.io/bluesky/stream/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/video-download/assets/favicon.svg"
+                        alt="Download Bluesky Video Icon">
+                </figure>
+                <h6 class="project-name">Download Video</h6>
+            </article>
+
+            <article class="project-card" data-title="Export Posts from Bluesky"
+                data-description="Choose profile-based exports, including followers, following, and lists, or use any profile, list, or feed link for customized downloads. You can also enter a Bluesky post link to download the full metadata of its thread."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/export-bluesky-posts/assets/social-image.png"
+                data-actions='[
+                    {"text": "Try now", "url": "https://romiojoseph.github.io/bluesky/export-bluesky-posts/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/export-bluesky-posts/assets/favicon.svg"
+                        alt="Export Posts from Bluesky Icon">
+                </figure>
+                <h6 class="project-name">Export Posts</h6>
+            </article>
+
+            <article class="project-card" data-title="Bluesky Trending Topics"
+                data-description="Explore Bluesky's trending topics, from past to present. Bluesky is becoming the next big thing. A moderated space where people gather to discuss what's happening."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/trending-topics/assets/social-image.png"
+                data-actions='[
+                    {"text": "Explore all trending feeds", "url": "https://romiojoseph.github.io/bluesky/trending-topics/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/trending-topics/assets/favicon.svg"
+                        alt="Bluesky Trending Topics Icon">
+                </figure>
+                <h6 class="project-name">Trending Topics</h6>
+            </article>
+
+            <article class="project-card" data-title="Bookmark Bluesky Posts"
+                data-description="Bookmark Bluesky posts with a Telegram bot and save them in a Google Sheet. A website to display a feed full of Bluesky posts that you curated. Make your personalized feed public by using the script, Telegram bot, and this template. **Updated the project to 'My feed'."
+                data-image="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bookmark-bluesky-posts/assets/social-image.png"
+                data-actions='[
+                    {"text": "Google Apps Script", "url": "https://github.com/romiojoseph/bluesky/tree/main/bookmark-bluesky-posts-telegram-bot", "buttonType": "primary"},
+                    {"text": "Python Script", "url": "https://github.com/romiojoseph/bluesky/tree/main/python-scripts/telegram-bluesky-bot", "buttonType": "primary"},
+                    {"text": "Try now", "url": "https://romiojoseph.github.io/bluesky/bookmark-bluesky-posts/", "buttonType": "primary"}
+                ]'>
+                <figure class="project-icon">
+                    <img src="https://raw.githubusercontent.com/romiojoseph/bluesky/refs/heads/main/bookmark-bluesky-posts/assets/favicon.svg"
+                        alt="Bookmark Bluesky Posts Icon">
+                </figure>
+                <h6 class="project-name">Bookmark Posts</h6>
+            </article>
+
 
         </main>
 
+    </div><!-- /.container -->
 
-        <footer>
-            <p>Everything is deployed on <a href="https://github.com/romiojoseph/bluesky/tree/main" target="_blank"
-                    rel="noopener noreferrer" title="My Bluesky Repository">Github Pages</a>,
-                with the JavaScript for each project created using LLMs. Read
-                more at <a href="https://romio.substack.com/p/project-playground" target="_blank"
-                    rel="noopener noreferrer" title="Read more about these projects on my blog.">my blog</a>.</p>
-            <button type="button" title="These are all the results of vibe coding."
-                onclick="window.open('https://romiojoseph.github.io/open-source/', '_blank', 'noopener')">
-                Explore more projects
-            </button>
-            <button type="button" title="Built on Bluesky & ATProto"
-                onclick="window.open('https://romiojoseph.github.io/blog/', '_blank', 'noopener')">
-                Bluesky Blog
-            </button>
-        </footer>
+    <!-- Progress Bar Container -->
+    <div class="progress-bar-container" id="progressBarContainer">
+        <div class="progress-bar-value" id="progressBarValue"></div>
     </div>
 
+    <script>
+        // Disable right-click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Disable specific key combos
+        document.addEventListener('keydown', function (e) {
+            // F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+I
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+J (Chrome DevTools)
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'j') {
+                e.preventDefault();
+            }
+
+            // Ctrl+U (View source)
+            if (e.ctrlKey && e.key.toLowerCase() === 'u') {
+                e.preventDefault();
+            }
+
+            // Ctrl+Shift+C (Element picker)
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+            }
+        });
+    </script>
+
+    <!-- Link to JS inside the assets folder -->
+    <script src="assets/script.js"></script>
 </body>
 
 </html>

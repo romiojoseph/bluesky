@@ -69,8 +69,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
 
+    // Add event listener for Enter key on the input field
+    const handleInput = document.getElementById('handleInput');
+    if (handleInput) {
+        handleInput.addEventListener('keypress', async (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission
+                showLoadingScreen(); // Show loading screen before starting
+                try {
+                    await fetchAndProcessRepository(); // Await the fetchAndProcessRepository function
+                } finally {
+                    hideLoadingScreen(); // Hide loading screen after completion (or error)
+                }
+            }
+        });
+    }
+});
 
 //Loading screen functions
 function showLoadingScreen() {

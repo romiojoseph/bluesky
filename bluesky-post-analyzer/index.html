@@ -41,12 +41,13 @@
             </p>
         </div>
         <div class="input-section">
-            <input type="text" id="post-url" placeholder="https://bsky.app/profile/username/post/post_id">
+            <input type="text" id="post-url" placeholder="https://bsky.app/profile/username/post/post_id"
+                onkeypress="if(event.keyCode === 13) { event.preventDefault(); analyzePost(); }">
             <button onclick="analyzePost()">Analyze Post</button>
         </div>
 
         <!-- Loader (modified) -->
-        <div class="loader-container" id="loader">
+        <div id="loader" class="loader-container" style="display: none;">
             <span class="loader"></span>
             <p id="progress-message"></p>
             <p id="progress-action"></p>

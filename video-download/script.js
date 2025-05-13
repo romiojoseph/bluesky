@@ -60,6 +60,11 @@ async function copyToClipboard(text) {
 // Bluesky API Interaction Functions
 async function resolveHandleToDid(handle) {
     try {
+        // If it's already a DID, return it directly
+        if (handle.startsWith('did:')) {
+            return handle;
+        }
+        
         const response = await fetch(`${API_BASE}/com.atproto.identity.resolveHandle?handle=${handle}`);
         if (!response.ok) throw new Error('Failed to resolve handle');
         const data = await response.json();
@@ -70,9 +75,41 @@ async function resolveHandleToDid(handle) {
 }
 
 function getPostIdFromLink(postLink) {
-    const match = postLink.match(/bsky\.app\/profile\/([^/]+)\/post\/([^/]+)/);
-    if (!match) throw new Error('Invalid Bluesky post link');
-    return { handle: match[1], postId: match[2] };
+    // Handle standard bsky.app profile URL with handle
+    let match = postLink.match(/bsky\.app\/profile\/([^/]+)\/post\/([^/]+)/);
+    if (match) {
+        const handleOrDid = match[1];
+        // Check if the matched part is a DID
+        if (handleOrDid.startsWith('did:plc:')) {
+            return { did: handleOrDid, postId: match[2] };
+        }
+        return { handle: handleOrDid, postId: match[2] };
+    }
+    
+    // Handle bsky.app profile URL with DID
+    match = postLink.match(/bsky\.app\/profile\/did:plc:([^/]+)\/post\/([^/]+)/);
+    if (match) {
+        return { did: `did:plc:${match[1]}`, postId: match[2] };
+    }
+    
+    // Handle at:// protocol URL
+    match = postLink.match(/at:\/\/did:plc:([^/]+)\/app\.bsky\.feed\.post\/([^/]+)/);
+    if (match) {
+        return { did: `did:plc:${match[1]}`, postId: match[2] };
+    }
+    
+    // Handle video.bsky.app URL (playlist URL)
+    match = postLink.match(/video\.bsky\.app\/watch\/did%3Aplc%3A([^/]+)\/([^/]+)\/playlist\.m3u8/);
+    if (match) {
+        // Extract CID from the URL
+        const cid = match[2];
+        // For playlist URLs, we'll use the CID to construct the video details directly
+        const did = `did:plc:${match[1]}`;
+        // Return a special object that indicates this is a direct playlist URL
+        return { did: did, cid: cid, isPlaylistUrl: true };
+    }
+    
+    throw new Error('Invalid Bluesky post link. Supported formats: bsky.app profile links, at:// protocol links, or video.bsky.app playlist URLs');
 }
 
 async function fetchVideoDetails() {
@@ -83,10 +120,42 @@ async function fetchVideoDetails() {
         document.getElementById('resolutionSelector').style.display = 'none';
 
         const postLink = document.getElementById('postLink').value;
-        const { handle, postId } = getPostIdFromLink(postLink);
-
-        const did = await resolveHandleToDid(handle);
-        const response = await fetch(`${API_BASE}/app.bsky.feed.getPostThread?uri=at://${did}/app.bsky.feed.post/${postId}`);
+        const linkInfo = getPostIdFromLink(postLink);
+        
+        // Handle direct playlist URL case
+        if (linkInfo.isPlaylistUrl) {
+            // For direct playlist URLs, we don't have post data, so we create minimal details
+            const playlistUrl = postLink;
+            
+            currentVideoDetails = {
+                authorHandle: 'Unknown', // We don't have author info from playlist URL
+                authorDisplayName: 'Unknown',
+                recordCreatedAt: new Date().toISOString(),
+                playlist: playlistUrl,
+                cid: linkInfo.cid,
+                mimeType: 'video/mp4',
+                authorDid: linkInfo.did,
+                text: 'Video from direct playlist URL'
+            };
+            
+            displayVideoDetails();
+            await fetchResolutions(playlistUrl);
+            return;
+        }
+        
+        // Regular post URL handling
+        let did;
+        if (linkInfo.did) {
+            // If we already have the DID from the URL
+            did = linkInfo.did;
+        } else if (linkInfo.handle) {
+            // If we have a handle, resolve it to a DID
+            did = await resolveHandleToDid(linkInfo.handle);
+        } else {
+            throw new Error('Could not determine DID from the provided URL');
+        }
+        
+        const response = await fetch(`${API_BASE}/app.bsky.feed.getPostThread?uri=at://${did}/app.bsky.feed.post/${linkInfo.postId}`);
         if (!response.ok) throw new Error('Failed to fetch post data');
 
         const postData = await response.json();
