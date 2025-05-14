@@ -1,5 +1,7 @@
 {
     "postUris": [
+        "https://bsky.app/profile/letterboxd.social/post/3loy22yx35227",
+        "https://bsky.app/profile/letterboxd.social/post/3lovot24hoc2o",
         "https://bsky.app/profile/hrw.org/post/3loo2unreck2p",
         "https://bsky.app/profile/wonderofscience.bsky.social/post/3lomoukrgak22",
         "https://bsky.app/profile/knotweed-ireland.bsky.social/post/3lonh5qxod22z",
@@ -10,6 +12,10 @@
         "https://bsky.app/profile/stsci.edu/post/3lollnroffk2c"
     ],
     "feedGenerators": [
+        {
+            "name": "Experimental Video feed",
+            "url": "https://bsky.app/profile/romiojoseph.github.io/feed/stream"
+        },
         {
             "name": "Trending Vids",
             "url": "https://bsky.app/profile/devingaffney.com/feed/trending-vids"

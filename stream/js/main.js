@@ -1,5 +1,7 @@
 let currentMainPostData = null;
-let currentPlayingPostFromFeed = null;
+let currentPlayingFeedContext = null; // AT-URI of the feed, if current video is from a feed
+let currentVideoFromFeedUri = null; // AT-URI of the specific video post loaded from a feed
+let isNavigatingThroughHistory = false; // Flag to track if we're handling a popstate event
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
@@ -43,9 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
         videoStatusIconOverlayId: 'videoStatusIconOverlay'
     });
 
-    searchButton.addEventListener('click', () => handleSearch(urlInput.value));
+    searchButton.addEventListener('click', () => handleSearch(urlInput.value, false));
     urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSearch(urlInput.value);
+        if (e.key === 'Enter') handleSearch(urlInput.value, false);
+    });
+
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.videoUrl) {
+            isNavigatingThroughHistory = true;
+            urlInput.value = event.state.videoUrl;
+            handleSearch(event.state.videoUrl, false);
+            isNavigatingThroughHistory = false;
+        }
     });
 
     loadMoreCommentsButtonElement.addEventListener('click', () => {
@@ -65,59 +76,106 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!keepSpinnerForNextStep && useGlobalSpinner) {
             hideGlobalSpinner();
-        } else if (!useGlobalSpinner) {
+        } else if (!useGlobalSpinner) { // Also hide if not using global spinner at all for this message
             hideGlobalSpinner();
         }
+
 
         messageArea.textContent = message;
         messageArea.className = 'message-area';
         if (isError) messageArea.classList.add('error');
 
-        if ((message || isError) && !useGlobalSpinner) {
-            messageArea.style.display = 'block';
-        } else if (!useGlobalSpinner) {
+        // Control messageArea display
+        if (message || (isError && message)) { // Show if there's a message, especially an error message
+             messageArea.style.display = 'block';
+        } else if (!useGlobalSpinner && !message) { // Hide if no message and not using global spinner
             messageArea.style.display = 'none';
-        }
-
-        if (useGlobalSpinner && !isError) {
-            messageArea.style.display = 'none';
-        }
-        if (useGlobalSpinner && isError && message) {
-            messageArea.style.display = 'block';
-        }
-        if (useGlobalSpinner && !message && !isError) {
+        } else if (useGlobalSpinner && !isError && !message) { // Hide if using global spinner for a non-error, no-text message
             messageArea.style.display = 'none';
         }
     }
 
-    async function handleSearch(urlToSearch) {
-        const urlValue = urlToSearch.trim();
-        currentPlayingPostFromFeed = null;
+    async function handleSearch(urlToSearch, isRecursiveCall = false) {
+        const urlValue = urlToSearch ? urlToSearch.trim() : '';
+        
         hiddenPostMessage.style.display = 'none';
 
-
         if (!urlValue) {
-            showAppMessage('Please enter a URL.', true);
+            showAppMessage('Please enter a URL.', true, false, false);
+            player.resetPlayer();
+            if (commentsSectionHeader) commentsSectionHeader.style.display = 'none';
+            resetCommentsSection(commentsContainerElement, loadMoreCommentsButtonElement);
+            mainPostDetailsContainer.style.display = 'none';
+            currentMainPostData = null;
+            currentPlayingFeedContext = null; 
+            currentVideoFromFeedUri = null;
+            loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, null, null);
             return;
         }
+        
+        if (!isRecursiveCall) {
+            let inputAtUri = null;
+            try {
+                inputAtUri = isBlueskyFeedURL(urlValue) ? 
+                             await convertFeedPageUrlToAtUri(urlValue, null) : 
+                             await getAtUriFromInput(urlValue, null);
+            } catch (e) { /* ignore resolution error for this check */ }
+
+            if (currentMainPostData && inputAtUri === currentMainPostData.uri) { 
+                showAppMessage('This video is already loaded.', false, false, false);
+                loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, currentPlayingFeedContext, currentMainPostData.uri);
+                return;
+            }
+            if (currentPlayingFeedContext && inputAtUri === currentPlayingFeedContext && currentVideoFromFeedUri) {
+                // Allow this, but the specific video check below for `currentVideoFromFeedUri` will handle if it's the *exact same video*.
+            }
+             if (currentPlayingFeedContext && currentVideoFromFeedUri && inputAtUri === currentVideoFromFeedUri) {
+                showAppMessage('This video (from current feed) is already loaded.', false, false, false);
+                loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, currentPlayingFeedContext, currentVideoFromFeedUri);
+                return;
+            }
+        }
+
 
         player.resetPlayer();
         if (commentsSectionHeader) commentsSectionHeader.style.display = 'none';
         resetCommentsSection(commentsContainerElement, loadMoreCommentsButtonElement);
-
         mainPostDetailsContainer.style.display = 'none';
-        mainPostDetailsContainer.innerHTML = '';
-        currentMainPostData = null;
+        
+        if (!isRecursiveCall) { 
+            currentMainPostData = null;
+        }
+        if (!isBlueskyFeedURL(urlValue) && !isRecursiveCall) {
+            currentPlayingFeedContext = null;
+            currentVideoFromFeedUri = null;
+        }
 
-        showAppMessage('Processing URL...', false, true, true);
+
+        showAppMessage('Processing URL...', false, true, true); // Full screen spinner for initial processing
+
+        let feedUriForSidebar = currentPlayingFeedContext; 
+        let playingUriForSidebar = null;
 
         try {
             if (urlValue.endsWith('.m3u8')) {
-                showAppMessage('Loading M3U8 video...', false, true, false);
-                player.loadVideoSource(urlValue, showAppMessage);
+                showAppMessage('', false, false, false); // Clear message area, player will show its own
+                player.loadVideoSource(urlValue, showAppMessage); // Player shows its own spinner/message
+                playingUriForSidebar = null; 
+                feedUriForSidebar = null; 
+                currentMainPostData = null; 
+                currentPlayingFeedContext = null; 
+                currentVideoFromFeedUri = null;
+                
+                if (!isNavigatingThroughHistory) {
+                    window.history.pushState({ videoUrl: urlValue }, '', `?video=${encodeURIComponent(urlValue)}`);
+                }
             } else if (isBlueskyFeedURL(urlValue)) {
-                showAppMessage('Processing feed...', false, true, true);
+                showAppMessage('Processing feed...', false, true, true); // Full screen spinner
                 const feedAtUri = await convertFeedPageUrlToAtUri(urlValue, showAppMessage);
+                
+                currentPlayingFeedContext = feedAtUri; 
+                feedUriForSidebar = feedAtUri;
+                currentVideoFromFeedUri = null; 
 
                 const feedApiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getFeed?feed=${encodeURIComponent(feedAtUri)}&limit=50`;
                 const response = await fetch(feedApiUrl);
@@ -138,25 +196,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (firstVideoPost) {
-                    currentPlayingPostFromFeed = firstVideoPost.uri;
+                    currentVideoFromFeedUri = firstVideoPost.uri; 
                     const postRkey = firstVideoPost.uri.split('/').pop();
                     const profileIdentifier = firstVideoPost.author.handle;
                     const bskyWebUrlForFirstVideo = `https://bsky.app/profile/${profileIdentifier}/post/${postRkey}`;
-
-                    await handleSearch(bskyWebUrlForFirstVideo);
-                    showAppMessage('', false, false, false);
-
-                    loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, feedAtUri, firstVideoPost.uri);
+                    
+                    if (urlInput.value !== bskyWebUrlForFirstVideo) { 
+                        urlInput.value = bskyWebUrlForFirstVideo; 
+                    }
+                    
+                    if (!isNavigatingThroughHistory) {
+                        window.history.pushState({ videoUrl: bskyWebUrlForFirstVideo }, '', `?video=${encodeURIComponent(bskyWebUrlForFirstVideo)}`);
+                    }
+                    
+                    await handleSearch(bskyWebUrlForFirstVideo, true); // Recursive call
+                    return; 
 
                 } else {
                     if (commentsSectionHeader) commentsSectionHeader.style.display = 'none';
+                    playingUriForSidebar = null;
+                    currentMainPostData = null; 
                     throw new Error('No playable video posts found in the provided feed or they are filtered.');
                 }
 
-            } else {
+            } else { 
                 const atUri = await getAtUriFromInput(urlValue, showAppMessage);
+                playingUriForSidebar = atUri;
 
-                showAppMessage(`Fetching post data...`, false, true, true);
+                showAppMessage(`Fetching post data...`, false, true, true); // Full screen spinner
                 const postData = await fetchBlueskyVideoPostData(atUri);
 
                 if (isPostHiddenByLabels(postData)) {
@@ -166,11 +233,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     loadMoreCommentsButtonElement.style.display = 'none';
                     player.resetPlayer();
                     hiddenPostMessage.style.display = 'block';
-                    showAppMessage('', false, false, false);
+                    showAppMessage('', false, false, false); // Clear message area
+                    currentMainPostData = null; 
+                    loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, currentPlayingFeedContext, null);
                     return;
                 }
-                currentMainPostData = postData;
+                currentMainPostData = postData; 
 
+                if (!isRecursiveCall) {
+                    currentPlayingFeedContext = null;
+                    currentVideoFromFeedUri = null;
+                }
+                feedUriForSidebar = currentPlayingFeedContext; 
 
                 let playlistUrl = null;
                 if (postData.embed && postData.embed.$type === 'app.bsky.embed.video#view' && postData.embed.playlist) {
@@ -178,35 +252,70 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     displayMainPostDetails(currentMainPostData, urlInput, searchButton);
                     if (commentsSectionHeader) commentsSectionHeader.style.display = 'none';
+                    loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, feedUriForSidebar, currentMainPostData.uri);
                     throw new Error('Post does not contain a playable video.');
                 }
 
                 displayMainPostDetails(currentMainPostData, urlInput, searchButton);
 
-                showAppMessage('Loading video...', false, true, false);
-                player.loadVideoSource(playlistUrl, showAppMessage);
-
+                showAppMessage('', false, false, false); // Clear message area, player will handle its own
+                player.loadVideoSource(playlistUrl, showAppMessage); // Player handles its own spinner
+                
+                if (!isNavigatingThroughHistory && !isRecursiveCall) {
+                    window.history.pushState({ videoUrl: urlValue }, '', `?video=${encodeURIComponent(urlValue)}`);
+                }
+                
                 if (atUri) {
                     if (commentsSectionHeader) commentsSectionHeader.style.display = 'block';
                     commentsContainerElement.style.display = 'block';
                     fetchAndDisplayComments(atUri, null, false, commentsContainerElement, loadMoreCommentsButtonElement, showAppMessage, urlInput, searchButton);
                 }
-                if (!currentPlayingPostFromFeed) {
-                    loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, null, atUri);
-                }
             }
+            
+            loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, feedUriForSidebar, playingUriForSidebar);
+
         } catch (error) {
             showAppMessage(`${error.message}`, true, false, false);
-            if (!currentMainPostData) {
+            if (!currentMainPostData) { 
                 mainPostDetailsContainer.style.display = 'none';
             }
             if (commentsSectionHeader) commentsSectionHeader.style.display = 'none';
             resetCommentsSection(commentsContainerElement, loadMoreCommentsButtonElement);
+            loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, feedUriForSidebar, null);
         } finally {
+            // Global spinner hiding (ensure it's hidden if no longer needed by other operations)
             const spinnerElement = document.getElementById('globalSpinner');
+            const spinnerMsgEl = document.getElementById('spinnerMessage');
             if (spinnerElement && spinnerElement.style.display !== 'none') {
-                hideGlobalSpinner();
+                // Hide if not explicitly kept for next step OR if message doesn't imply ongoing video init
+                 if (!spinnerMsgEl || (spinnerMsgEl && !spinnerMsgEl.textContent.includes("Initializing video...") && !spinnerMsgEl.textContent.includes("Video loaded, setting quality..."))) {
+                    // Check if the keepSpinnerForNextStep logic in showAppMessage handled this.
+                    // This check is a fallback.
+                    // Generally, hideGlobalSpinner() should be called by showAppMessage when appropriate.
+                 }
             }
+            // If showAppMessage was called with keepSpinnerForNextStep=true, it won't hide.
+            // If last message was an error without global spinner, it's already hidden.
+            // This is to catch cases where global spinner might be left on.
+            // A more robust way is to ensure every path that sets it, also clears it.
+            // For now, showAppMessage's logic should handle most cases.
+
+            // Sidebar scroll restoration and flag reset
+            if (window.sidebarScrollToRestore !== undefined) {
+                const sidebarElem = document.querySelector('.explore-more-sidebar');
+                if (sidebarElem) {
+                    const scrollPos = window.sidebarScrollToRestore;
+                    // Use rAF to ensure DOM updates are flushed before scrolling
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => { // Double rAF for more certainty
+                            sidebarElem.scrollTop = scrollPos;
+                        });
+                    });
+                }
+                delete window.sidebarScrollToRestore; // Clear after attempting to restore
+            }
+            // Always reset the global flag after handleSearch completes
+            window.preventSidebarReloadGlobal = false;
         }
     }
 
@@ -215,38 +324,41 @@ document.addEventListener('DOMContentLoaded', () => {
             mainPostDetailsContainer.style.display = 'none';
             return;
         }
+    
         const authorAvatarSrc = post.author.avatar || DEFAULT_AVATAR;
         const authorDisplayName = escapeHtml(post.author.displayName || post.author.handle);
         const authorHandleText = escapeHtml(post.author.handle);
         const verificationHtml = (post.author.verification && post.author.verification.verifiedStatus === 'valid')
             ? '<span class="verification-badge"><i class="ph-fill ph-seal-check"></i></span>'
             : '';
-
+    
         const postTextHtml = post.record.text
             ? `<p class="main-post-text">${parseFacetsToHtml(post.record.text, post.record.facets, urlInputRef, searchButtonRef)}</p>`
             : '';
-
+    
         const postRkey = post.uri.split('/').pop();
         const blueskyPostUrl = `https://bsky.app/profile/${post.author.did}/post/${postRkey}`;
-
+    
         const likeCount = post.likeCount || 0;
         const repostCount = post.repostCount || 0;
+    
         let metaHtml = '';
-
+    
         if (likeCount > 0) {
-            metaHtml += `<span>${formatNumberWithCommas(likeCount)} ${likeCount === 1 ? 'Like' : 'Likes'}</span>`;
+            metaHtml += `<div><i class="ph ph-heart"></i> ${formatNumberWithCommas(likeCount)} ${likeCount === 1 ? 'Like' : 'Likes'}</div>`;
         }
+    
         if (repostCount > 0) {
-            metaHtml += `${likeCount > 0 ? ' • ' : ''}<span>${formatNumberWithCommas(repostCount)} ${repostCount === 1 ? 'Repost' : 'Reposts'}</span>`;
+            metaHtml += `<div><i class="ph ph-repeat"></i> ${formatNumberWithCommas(repostCount)} ${repostCount === 1 ? 'Repost' : 'Reposts'}</div>`;
         }
-
-        if (likeCount === 0 && repostCount === 0) {
-            metaHtml = '<span>No likes or reposts yet.</span>';
+    
+        const timeAgo = formatRelativeTime(post.record.createdAt);
+        const absoluteTime = formatAbsoluteDateTime(post.record.createdAt);
+    
+        if (typeof timeAgo === 'string' && timeAgo.trim().length > 0) {
+            metaHtml += `<div class="post-time" title="${absoluteTime}">${timeAgo}</div>`;
         }
-
-        metaHtml += `<span class="post-time">${formatRelativeTime(post.record.createdAt)}</span>`;
-
-
+    
         mainPostDetailsContainer.innerHTML = `
             <div class="main-post-header">
                 <div class="main-post-author">
@@ -256,12 +368,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             <strong id="mainPostAuthorDisplayName">${authorDisplayName}</strong>
                             ${verificationHtml}
                         </div>
-                    <div>
-                        <span id="mainPostAuthorHandle">@${authorHandleText}</span>
-                    </div>
+                        <div>
+                            <span id="mainPostAuthorHandle">@${authorHandleText}</span>
+                        </div>
                     </div>
                 </div>
-                 <a id="openInBlueskyLink" href="${blueskyPostUrl}" target="_blank" rel="noopener noreferrer" class="open-in-bluesky-button" title="Open post in Bluesky">
+                <a id="openInBlueskyLink" href="${blueskyPostUrl}" target="_blank" rel="noopener noreferrer" class="open-in-bluesky-button" title="Open post in Bluesky">
                     <i class="ph ph-arrow-square-out"></i>
                 </a>
             </div>
@@ -271,49 +383,42 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         mainPostDetailsContainer.style.display = 'block';
-
+    
         mainPostDetailsContainer.querySelectorAll('.internal-bsky-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const bskyUrl = link.dataset.bskyLink;
                 if (urlInputRef && searchButtonRef && bskyUrl) {
                     urlInputRef.value = bskyUrl;
-                    searchButtonRef.click();
+                    searchButtonRef.click(false); // Ensure this matches how you trigger search
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
         });
     }
+    
 
     async function initializeApp() {
-        // First, ensure the dropdown is populated
-        await loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, null, null);
-
-        // Then, handle initial URL (default or from input)
-        const defaultPostUrl = "https://bsky.app/profile/phillewis.bsky.social/post/3loocnxcs622u";
-        let urlToLoadInitially = defaultPostUrl;
-        let playingUriForSidebar = null;
-
-        if (urlInput.value && urlInput.value.trim() !== "") {
-            urlToLoadInitially = urlInput.value.trim();
-        } else {
-            urlInput.value = ''; // Clear if it was empty, so default is loaded without user input shown
+        // Initialize global flags if they don't exist
+        window.preventSidebarReloadGlobal = window.preventSidebarReloadGlobal || false;
+        if (typeof window.sidebarScrollToRestore === 'undefined') {
+            window.sidebarScrollToRestore = undefined;
         }
 
-        await handleSearch(urlToLoadInitially);
 
-        // After handleSearch, currentMainPostData or currentPlayingPostFromFeed might be set
-        // This is mainly for the case where the initial load was a *single post*,
-        // so we want the sidebar to refresh without that single post.
-        // If it was a feed, loadExplorePosts was already called with the feed URI.
-        if (currentMainPostData && !currentPlayingPostFromFeed) {
-            playingUriForSidebar = currentMainPostData.uri;
-            // Refresh explore posts, excluding the one just loaded if it was a single post
-            loadExplorePosts(urlInput, searchButton, explorePostsContainerElement, exploreSpinnerContainerElement, exploreSourceSelectElement, showAppMessage, null, playingUriForSidebar);
-        } else if (currentPlayingPostFromFeed) {
-            // If a feed was loaded, loadExplorePosts was already called from within handleSearch.
-            // No further action needed here for the sidebar related to the *initial feed* load.
+        const experimentalFeedUrl = "https://bsky.app/profile/romiojoseph.github.io/feed/stream";
+        const oldDefaultPostUrlForInputCheck = "https://bsky.app/profile/letterboxd.social/post/3lovot24hoc2o";
+
+        let urlToLoadInitially = experimentalFeedUrl; 
+
+        const currentUrlInInput = urlInput.value.trim();
+        if (currentUrlInInput !== "" && currentUrlInInput !== oldDefaultPostUrlForInputCheck) {
+            urlToLoadInitially = currentUrlInInput;
+        } else if (currentUrlInInput === oldDefaultPostUrlForInputCheck || currentUrlInInput === "") {
+            urlInput.value = ''; 
         }
+        
+        await handleSearch(urlToLoadInitially, false); 
     }
 
     initializeApp();

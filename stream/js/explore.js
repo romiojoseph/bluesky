@@ -2,154 +2,23 @@ const EXPLORE_POST_BATCH_SIZE = 10;
 const EXPLORE_FEED_LIMIT = 25;
 
 let jsonDataSource = null;
-let isDropdownPopulated = false; // Crucial flag
+let isDropdownPopulated = false;
 let currentFeedCursor = null;
 let isLoadingMoreFeedPosts = false;
 let currentFeedAtUriForInfiniteScroll = null;
 
-
-async function loadExplorePosts(urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, exploreSourceSelectEl, showMessageCallback, feedAtUriToLoad = null, playingPostUri = null) {
-    const exploreFeedEndMessageEl = document.getElementById('exploreFeedEndMessage');
-    exploreFeedEndMessageEl.style.display = 'none';
-
-    // Ensure dropdown is populated only once
-    if (!isDropdownPopulated) {
-        // This will set isDropdownPopulated = true upon successful completion
-        await populateExploreDropdownAndSetupListener(exploreSourceSelectEl, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback);
-    }
-
-    // Wait for dropdown population if it was just initiated
-    // A simple mechanism, could be improved with a promise if populateExplore... itself returned one.
-    while (!isDropdownPopulated) {
-        await new Promise(resolve => setTimeout(resolve, 50)); // Small delay to allow population
-    }
-
-
-    const oldTempOption = document.getElementById("tempCustomFeedOption");
-    if (oldTempOption && oldTempOption.value !== feedAtUriToLoad) {
-        oldTempOption.remove();
-    }
-
-    if (feedAtUriToLoad) {
-        const feedOption = Array.from(exploreSourceSelectEl.options).find(opt => opt.value === feedAtUriToLoad || opt.dataset.feedAtUri === feedAtUriToLoad);
-        if (feedOption) {
-            exploreSourceSelectEl.value = feedOption.value;
-        } else {
-            if (!document.getElementById("tempCustomFeedOption") || document.getElementById("tempCustomFeedOption").value !== feedAtUriToLoad) {
-                const feedRkey = feedAtUriToLoad.split('/').pop();
-                const customOption = document.createElement('option');
-                customOption.value = feedAtUriToLoad;
-                customOption.dataset.feedAtUri = feedAtUriToLoad;
-                customOption.textContent = `Current: ${feedRkey}`;
-                customOption.id = "tempCustomFeedOption";
-                exploreSourceSelectEl.appendChild(customOption);
-                exploreSourceSelectEl.value = feedAtUriToLoad;
-            }
-        }
-        await displaySelectedExploreContent(feedAtUriToLoad, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback, true, playingPostUri);
-    } else {
-        const tempOpt = document.getElementById("tempCustomFeedOption");
-        if (tempOpt && exploreSourceSelectEl.value !== tempOpt.value) {
-            tempOpt.remove();
-        }
-        await displaySelectedExploreContent(exploreSourceSelectEl.value, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback, exploreSourceSelectEl.value !== '__presaved__', playingPostUri);
-    }
-
-    const sidebar = document.querySelector('.explore-more-sidebar');
-
-    if (!sidebar.dataset.infiniteScrollAttached) {
-        // Handle both scroll and touch events
-        const handleScroll = async (e) => {
-            const container = e.target;
-            const scrollPosition = container.scrollTop + container.clientHeight;
-            const totalHeight = container.scrollHeight;
-            const threshold = 100; // pixels before bottom
-
-            if (!isLoadingMoreFeedPosts &&
-                scrollPosition + threshold >= totalHeight) {
-                isLoadingMoreFeedPosts = true;
-                exploreSpinnerContainerEl.style.display = 'block';
-
-                try {
-                    const feedApiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getFeed?feed=${encodeURIComponent(currentFeedAtUriForInfiniteScroll)}&limit=${EXPLORE_FEED_LIMIT}&cursor=${encodeURIComponent(currentFeedCursor)}`;
-                    const response = await fetch(feedApiUrl);
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(`Failed to fetch more feed items (${response.status}): ${errorData.message || response.statusText}`);
-                    }
-                    const data = await response.json();
-                    let postsAdded = 0;
-                    if (data.feed && data.feed.length > 0) {
-                        data.feed.forEach(item => {
-                            const post = item.post;
-                            if (post && post.embed && post.embed.$type === "app.bsky.embed.video#view" && post.author && post.record && !isPostHiddenByLabels(post) && post.uri !== playingPostUri) {
-                                const card = createExplorePostCard(post, urlInputRef, searchButtonRef);
-                                exploreContainerEl.appendChild(card);
-                                postsAdded++;
-                            }
-                        });
-                    }
-                    currentFeedCursor = data.cursor || null;
-                    if (!currentFeedCursor && postsAdded === 0 && data.feed.length === 0) {
-                        exploreFeedEndMessageEl.style.display = 'block';
-                    } else if (!currentFeedCursor && postsAdded >= 0 && data.feed.length < EXPLORE_FEED_LIMIT) {
-                        exploreFeedEndMessageEl.style.display = 'block';
-                    }
-
-                } catch (error) {
-                    console.error('Error loading more feed posts:', error);
-                } finally {
-                    isLoadingMoreFeedPosts = false;
-                    exploreSpinnerContainerEl.style.display = 'none';
-                }
-            }
-        };
-
-        // Attach scroll event
-        sidebar.addEventListener('scroll', handleScroll);
-
-        // Also handle touch events for mobile
-        let touchStartY = 0;
-        sidebar.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-
-        sidebar.addEventListener('touchmove', (e) => {
-            const touchY = e.touches[0].clientY;
-            const container = sidebar;
-            const scrollPosition = container.scrollTop + container.clientHeight;
-            const totalHeight = container.scrollHeight;
-            const threshold = 100;
-
-            if (!isLoadingMoreFeedPosts &&
-                scrollPosition + threshold >= totalHeight &&
-                touchStartY > touchY) { // Only load more when scrolling down
-                handleScroll({ target: container });
-            }
-        }, { passive: true });
-
-        sidebar.dataset.infiniteScrollAttached = 'true';
-    }
-}
-
-
 async function populateExploreDropdownAndSetupListener(exploreSourceSelectEl, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback) {
-    if (isDropdownPopulated) { // Check at the very beginning
+    if (isDropdownPopulated) {
         return;
     }
-    isDropdownPopulated = true; // Set flag early to prevent race conditions
+    isDropdownPopulated = true;
 
     try {
         const response = await fetch('assets/video_posts.json');
         if (!response.ok) throw new Error(`Failed to load explore posts config: ${response.status} ${response.statusText}`);
         jsonDataSource = await response.json();
 
-        exploreSourceSelectEl.innerHTML = '';
-
-        const presavedOption = document.createElement('option');
-        presavedOption.value = '__presaved__';
-        presavedOption.textContent = 'Preloaded videos';
-        exploreSourceSelectEl.appendChild(presavedOption);
+        exploreSourceSelectEl.innerHTML = ''; // Clear existing options
 
         if (jsonDataSource.feedGenerators && Array.isArray(jsonDataSource.feedGenerators)) {
             for (const feed of jsonDataSource.feedGenerators) {
@@ -167,43 +36,181 @@ async function populateExploreDropdownAndSetupListener(exploreSourceSelectEl, ur
                 }
             }
         }
-        // isDropdownPopulated = true; // Moved up to prevent race conditions
 
-        exploreSourceSelectEl.addEventListener('change', (event) => {
+        const presavedOption = document.createElement('option');
+        presavedOption.value = '__presaved__';
+        presavedOption.textContent = 'Preloaded videos';
+        exploreSourceSelectEl.appendChild(presavedOption);
+
+        exploreSourceSelectEl.addEventListener('change', async (event) => {
             const tempOption = document.getElementById("tempCustomFeedOption");
             if (tempOption && tempOption.value !== event.target.value) {
                 tempOption.remove();
             }
-            displaySelectedExploreContent(event.target.value, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback, event.target.value !== '__presaved__');
+            const selectedValue = event.target.value;
+
+            if (selectedValue === '__presaved__') {
+                if (jsonDataSource && jsonDataSource.postUris && jsonDataSource.postUris.length > 0) {
+                    const firstPresavedPostUrl = jsonDataSource.postUris[0];
+                    urlInputRef.value = firstPresavedPostUrl;
+                    searchButtonRef.click();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    urlInputRef.value = '';
+                    searchButtonRef.click();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } else {
+                urlInputRef.value = selectedValue;
+                searchButtonRef.click();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         });
 
     } catch (error) {
-        isDropdownPopulated = false; // Reset if failed
-        console.error('Error initializing explore section:', error);
+        isDropdownPopulated = false;
+        console.error('Error initializing explore section sources:', error);
         exploreContainerEl.innerHTML = `<p style="color:red;">Error initializing explore sources: ${error.message}</p>`;
-        exploreSpinnerContainerEl.style.display = 'none';
+        if(exploreSpinnerContainerEl) exploreSpinnerContainerEl.style.display = 'none';
         if (jsonDataSource === null && showMessageCallback) showMessageCallback('Failed to load explore configuration.', true, false, false);
     }
 }
 
-async function displaySelectedExploreContent(selectedValueOrAtUri, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback, isFeed = false, playingPostUri = null) {
-    exploreSpinnerContainerEl.style.display = 'flex';
-    exploreContainerEl.innerHTML = '';
-    currentFeedCursor = null;
-    currentFeedAtUriForInfiniteScroll = null;
-    isLoadingMoreFeedPosts = false;
-    const exploreFeedEndMessageEl = document.getElementById('exploreFeedEndMessage');
-    exploreFeedEndMessageEl.style.display = 'none';
 
+async function loadExplorePosts(urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, exploreSourceSelectEl, showMessageCallback, feedAtUriToLoad = null, playingPostUri = null) {
+    if (window.preventSidebarReloadGlobal) {
+        return;
+    }
+
+    const exploreFeedEndMessageEl = document.getElementById('exploreFeedEndMessage');
+    if (exploreFeedEndMessageEl) exploreFeedEndMessageEl.style.display = 'none';
+
+    if (!isDropdownPopulated) {
+        await populateExploreDropdownAndSetupListener(exploreSourceSelectEl, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback);
+    }
+    
+    while (isDropdownPopulated && !jsonDataSource) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    if(!jsonDataSource && isDropdownPopulated === false){
+         console.warn("Explore dropdown population failed or jsonDataSource not loaded. Cannot load explore posts.");
+         if(exploreSpinnerContainerEl) exploreSpinnerContainerEl.style.display = 'none';
+         return;
+    }
+
+    const oldTempOption = document.getElementById("tempCustomFeedOption");
+    if (oldTempOption && oldTempOption.value !== feedAtUriToLoad) {
+        oldTempOption.remove();
+    }
+
+    let actualSelectedValueOrAtUri = exploreSourceSelectEl.value;
+
+    if (feedAtUriToLoad) {
+        const feedOption = Array.from(exploreSourceSelectEl.options).find(opt => opt.value === feedAtUriToLoad || opt.dataset.feedAtUri === feedAtUriToLoad);
+        if (feedOption) {
+            exploreSourceSelectEl.value = feedOption.value;
+            actualSelectedValueOrAtUri = feedOption.value;
+        } else {
+            if (!document.getElementById("tempCustomFeedOption") || document.getElementById("tempCustomFeedOption").value !== feedAtUriToLoad) {
+                const feedRkey = feedAtUriToLoad.split('/').pop();
+                const customOption = document.createElement('option');
+                customOption.value = feedAtUriToLoad;
+                customOption.dataset.feedAtUri = feedAtUriToLoad;
+                customOption.textContent = `Current: ${feedRkey.substring(0,10)}...`;
+                customOption.id = "tempCustomFeedOption";
+                exploreSourceSelectEl.appendChild(customOption);
+                exploreSourceSelectEl.value = feedAtUriToLoad;
+                actualSelectedValueOrAtUri = feedAtUriToLoad;
+            }
+        }
+    } else {
+        const tempOpt = document.getElementById("tempCustomFeedOption");
+        if (tempOpt && exploreSourceSelectEl.value !== tempOpt.value) {
+            tempOpt.remove();
+        }
+        actualSelectedValueOrAtUri = exploreSourceSelectEl.value;
+    }
+    
+    await displaySelectedExploreContent(actualSelectedValueOrAtUri, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback, actualSelectedValueOrAtUri !== '__presaved__', playingPostUri);
+    
+    const sidebar = document.querySelector('.explore-more-sidebar');
+    if (!sidebar.dataset.infiniteScrollAttached) {
+        const isMobile = window.matchMedia("(max-width: 540px)").matches;
+        const scrollTarget = isMobile ? window : sidebar;
+
+        const handleScroll = async (e) => {
+            let isAtBottom;
+            if (isMobile) {
+                 isAtBottom = window.innerHeight + window.scrollY + 150 >= document.documentElement.scrollHeight;
+            } else { 
+                 if (sidebar.scrollHeight <= sidebar.clientHeight + 10) {
+                    isAtBottom = true; 
+                 } else {
+                    isAtBottom = sidebar.scrollTop + sidebar.clientHeight + 150 >= sidebar.scrollHeight;
+                 }
+            }
+
+            if (!isLoadingMoreFeedPosts && currentFeedCursor && currentFeedAtUriForInfiniteScroll && isAtBottom) {
+                isLoadingMoreFeedPosts = true;
+                if(exploreSpinnerContainerEl) exploreSpinnerContainerEl.style.display = 'flex';
+
+                try {
+                    const feedApiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getFeed?feed=${encodeURIComponent(currentFeedAtUriForInfiniteScroll)}&limit=${EXPLORE_FEED_LIMIT}&cursor=${encodeURIComponent(currentFeedCursor)}`;
+                    const response = await fetch(feedApiUrl);
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(`Failed to fetch more feed items (${response.status}): ${errorData.message || response.statusText}`);
+                    }
+                    const data = await response.json();
+                    // let postsAdded = 0; // Not strictly needed if not checking count for a message
+                    if (data.feed && data.feed.length > 0) {
+                        data.feed.forEach(item => {
+                            const post = item.post;
+                            if (post && post.embed && post.embed.$type === "app.bsky.embed.video#view" && post.author && post.record && !isPostHiddenByLabels(post) && post.uri !== playingPostUri) {
+                                const card = createExplorePostCard(post, urlInputRef, searchButtonRef);
+                                exploreContainerEl.appendChild(card);
+                                // postsAdded++;
+                            }
+                        });
+                    }
+                    currentFeedCursor = data.cursor || null;
+                    if ((!currentFeedCursor || data.feed.length < EXPLORE_FEED_LIMIT)) { 
+                        if (exploreFeedEndMessageEl) exploreFeedEndMessageEl.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Error loading more feed posts:', error);
+                } finally {
+                    isLoadingMoreFeedPosts = false;
+                    if(exploreSpinnerContainerEl) exploreSpinnerContainerEl.style.display = 'none';
+                }
+            }
+        };
+
+        scrollTarget.addEventListener('scroll', handleScroll);
+        sidebar.dataset.infiniteScrollAttached = 'true'; 
+    }
+}
+
+
+async function displaySelectedExploreContent(selectedValueOrAtUri, urlInputRef, searchButtonRef, exploreContainerEl, exploreSpinnerContainerEl, showMessageCallback, isFeed = false, playingPostUri = null) {
+    if(exploreSpinnerContainerEl) exploreSpinnerContainerEl.style.display = 'flex';
+    if(exploreContainerEl) exploreContainerEl.innerHTML = '';
+    currentFeedCursor = null;
+    isLoadingMoreFeedPosts = false; 
+    const exploreFeedEndMessageEl = document.getElementById('exploreFeedEndMessage');
+    if (exploreFeedEndMessageEl) exploreFeedEndMessageEl.style.display = 'none';
 
     try {
         if (!jsonDataSource) {
+            console.warn("jsonDataSource is null in displaySelectedExploreContent. Attempting to fetch.");
             const response = await fetch('assets/video_posts.json');
             if (!response.ok) throw new Error(`Failed to load explore posts config: ${response.status} ${response.statusText}`);
             jsonDataSource = await response.json();
         }
 
         if (selectedValueOrAtUri === '__presaved__') {
+            currentFeedAtUriForInfiniteScroll = null;
             await fetchAndDisplayPresavedVideoPosts(jsonDataSource.postUris || [], urlInputRef, searchButtonRef, exploreContainerEl, showMessageCallback, playingPostUri);
         } else {
             currentFeedAtUriForInfiniteScroll = selectedValueOrAtUri;
@@ -211,17 +218,15 @@ async function displaySelectedExploreContent(selectedValueOrAtUri, urlInputRef, 
         }
     } catch (error) {
         console.error('Error displaying explore content:', error);
-        exploreContainerEl.innerHTML = `<p style="color:red;">Error loading content: ${error.message}</p>`;
+        if(exploreContainerEl) exploreContainerEl.innerHTML = `<p style="color:red;">Error loading content: ${error.message}</p>`;
     } finally {
-        exploreSpinnerContainerEl.style.display = 'none';
-        if (showMessageCallback) showMessageCallback('', false, false, false);
-        else hideGlobalSpinner();
+        if(exploreSpinnerContainerEl) exploreSpinnerContainerEl.style.display = 'none';
     }
 }
 
 async function fetchAndDisplayPresavedVideoPosts(postUrls, urlInputRef, searchButtonRef, exploreContainerEl, showMessageCallback, playingPostUri = null) {
     if (!postUrls || postUrls.length === 0) {
-        exploreContainerEl.innerHTML = '<p>No presaved posts to explore currently.</p>';
+        exploreContainerEl.innerHTML = '<p class="user-notice">No presaved posts to explore currently.</p>';
         return;
     }
 
@@ -238,13 +243,22 @@ async function fetchAndDisplayPresavedVideoPosts(postUrls, urlInputRef, searchBu
             }
         }
     }
-
-    if (resolvedAtUris.length === 0 && playingPostUri && postUrls.length > 0) {
-        exploreContainerEl.innerHTML = '<p>The only presaved post is currently playing.</p>';
-        return;
-    }
+    
     if (resolvedAtUris.length === 0) {
-        exploreContainerEl.innerHTML = '<p>No valid Bluesky posts found to explore after resolving presaved URLs.</p>';
+        let onlyPlaying = false;
+        if (playingPostUri && postUrls.length === 1) {
+            try {
+                const singlePresavedAtUri = await getAtUriFromInput(postUrls[0], null);
+                if (singlePresavedAtUri === playingPostUri) {
+                    onlyPlaying = true;
+                }
+            } catch (e) { /* ignore */ }
+        }
+        if (onlyPlaying) {
+            exploreContainerEl.innerHTML = '<p class="user-notice">The only presaved post is currently playing.</p>';
+        } else {
+            exploreContainerEl.innerHTML = '<p class="user-notice">No valid Bluesky posts found in the presaved list, or they are filtered.</p>';
+        }
         return;
     }
 
@@ -280,7 +294,7 @@ async function fetchAndDisplayPresavedVideoPosts(postUrls, urlInputRef, searchBu
         }
     }
     if (postsAdded === 0) {
-        exploreContainerEl.innerHTML = '<p>No video posts found in the presaved list after filtering.</p>';
+        exploreContainerEl.innerHTML = '<p class="user-notice">No video posts found in the presaved list after filtering.</p>';
     }
 }
 
@@ -309,25 +323,25 @@ async function fetchAndDisplayFeedVideoPosts(feedAtUri, urlInputRef, searchButto
             });
         }
 
-        if (videoPostCount === 0 && !currentFeedCursor && (!data.feed || data.feed.length === 0)) {
-            exploreContainerEl.innerHTML = `<p class="user-notice">No video posts found in this feed after filtering.</p>`;
-        } else if (videoPostCount === 0 && playingPostUri && data.feed && data.feed.length > 0) {
-            exploreContainerEl.innerHTML = `<p class="user-notice">The only video posts in this feed are currently playing or filtered out.</p>`;
-        } else if (videoPostCount === 0 && data.feed && data.feed.length > 0) {
-            exploreContainerEl.innerHTML = `<p class="user-notice">No video posts found in this feed after filtering.</p>`;
+        if (videoPostCount === 0) {
+            if (!data.feed || data.feed.length === 0) {
+                 exploreContainerEl.innerHTML = `<p class="user-notice">This feed appears to be empty or returned no posts.</p>`;
+            } else {
+                 exploreContainerEl.innerHTML = `<p class="user-notice">No video posts found in this feed after filtering, or the only videos are the one currently playing.</p>`;
+            }
         }
 
-        if (!currentFeedCursor && videoPostCount > 0) {
-            exploreFeedEndMessageEl.style.display = 'block';
+        if (!currentFeedCursor && data.feed && data.feed.length < EXPLORE_FEED_LIMIT) { 
+            if (exploreFeedEndMessageEl) exploreFeedEndMessageEl.style.display = 'block';
+        } else if (!currentFeedCursor && (!data.feed || data.feed.length === 0)) { 
+             if (exploreFeedEndMessageEl) exploreFeedEndMessageEl.style.display = 'block';
         }
-
 
     } catch (error) {
         console.error(`Error loading posts from feed ${feedAtUri}:`, error);
         exploreContainerEl.innerHTML = `<p style="color:red;">Error loading feed: ${error.message}</p>`;
         currentFeedCursor = null;
         currentFeedAtUriForInfiniteScroll = null;
-        if (showMessageCallback) showMessageCallback('', false, false, false);
     }
 }
 
@@ -356,7 +370,7 @@ function createExplorePostCard(post, urlInputRef, searchButtonRef) {
 
     const playIconOverlay = document.createElement('div');
     playIconOverlay.classList.add('explore-play-icon-overlay');
-    playIconOverlay.innerHTML = '<i class="ph-bold ph-play-circle"></i>';
+    playIconOverlay.innerHTML = '<i class="ph ph-play-circle"></i>';
     thumbnailContainer.appendChild(playIconOverlay);
 
     const metricsOverlay = document.createElement('div');
@@ -370,15 +384,16 @@ function createExplorePostCard(post, urlInputRef, searchButtonRef) {
         likesSpan.innerHTML = `<i class="ph ph-heart"></i> ${formatNumberWithCommas(likeCount)}`;
         metricsOverlay.appendChild(likesSpan);
     }
+    
     if (repostCount > 0) {
         const repostsSpan = document.createElement('span');
         repostsSpan.innerHTML = `<i class="ph ph-repeat"></i> ${formatNumberWithCommas(repostCount)}`;
         metricsOverlay.appendChild(repostsSpan);
     }
+    
     if (metricsOverlay.hasChildNodes()) {
         thumbnailContainer.appendChild(metricsOverlay);
-    }
-
+    }    
 
     card.appendChild(thumbnailContainer);
 
@@ -419,10 +434,17 @@ function createExplorePostCard(post, urlInputRef, searchButtonRef) {
             const postRkey = post.uri.split('/').pop();
             const profileIdentifier = post.author.handle;
             const bskyWebUrl = `https://bsky.app/profile/${profileIdentifier}/post/${postRkey}`;
+            
+            const sidebar = document.querySelector('.explore-more-sidebar');
+            window.sidebarScrollToRestore = sidebar ? sidebar.scrollTop : 0;
+            window.preventSidebarReloadGlobal = true;
+            
             urlInputRef.value = bskyWebUrl;
-
             searchButtonRef.click();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (window.matchMedia("(min-width: 541px)").matches) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
     });
 

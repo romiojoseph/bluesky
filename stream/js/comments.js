@@ -190,17 +190,17 @@ function createCommentElement(postView, depth, urlInputRef, searchButtonRef) {
     const authorInfoDiv = document.createElement('div');
     authorInfoDiv.classList.add('comment-author-info');
 
+    const handleSpan = document.createElement('span');
+    handleSpan.classList.add('comment-author-handle');
+    handleSpan.textContent = `@${postView.author.handle}`;
+    authorInfoDiv.appendChild(handleSpan);
+
     if (postView.author.verification && postView.author.verification.verifiedStatus === 'valid') {
         const verifiedBadge = document.createElement('span');
         verifiedBadge.classList.add('verification-badge');
         verifiedBadge.innerHTML = '<i class="ph-fill ph-seal-check"></i>';
         authorInfoDiv.appendChild(verifiedBadge);
     }
-
-    const handleSpan = document.createElement('span');
-    handleSpan.classList.add('comment-author-handle');
-    handleSpan.textContent = `@${postView.author.handle}`;
-    authorInfoDiv.appendChild(handleSpan);
 
     const timestampSpan = document.createElement('span');
     timestampSpan.classList.add('comment-timestamp');

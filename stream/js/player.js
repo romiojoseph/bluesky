@@ -17,7 +17,8 @@ function initializePlayer(config) {
 
     const videoPlayer = document.getElementById(videoElementId);
     const videoPlayerMessageOverlay = document.getElementById('videoPlayerMessageOverlay');
-    const videoPlayerMessageSpan = videoPlayerMessageOverlay ? videoPlayerMessageOverlay.querySelector('span') : null;
+    const videoPlayerOverlaySpinner = document.getElementById('videoPlayerOverlaySpinner');
+    const videoPlayerOverlayMessageSpan = document.getElementById('videoPlayerOverlayMessage');
     const customControls = document.getElementById(controlsContainerId);
     const qualitySelector = document.getElementById(qualitySelectorId);
     const playPauseButton = document.getElementById(playPauseButtonId);
@@ -81,27 +82,44 @@ function initializePlayer(config) {
 
     qualitySelector.addEventListener('change', () => {
         if (hlsPlayer) {
-            showPlayerMessage("Changing quality...");
+            showPlayerMessage("Changing quality...", true);
             hlsPlayer.currentLevel = parseInt(qualitySelector.value);
         }
-        handleInteractionStart();
+        handleInteractionStart(); // Keep controls visible during interaction
     });
 
-    function showPlayerMessage(message) {
-        if (videoPlayerMessageOverlay && videoPlayerMessageSpan) {
-            videoPlayerMessageSpan.textContent = message;
+    // Listener for hiding controls when clicking outside the player
+    document.addEventListener('click', (event) => {
+        const isPlayerInteracting = videoPlayerContainer.classList.contains('user-interacting');
+        const isClickInsidePlayer = videoPlayerContainer.contains(event.target);
+        const header = document.querySelector('header');
+        const isClickInsideHeader = header ? header.contains(event.target) : false;
+
+        if (isPlayerInteracting && !isClickInsidePlayer && !isClickInsideHeader && !videoPlayer.paused) {
+            hidePlayerControls();
+        }
+    });
+
+
+    function showPlayerMessage(message, showSpinner = true) {
+        if (videoPlayerMessageOverlay && videoPlayerOverlayMessageSpan && videoPlayerOverlaySpinner) {
+            videoPlayerOverlayMessageSpan.textContent = message;
+            videoPlayerOverlaySpinner.style.display = showSpinner ? 'inline-block' : 'none';
             videoPlayerMessageOverlay.style.display = 'flex';
         }
     }
 
     function hidePlayerMessage() {
-        if (videoPlayerMessageOverlay) {
+        if (videoPlayerMessageOverlay && videoPlayerOverlaySpinner) {
             videoPlayerMessageOverlay.style.display = 'none';
+            videoPlayerOverlaySpinner.style.display = 'none';
         }
     }
 
 
     function handleVideoAreaClick(event) {
+        // Only toggle play/pause if the click is directly on the video or the status icon overlay
+        // and not on other controls that might be overlaid (though center controls have their own handlers)
         if (event.target === videoPlayer || event.target === videoStatusIconOverlay) {
             togglePlayPause();
         }
@@ -117,7 +135,7 @@ function initializePlayer(config) {
 
     function toggleMute() {
         videoPlayer.muted = !videoPlayer.muted;
-        handleInteractionStart();
+        handleInteractionStart(); // Keep controls visible
     }
 
     function seekVideo(e) {
@@ -125,13 +143,13 @@ function initializePlayer(config) {
         const rect = progressBarWrapper.getBoundingClientRect();
         const offsetX = e.clientX - rect.left;
         videoPlayer.currentTime = (offsetX / rect.width) * videoPlayer.duration;
-        handleInteractionStart();
+        handleInteractionStart(); // Keep controls visible
     }
 
     function seekRelative(seconds) {
         if (!videoPlayer.duration || !isFinite(videoPlayer.duration)) return;
         videoPlayer.currentTime = Math.max(0, Math.min(videoPlayer.duration, videoPlayer.currentTime + seconds));
-        handleInteractionStart();
+        handleInteractionStart(); // Keep controls visible
     }
 
     function toggleFullscreen() {
@@ -142,7 +160,7 @@ function initializePlayer(config) {
             if (document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         }
-        handleInteractionStart();
+        handleInteractionStart(); // Keep controls visible
     }
 
     function updatePlayPauseIcons(isPaused) {
@@ -160,7 +178,7 @@ function initializePlayer(config) {
         videoStatusIconOverlay.classList.add('visible');
         statusIconTimeout = setTimeout(() => {
             videoStatusIconOverlay.classList.remove('visible');
-        }, 700);
+        }, 700); // Icon visible for 0.7s
     }
 
 
@@ -180,7 +198,7 @@ function initializePlayer(config) {
         } else {
             totalDurationDisplay.textContent = 'Live';
         }
-        hidePlayerMessage();
+        if (!videoPlayer.paused) hidePlayerMessage(); // Hide messages like "Tap to play" if we get metadata while playing
     }
     function updateCurrentTime() {
         currentTimeDisplay.textContent = formatTime(videoPlayer.currentTime);
@@ -249,6 +267,7 @@ function initializePlayer(config) {
     }
 
     function handleInteractionEnd() {
+        // Only start hide timer if not paused and mouse/touch leaves player area
         if (!videoPlayer.paused) {
             startHideControlsTimer();
         }
@@ -264,7 +283,7 @@ function initializePlayer(config) {
 
     function startHideControlsTimer() {
         clearTimeout(playerControlsTimeout);
-        playerControlsTimeout = setTimeout(hidePlayerControls, 1000);
+        playerControlsTimeout = setTimeout(hidePlayerControls, 1000); // Hide after 1 second of no interaction
     }
 
     updateMuteButtonVisuals();
@@ -276,16 +295,15 @@ function initializePlayer(config) {
             videoPlayerContainer.style.display = 'block';
             if (Hls.isSupported()) {
                 if (hlsPlayer) hlsPlayer.destroy();
-                showPlayerMessage("Initializing video...");
+                showPlayerMessage("Initializing video...", true);
                 hlsPlayer = new Hls({});
                 hlsPlayer.loadSource(m3u8Url);
                 hlsPlayer.attachMedia(videoPlayer);
 
                 hlsPlayer.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-                    showPlayerMessage("Video loaded, setting quality...");
                     videoPlayer.play().catch(e => {
                         console.warn("Autoplay prevented:", e);
-                        hidePlayerMessage();
+                        showPlayerMessage("Tap to play", false);
                         handlePause();
                     });
                     qualitySelector.style.display = 'block';
@@ -296,7 +314,7 @@ function initializePlayer(config) {
                     }
                 });
                 hlsPlayer.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-                    hidePlayerMessage();
+                    if (!videoPlayer.paused) hidePlayerMessage(); // Hide "Changing quality..." if it was shown
                     if (qualitySelector.options.length > 0 && hlsPlayer.currentLevel !== -1) {
                         for (let i = 0; i < qualitySelector.options.length; i++) {
                             if (parseInt(qualitySelector.options[i].value) === data.level) {
@@ -310,47 +328,68 @@ function initializePlayer(config) {
                 });
 
                 hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
-                    hidePlayerMessage();
-                    if (data.fatal) {
-                        let errorMsg = `Error loading video: ${data.details}`;
-                        switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                errorMsg = `Network error (check CORS/URL): ${data.details}`;
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                errorMsg = `Media error: ${data.details}`;
-                                if (data.reason === 'bufferStalledError' && hlsPlayer) {
-                                    hlsPlayer.recoverMediaError();
-                                }
-                                break;
-                        }
-                        if (showMessageCallback) showMessageCallback(errorMsg, true);
-                        console.error('Fatal HLS error:', data);
-                        if (hlsPlayer && data.fatal) {
-                            hlsPlayer.destroy();
-                            hlsPlayer = null;
-                        }
-                    } else {
-                        console.warn('Non-fatal HLS error:', data);
+                    let errorMsg = `Error: ${data.details}`;
+                    let showErrorOverlay = true;
+                    let showSpinnerInOverlay = false;
+
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            errorMsg = `Network error: ${data.details}`;
+                            if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR || data.details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR) {
+                                errorMsg = `Error loading video (check URL/CORS).`;
+                            }
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            errorMsg = `Media error: ${data.details}`;
+                            if (data.details === Hls.ErrorDetails.BUFFER_SEEK_OVER_HOLE && hlsPlayer && !data.fatal) {
+                                console.warn("HLS.js: bufferSeekOverHole, attempting recovery.");
+                                showPlayerMessage("Player recovering...", true);
+                                if (hlsPlayer.recoverMediaError) hlsPlayer.recoverMediaError(); else hlsPlayer.startLoad();
+                                showErrorOverlay = false; 
+                            } else if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR && hlsPlayer && !data.fatal) {
+                                console.warn("HLS.js: bufferStalledError, attempting to resume load.");
+                                showPlayerMessage("Resuming stream...", true);
+                                hlsPlayer.startLoad();
+                                showErrorOverlay = false;
+                            }
+                            break;
+                        default:
+                            errorMsg = `Video load error: ${data.details}`;
+                            break;
+                    }
+
+                    if (showErrorOverlay) {
+                        showPlayerMessage(errorMsg, showSpinnerInOverlay);
+                    }
+                    
+                    console.error('HLS error:', data);
+                    if (showMessageCallback && data.fatal) { 
+                         showMessageCallback(errorMsg, true);
+                    }
+
+                    if (hlsPlayer && data.fatal) {
+                        hlsPlayer.destroy();
+                        hlsPlayer = null;
                     }
                 });
             } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                showPlayerMessage("Loading video...");
+                showPlayerMessage("Loading video...", true);
                 videoPlayer.src = m3u8Url;
                 videoPlayer.addEventListener('loadedmetadata', () => {
-                    hidePlayerMessage();
                     videoPlayer.play().catch(e => {
                         console.warn("Autoplay prevented (native HLS):", e);
+                        showPlayerMessage("Tap to play", false);
                         handlePause();
                     })
                 });
                 qualitySelector.style.display = 'none';
                 videoPlayer.addEventListener('error', (e) => {
-                    hidePlayerMessage();
+                    const errorDetail = videoPlayer.error ? videoPlayer.error.message : 'Unknown error';
+                    showPlayerMessage(`Error playing video: ${errorDetail}`, false);
                     if (showMessageCallback) showMessageCallback('Error playing video with native HLS.', true);
                 });
             } else {
-                hidePlayerMessage();
+                showPlayerMessage('HLS is not supported in your browser.', false);
                 if (showMessageCallback) showMessageCallback('HLS is not supported in your browser.', true);
             }
         },

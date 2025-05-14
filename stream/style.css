@@ -36,6 +36,9 @@
     --font-size-caption: 14px;
     --font-size-label: 13px;
     --font-size-tagline: 11px;
+
+    --header-height-desktop: 63px;
+    --header-height-mobile: 55px;
 }
 
 * {
@@ -84,6 +87,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    padding-top: var(--header-height-desktop); /* Space for fixed header */
 }
 
 i.ph {
@@ -118,21 +122,17 @@ button i.ph {
 }
 
 .spinner-icon {
-    /* For ph-spinner */
+    display: inline-block;
     font-size: 40px !important;
-    /* Adjust size as needed */
     animation: spin 1s linear infinite;
     margin-bottom: 10px;
     color: var(--auraDark-11);
 }
 
 .button-spinner.spinner-icon {
-    /* For spinner in buttons */
     font-size: 1.2em !important;
-    /* Match button icon size */
     margin-left: 8px;
     margin-bottom: 0;
-    /* Reset margin for inline use */
 }
 
 
@@ -157,8 +157,11 @@ header {
     justify-content: center;
     position: fixed;
     top: 0;
+    left: 0; /* Ensure it spans full width */
+    right: 0; /* Ensure it spans full width */
     z-index: 2147483649;
     width: 100%;
+    height: var(--header-height-desktop);
 }
 
 .logo {
@@ -188,6 +191,7 @@ header {
     backdrop-filter: blur(16px);
     color: var(--auraDark-11);
     outline: none;
+    height: 39px;
 }
 
 #urlInput:hover {
@@ -238,20 +242,37 @@ header {
     display: flex;
     flex-grow: 1;
     width: 100%;
-    margin: 48px auto 0;
+    /* margin-top removed, handled by body padding-top */
 }
 
 main {
-    flex: 3;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 0;
     overflow-y: auto;
+    gap: 24px;
+}
+
+.video-content-child {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.reply-section {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .video-player-container {
-    position: relative;
+    position: relative; /* Default for desktop */
     width: 100%;
     max-width: 960px;
     aspect-ratio: 16 / 9;
@@ -259,7 +280,8 @@ main {
     border-radius: 16px;
     overflow: hidden;
     display: none;
-    margin-bottom: 20px;
+    z-index: 10;
+    margin: 8px 0 0 ;
 }
 
 #videoPlayer {
@@ -281,9 +303,7 @@ main {
     border-radius: 50px;
     opacity: 0;
     transition: opacity 0.05s ease-out;
-    /* Faster fade-out */
     pointer-events: none;
-    display: flex;
     gap: 48px;
 }
 
@@ -292,7 +312,6 @@ main {
     opacity: 1;
     pointer-events: auto;
     transition: opacity 0.3s ease-in-out;
-    /* Smooth fade-in */
 }
 
 .center-control-button {
@@ -350,7 +369,6 @@ main {
     opacity: 1;
     pointer-events: auto;
     transition: opacity 0.3s ease-in-out;
-    /* Smooth fade-in */
 }
 
 .controls-bottom-left,
@@ -427,7 +445,8 @@ main {
 .main-post-details-container {
     width: 100%;
     max-width: 960px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
+    background-color: var(--auraDark-1);
 }
 
 .main-post-header {
@@ -513,8 +532,7 @@ main {
     padding-top: 12px;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    /* Increased gap for better separation */
+    gap: 20px;
     align-items: center;
 }
 
@@ -578,13 +596,13 @@ main {
     width: 100%;
     max-width: 960px;
     background-color: var(--auraDark-3);
-    padding: 16px;
+    padding: 10px 16px;
     border-radius: 16px 16px 0 0;
 }
 
 .comments-section-header h3 {
     margin: 0;
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-caption);
     color: var(--auraDark-11);
     font-weight: 600;
 }
@@ -592,7 +610,7 @@ main {
 .comments-section-header span {
     font-weight: normal;
     color: var(--auraDark-11);
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-caption);
     font-weight: 600;
 }
 
@@ -605,6 +623,7 @@ main {
     max-height: 60vh;
     overflow-x: hidden;
     overflow-y: scroll;
+    background-color: var(--auraDark-1);
 }
 
 .comment {
@@ -640,8 +659,8 @@ main {
 
 .comment-author-info {
     display: flex;
+    gap: 4px;
     align-items: center;
-    flex-wrap: wrap;
 }
 
 .comment-author-container {
@@ -656,7 +675,7 @@ main {
 .comment-author-handle {
     color: var(--auraDark-8);
     font-size: var(--font-size-label);
-    margin-right: 8px;
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -670,7 +689,7 @@ main {
 }
 
 .comment-timestamp {
-    color: var(--auraDark-8);
+    color: var(--auraDark-7);
     font-size: var(--font-size-label);
     white-space: nowrap;
 }
@@ -793,7 +812,6 @@ main {
     color: var(--auraDark-10);
 }
 
-
 .comment-embed-record a.view-quote-link {
     font-size: var(--font-size-label);
     color: var(--auraDark-10);
@@ -850,18 +868,16 @@ main {
     cursor: not-allowed;
 }
 
-/* .load-more-button .button-spinner is now .button-spinner.spinner-icon */
-
 .explore-more-sidebar {
     flex: 1;
-    min-width: 220px;
-    max-width: 350px;
+    min-width: 180px;
+    max-width: 280px;
     padding: 16px;
     background-color: var(--auraDark-1);
-    overflow-y: auto;
-    height: calc(100vh - 60px);
-    position: sticky;
-    top: 60px;
+    overflow-y: auto; /* Desktop sidebar scrolls itself */
+    height: calc(100vh - var(--header-height-desktop));
+    position: sticky; /* Sticky for desktop */
+    top: var(--header-height-desktop);
     -webkit-overflow-scrolling: touch;
 }
 
@@ -933,9 +949,13 @@ main {
     left: 50%;
     transform: translate(-50%, -50%);
     color: rgba(255, 255, 255, 0.9);
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.32);
     border-radius: 50%;
-    padding: 10px;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
     opacity: 0.8;
     transition: opacity 0.2s;
@@ -945,9 +965,9 @@ main {
     opacity: 1;
 }
 
-.explore-play-icon-overlay i.ph {
-    font-size: 2.5em;
-    display: block;
+.explore-play-icon-overlay i {
+    font-size: var(--font-size-heading4);
+    vertical-align: middle;
 }
 
 .explore-metrics-overlay {
@@ -1013,7 +1033,6 @@ main {
 }
 
 .sidebar-spinner-container {
-    /* Renamed from .sidebar-spinner */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1022,9 +1041,7 @@ main {
 
 .sidebar-spinner-container .spinner-icon {
     font-size: 24px !important;
-    /* Adjust size for sidebar */
     margin-bottom: 0;
-    /* Reset margin for flex centering */
 }
 
 
@@ -1045,87 +1062,6 @@ main {
     cursor: pointer;
 }
 
-
-
-@media (max-width: 540px) {
-    .main-content-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        gap: 32px;
-        width: 100%;
-        margin: 48px auto 0;
-    }
-
-    main {
-        flex: 1;
-        width: 100%;
-        padding: 0;
-    }
-
-    .video-player-container {
-        border-radius: 0;
-    }
-
-    .main-post-details-container {
-        padding: 0 12px;
-
-    }
-
-    .explore-posts-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .explore-metrics-overlay {
-        font-size: calc(var(--font-size-tagline) - 1px);
-        /* Slightly smaller on mobile */
-        padding: 3px 6px;
-    }
-
-
-    .author-handle {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: inline-block;
-        min-width: 0;
-    }
-
-    header {
-        padding: 8px 4px;
-    }
-
-    .explore-more-sidebar {
-        width: 100%;
-        max-width: 100%;
-        padding: 12px;
-        height: auto;
-        position: relative;
-        /* Change from static to relative */
-        min-height: 50vh;
-        /* Add minimum height */
-        overflow-y: auto;
-    }
-
-    .comment {
-        margin: 8px 0 24px;
-    }
-
-    .nested-replies {
-        padding-left: 4px;
-        width: calc(100% - 4px);
-    }
-
-    .comments-container {
-        padding: 12px;
-        max-height: 35vh;
-    }
-}
-
-
 .video-player-message-overlay {
     position: absolute;
     top: 0;
@@ -1134,17 +1070,24 @@ main {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
     display: flex;
+    flex-direction: column; /* Arrange spinner and text vertically */
     justify-content: center;
     align-items: center;
     color: white;
     font-size: var(--font-size-body);
-    z-index: 5;
-    /* Below controls but above video */
+    z-index: 5; /* Ensure it's above video, below other controls if needed */
     pointer-events: none;
-    /* Allow clicks to pass through to video if needed */
     text-align: center;
     padding: 20px;
+    gap: 10px; /* Space between spinner and message if both shown */
 }
+
+.video-player-message-overlay .spinner-icon {
+    font-size: 3em !important; /* Adjust size as needed */
+    margin-bottom: 0; /* Remove default margin from global spinner */
+    color: var(--auraDark-11); /* Match other spinners */
+}
+
 
 .user-notice {
     font-size: var(--font-size-caption);
@@ -1155,4 +1098,132 @@ main {
     color: var(--auraDark-9);
     padding: 12px;
     border-radius: 12px;
+}
+
+@media (max-width: 1024px) {
+    main {
+        padding: 0 12px; 
+    }
+}
+
+
+@media (max-width: 540px) {
+    body {
+        padding-top: var(--header-height-mobile); /* Space for mobile fixed header */
+        overflow-y: auto; /* Body is the main scroller on mobile */
+        height: 100vh; /* Ensure body can be a scroll container if needed */
+    }
+
+    header {
+        height: var(--header-height-mobile);
+        padding: 10px 12px; /* Slightly reduce padding to ensure proper height */
+    }
+
+    .main-content-wrapper {
+        flex-direction: column; /* Stack main and aside vertically */
+        margin-top: 0; /* No margin as body has padding-top */
+        overflow-y: visible; /* Let body scroll */
+        height: auto; /* Content defines height */
+    }
+
+    .video-center-controls-overlay {
+        top: 40%;
+    }
+
+    main {
+        flex: 1 1 auto; /* Allow main to grow and shrink but take available space */
+        width: 100%;
+        padding: 0;
+        overflow-y: visible; /* Content scrolls with body */
+        /* Other main styles (flex-direction, align-items) remain */
+    }
+
+    .video-player-container {
+        position: fixed; /* Change from sticky to fixed */
+        top: var(--header-height-mobile); /* Fixed below the header */
+        left: 0;
+        right: 0;
+        margin-top: 0; /* Remove any margin */
+        z-index: 100; /* Ensure it's above other content */
+        border-radius: 0;
+        /* margin-bottom: 10px; /* Removed, gap handled by video-content-child padding */
+        max-width: 100%;
+        background-color: var(--auraDark-1); /* Match body bg */
+    }
+
+    .video-content-child {
+        /* Player height (16:9 aspect ratio) + 10px gap below player */
+        padding-top: calc( (9 / 16 * 100vw) + 16px ); 
+    }
+
+    .main-post-details-container,
+    .comments-section-header, /* This will be directly under player or post details */
+    .comments-container,
+    .message-area,
+    #hiddenPostMessage,
+    .explore-more-sidebar { /* Explore sidebar is now part of main scroll flow */
+        padding-left: 12px;
+        padding-right: 12px;
+        width: 100%;
+        max-width: 100%; /* Override desktop max-width */
+    }
+    .main-post-details-container {
+        margin-top: 0; /* Space is handled by video-content-child's padding-top */
+        margin-bottom: 20px; /* Space before comments */
+    }
+
+    .comments-section-header {
+        border-radius: 0;
+    }
+    .comments-container {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        max-height: 45vh;
+    }
+    .load-more-button {
+        border-radius: 0;
+        margin-left: 12px;
+        margin-right: 12px;
+        width: calc(100% - 24px);
+        max-width: calc(100% - 24px);
+    }
+
+    .explore-more-sidebar {
+        flex: 1 1 auto; /* Allow it to take space */
+        height: auto;
+        position: relative; /* No longer sticky itself */
+        top: auto;
+        min-height: unset;
+        overflow-y: visible; /* Scrolls with body */
+        margin-top: 20px; /* Space after comments or main content */
+        padding-bottom: 20px; /* Space at the very end of the page */
+    }
+
+    .explore-posts-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .explore-metrics-overlay {
+        font-size: calc(var(--font-size-tagline) - 1px);
+        padding: 3px 6px;
+    }
+
+    .author-handle {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        min-width: 0;
+    }
+    .comment {
+        margin: 8px 0 24px;
+    }
+
+    .nested-replies {
+        padding-left: 4px;
+        width: calc(100% - 4px);
+    }
 }
