@@ -1,4 +1,5 @@
-.experience-notice {
+#experience-notice.experience-notice {
+  all: initial;
   position: fixed;
   right: 16px;
   bottom: 16px;
@@ -6,23 +7,33 @@
   max-width: 360px;
   background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
   color: #e5e7eb;
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid transparent;
   border-radius: 20px;
   padding: 24px;
   font-family: "Inter", "Segoe UI", sans-serif;
   opacity: 0;
   transform: translateY(40px) translateX(20px) scale(0.85);
   animation: experience-notice-in 380ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
 }
 
-.experience-notice__heading {
+#experience-notice.experience-notice,
+#experience-notice.experience-notice * {
+  box-sizing: border-box;
+}
+
+#experience-notice .experience-notice__heading {
   font-size: 1.0rem;
   font-weight: 600;
   margin: 0 32px 6px 0;
   color: #f8fafc;
 }
 
-.experience-notice__description {
+#experience-notice .experience-notice__description {
   margin: 0 0 14px;
   font-size: 0.85rem;
   line-height: 1.5;
@@ -30,13 +41,15 @@
   opacity: 0.8;
 }
 
-.experience-notice__actions {
+#experience-notice .experience-notice__actions {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  justify-content: flex-start;
 }
 
-.experience-notice__button {
+#experience-notice .experience-notice__button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -49,15 +62,17 @@
   font-size: 0.88rem;
   text-decoration: none;
   transition: transform 160ms ease, box-shadow 160ms ease;
+  margin: 0;
+  align-self: flex-start;
 }
 
-.experience-notice__button:hover,
-.experience-notice__button:focus-visible {
+#experience-notice .experience-notice__button:hover,
+#experience-notice .experience-notice__button:focus-visible {
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
-.experience-notice__close {
+#experience-notice .experience-notice__close {
   position: absolute;
   top: 20px;
   right: 12px;
@@ -71,15 +86,15 @@
   padding: 4px;
 }
 
-.experience-notice__close:hover,
-.experience-notice__close:focus-visible {
+#experience-notice .experience-notice__close:hover,
+#experience-notice .experience-notice__close:focus-visible {
   color: #f8fafc;
   background: transparent;
   transform: translateY(0px);
 
 }
 
-.experience-notice--hide {
+#experience-notice.experience-notice--hide {
   animation: experience-notice-out 220ms ease-in forwards;
 }
 
@@ -98,7 +113,7 @@
 }
 
 @media (max-width: 520px) {
-  .experience-notice {
+  #experience-notice.experience-notice {
     right: 16px;
     bottom: 16px;
     width: calc(100% - 32px);

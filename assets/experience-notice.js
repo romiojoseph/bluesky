@@ -16,6 +16,7 @@
     scriptTag.dataset.noticeButton || "Try it now ";
 
   const notice = document.createElement("section");
+  notice.id = "experience-notice";
   notice.className = "experience-notice";
   notice.setAttribute("role", "dialog");
   notice.setAttribute("aria-live", "polite");
