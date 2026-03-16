@@ -1,0 +1,106 @@
+.experience-notice {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10000;
+  max-width: 360px;
+  background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 20px;
+  padding: 24px;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  opacity: 0;
+  transform: translateY(40px) translateX(20px) scale(0.85);
+  animation: experience-notice-in 380ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.experience-notice__heading {
+  font-size: 1.0rem;
+  font-weight: 600;
+  margin: 0 32px 6px 0;
+  color: #f8fafc;
+}
+
+.experience-notice__description {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #cbd5f5;
+  opacity: 0.8;
+}
+
+.experience-notice__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.experience-notice__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #0866ff;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.experience-notice__button:hover,
+.experience-notice__button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+.experience-notice__close {
+  position: absolute;
+  top: 20px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: #cbd5f5;
+  font-size: 1.2rem;
+  font-weight: 400;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.experience-notice__close:hover,
+.experience-notice__close:focus-visible {
+  color: #f8fafc;
+  background: transparent;
+  transform: translateY(0px);
+
+}
+
+.experience-notice--hide {
+  animation: experience-notice-out 220ms ease-in forwards;
+}
+
+@keyframes experience-notice-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1);
+  }
+}
+
+@keyframes experience-notice-out {
+  to {
+    opacity: 0;
+    transform: translateY(40px) translateX(20px) scale(0.85);
+  }
+}
+
+@media (max-width: 520px) {
+  .experience-notice {
+    right: 16px;
+    bottom: 16px;
+    width: calc(100% - 32px);
+  }
+}
