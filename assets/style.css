@@ -388,24 +388,51 @@ figure {
     min-height: 150px;
 }
 
-.project-card.active {
-    transform: scale(0.95);
-    background-color: var(--auraDark-3);
-    border-color: var(--auraDark-5);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
 .project-card.active .project-icon {
     transform: scale(1.1);
 }
 
-@media (hover: none) and (pointer: coarse) {
-    .project-card:active {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        border-color: var(--auraDark-5);
-        background-color: var(--auraDark-3);
-        border-radius: 20px;
+.project-card.active {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border-color: var(--auraDark-5);
+    background-color: var(--auraDark-3);
+    border-radius: 20px;
+}
+
+/* Featured Project Highlight Sequence */
+.project-card.featured-project.active-highlight {
+    position: relative;
+    border-color: transparent !important;
+}
+
+.project-card.featured-project.active-highlight::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    padding: 2px;
+    border-radius: 13px;
+    background: linear-gradient(90deg, #1d2533, #312c1c, #271515, #1a3323, #1d2533);
+    background-size: 300% 100%;
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: animate-gradient 4s linear infinite;
+}
+
+@keyframes animate-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 300% 50%;
     }
 }
 

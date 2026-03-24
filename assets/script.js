@@ -179,4 +179,22 @@ document.addEventListener('DOMContentLoaded', () => {
     introSection.classList.add('visible');
     progressBarContainer.classList.remove('visible');
 
+    // Sequential Highlight for Featured Projects
+    const topProjects = document.querySelectorAll('.featured-project');
+    if (topProjects.length > 0) {
+        let currentIdx = 0;
+        const HIGHLIGHT_TIME = 4000; // 4 seconds cycle
+
+        const refreshHighlight = () => {
+            topProjects.forEach(p => p.classList.remove('active-highlight'));
+            if (topProjects[currentIdx]) {
+                topProjects[currentIdx].classList.add('active-highlight');
+                currentIdx = (currentIdx + 1) % topProjects.length;
+            }
+        };
+
+        refreshHighlight();
+        setInterval(refreshHighlight, HIGHLIGHT_TIME);
+    }
+
 });
